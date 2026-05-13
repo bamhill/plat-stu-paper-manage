@@ -1,8 +1,8 @@
 import { writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
+import { getSettings } from "./settings";
 
-const UPLOAD_ROOT = path.join(process.cwd(), "data", "files");
 const ALLOWED_TYPES = [
   "application/pdf",
   "application/msword",
@@ -21,22 +21,34 @@ export async function saveFile(
   category: string,
   entityId: number,
   mimeType: string,
+  studentDir?: string,
 ): Promise<{ fileName: string; filePath: string; fileSize: number; fileType: string }> {
-  const dir = path.join(UPLOAD_ROOT, category);
+  const settings = getSettings();
+  let dir: string;
+  if (studentDir) {
+    dir = path.join(process.cwd(), settings.fileRootDir, studentDir, category);
+  } else {
+    dir = path.join(process.cwd(), settings.fileRootDir, category);
+  }
   if (!existsSync(dir)) {
     await mkdir(dir, { recursive: true });
   }
 
   const timestamp = Date.now();
-  const safeName = originalName.replace(/[^a-zA-Z0-9._\-一-龥一-鿿]/g, "_");
+  const safeName = originalName.replace(/[^a-zA-Z0-9._\-一-鿿]/g, "_");
   const fileName = `${category}_${entityId}_${timestamp}_${safeName}`;
-  const filePath = path.join(dir, fileName);
+  const fullPath = path.join(dir, fileName);
 
-  await writeFile(filePath, buffer);
+  await writeFile(fullPath, buffer);
+
+  // Store path relative to the fileRootDir for backward compatibility
+  const relPath = path
+    .relative(path.join(process.cwd(), settings.fileRootDir), fullPath)
+    .replace(/\\/g, "/");
 
   return {
     fileName: originalName,
-    filePath: `${category}/${fileName}`,
+    filePath: relPath,
     fileSize: buffer.length,
     fileType: mimeType,
   };
@@ -53,5 +65,6 @@ export function validateFile(file: File): { valid: boolean; error?: string } {
 }
 
 export function getFilePath(relativePath: string): string {
-  return path.join(UPLOAD_ROOT, relativePath);
+  const settings = getSettings();
+  return path.join(process.cwd(), settings.fileRootDir, relativePath);
 }

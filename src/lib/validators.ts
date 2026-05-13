@@ -3,7 +3,7 @@ import { z } from "zod";
 export const studentSchema = z.object({
   name: z.string().min(1, "姓名不能为空"),
   studentNo: z.string().min(1, "学号不能为空"),
-  degreeType: z.enum(["master", "phd", "joint", "exchange"]),
+  degreeType: z.string().min(1, "学位类型不能为空"),
   enrollmentYear: z.coerce.number().int().min(2000).max(2100),
   graduationYear: z.coerce.number().int().min(2000).max(2100).nullable().optional(),
   direction: z.string().min(1, "方向不能为空"),

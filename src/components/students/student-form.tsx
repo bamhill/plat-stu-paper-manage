@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -26,11 +27,21 @@ interface Props {
 }
 
 export function StudentForm({ open, onOpenChange, student }: Props) {
+  const [degreeTypes, setDegreeTypes] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.degreeTypes?.length) setDegreeTypes(d.degreeTypes);
+      });
+  }, []);
+
   const form = useForm<StudentFormData>({
     resolver: zodResolver(studentSchema),
     defaultValues: (student
       ? { ...student, graduationYear: student.graduationYear ?? null, coSupervisor: student.coSupervisor ?? null, notes: student.notes ?? null }
-      : { name: "", studentNo: "", degreeType: "master", enrollmentYear: new Date().getFullYear(), graduationYear: null, direction: "", supervisor: "", coSupervisor: null, status: "active", notes: null }) as StudentFormData,
+      : { name: "", studentNo: "", degreeType: degreeTypes[0] || "", enrollmentYear: new Date().getFullYear(), graduationYear: null, direction: "", supervisor: "", coSupervisor: null, status: "active", notes: null }) as StudentFormData,
   });
 
   async function onSubmit(data: StudentFormData) {
@@ -62,8 +73,11 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
-                      <SelectItem value="master">硕士</SelectItem><SelectItem value="phd">博士</SelectItem>
-                      <SelectItem value="joint">联培</SelectItem><SelectItem value="exchange">交换</SelectItem>
+                      {degreeTypes.map((dt) => (
+                        <SelectItem key={dt} value={dt}>
+                          {dt}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select><FormMessage />
                 </FormItem>

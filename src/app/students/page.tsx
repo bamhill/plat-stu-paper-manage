@@ -15,6 +15,19 @@ export default async function StudentsPage() {
     orderBy: { graduationYear: "desc" },
     include: { _count: { select: { papers: true } } },
   });
+
+  // Get unique directions and degree types for filter
+  const allDirections = await prisma.student.findMany({
+    select: { direction: true },
+    distinct: ["direction"],
+    orderBy: { direction: "asc" },
+  });
+  const allDegreeTypes = await prisma.student.findMany({
+    select: { degreeType: true },
+    distinct: ["degreeType"],
+    orderBy: { degreeType: "asc" },
+  });
+
   return (
     <div>
       <AppBreadcrumb />
@@ -24,6 +37,8 @@ export default async function StudentsPage() {
       <StudentListTabs
         activeStudents={JSON.parse(JSON.stringify(activeStudents))}
         graduatedStudents={JSON.parse(JSON.stringify(graduatedStudents))}
+        directions={allDirections.map(d => d.direction)}
+        degreeTypes={allDegreeTypes.map(d => d.degreeType)}
       />
     </div>
   );

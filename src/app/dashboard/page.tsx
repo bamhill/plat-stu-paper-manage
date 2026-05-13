@@ -28,12 +28,7 @@ export default async function DashboardPage() {
   const gradeGroups = Array.from(grouped.entries())
     .sort(([a], [b]) => a - b)
     .map(([year, students]) => {
-      const currentYear = new Date().getFullYear();
-      let grade: string;
-      if (year === currentYear) grade = "研一";
-      else if (year === currentYear - 1) grade = "研二";
-      else if (year === currentYear - 2) grade = "研三";
-      else grade = `${year}级`;
+      const grade = `${year}级`;
       return { year, grade, students: JSON.parse(JSON.stringify(students)) };
     });
 

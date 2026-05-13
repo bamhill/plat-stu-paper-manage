@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
-import path from "path";
+import { getFilePath } from "@/lib/file-utils";
 
-export async function GET(_req: NextRequest, { params }: { params: { path: string[] } }) {
-  const filePath = path.join(process.cwd(), "data", "files", ...params.path);
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { path: string[] } },
+) {
+  const relPath = params.path.join("/");
   try {
-    const buffer = await readFile(filePath);
+    const fullPath = getFilePath(relPath);
+    const buffer = await readFile(fullPath);
     const fileName = params.path[params.path.length - 1];
     return new NextResponse(buffer, {
       headers: {

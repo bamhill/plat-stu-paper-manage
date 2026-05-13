@@ -11,6 +11,7 @@ const LABELS: Record<string, string> = {
   theses: "大论文",
   submissions: "投稿记录",
   revisions: "返修记录",
+  settings: "系统设置",
 };
 
 export function AppBreadcrumb() {

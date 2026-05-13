@@ -10,6 +10,7 @@ import {
   BookOpen,
   Send,
   RefreshCw,
+  Settings,
 } from "lucide-react";
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/theses", label: "大论文", icon: BookOpen },
   { href: "/submissions", label: "投稿记录", icon: Send },
   { href: "/revisions", label: "返修记录", icon: RefreshCw },
+  { href: "/settings", label: "系统设置", icon: Settings },
 ];
 
 export function AppSidebar() {
