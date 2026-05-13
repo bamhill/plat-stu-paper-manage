@@ -8,7 +8,6 @@ export default async function DashboardPage() {
     where: { status: "active" },
     include: {
       papers: {
-        where: { status: { notIn: ["rejected", "published"] } },
         include: {
           submissions: { orderBy: { submittedAt: "desc" }, take: 1 },
         },

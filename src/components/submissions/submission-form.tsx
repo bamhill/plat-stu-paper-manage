@@ -20,7 +20,8 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
   const form = useForm<SubmissionFormData>({
     resolver: zodResolver(submissionSchema),
     defaultValues: {
-      paperId: 0, venueName: "", submissionRound: 1,
+      paperId: 0 as unknown as number,
+      venueName: "", submissionRound: 1,
       manuscriptNo: null,
       submittedAt: null, decisionAt: null, decision: null,
       editorComments: null, reviewerComments: null,
@@ -44,7 +45,19 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
     }
   }, [submission, form]);
 
+  // Auto-select first paper when creating new submission
+  useEffect(() => {
+    if (!submission && open && papers.length > 0) {
+      const currentVal = form.getValues("paperId");
+      if (!currentVal) form.setValue("paperId", papers[0].id);
+    }
+  }, [papers, submission, form, open]);
+
   async function onSubmit(data: SubmissionFormData) {
+    if (!submission && !data.paperId) {
+      toast.error("请选择一篇小论文");
+      return;
+    }
     try {
       if (submission) { await updateSubmission(submission.id, data); toast.success("投稿已更新"); }
       else { await createSubmission(data); toast.success("投稿已记录"); }

@@ -7,45 +7,43 @@ import { ChevronRight } from "lucide-react";
 
 export function StudentCard({ student }: { student: any }) {
   const router = useRouter();
-  const activePapers = student.papers?.filter(
-    (p: any) => p.status !== "rejected" && p.status !== "published"
-  ) ?? [];
+  const papers = student.papers ?? [];
+  // Active first, then completed
+  const sorted = [...papers].sort((a, b) => {
+    const aDone = a.status === "published" || a.status === "rejected";
+    const bDone = b.status === "published" || b.status === "rejected";
+    return aDone === bDone ? 0 : aDone ? 1 : -1;
+  });
+  const displayPapers = sorted.slice(0, 4);
+  const moreCount = papers.length - 4;
 
   return (
     <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push(`/students/${student.id}`)}>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-3">
+      <CardContent className="p-3">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-medium text-sm">
+            <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-medium text-xs">
               {student.name.charAt(0)}
             </div>
             <div>
-              <div className="font-medium text-sm">{student.name}</div>
-              <div className="text-xs text-gray-400">{student.direction}</div>
+              <div className="font-medium text-xs">{student.name}</div>
+              <div className="text-[10px] text-gray-400">{student.direction}</div>
             </div>
           </div>
-          <ChevronRight className="h-4 w-4 text-gray-300" />
+          <ChevronRight className="h-3 w-3 text-gray-300" />
         </div>
-        {activePapers.length === 0 ? (
-          <p className="text-xs text-gray-400">暂无活跃论文</p>
+        {papers.length === 0 ? (
+          <p className="text-[10px] text-gray-400">暂无论文</p>
         ) : (
-          <div className="space-y-2">
-            {activePapers.slice(0, 3).map((paper: any) => (
-              <div key={paper.id} className="rounded-md border p-2 text-xs">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium truncate block max-w-[180px]">{paper.title}</span>
-                  <StatusBadge value={paper.status} />
-                </div>
-                {paper.targetVenue && <span className="text-gray-400">目标：{paper.targetVenue}</span>}
-                {paper.submissions?.[0]?.reviewerComments && (
-                  <div className="mt-1 pt-1 border-t text-gray-500 truncate">
-                    {paper.submissions[0].reviewerComments.slice(0, 60)}...
-                  </div>
-                )}
+          <div className="space-y-1">
+            {displayPapers.map((paper: any) => (
+              <div key={paper.id} className="rounded border p-1.5 text-[10px] flex items-center justify-between gap-2">
+                <span className="font-medium truncate flex-1">{paper.title}</span>
+                <StatusBadge value={paper.status} />
               </div>
             ))}
-            {activePapers.length > 3 && (
-              <p className="text-xs text-blue-600">+{activePapers.length - 3} 篇更多...</p>
+            {moreCount > 0 && (
+              <p className="text-[10px] text-blue-600">+{moreCount} 篇</p>
             )}
           </div>
         )}
