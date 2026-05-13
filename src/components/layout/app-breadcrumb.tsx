@@ -13,6 +13,7 @@ const LABELS: Record<string, string> = {
   revisions: "返修记录",
   query: "综合查询",
   analysis: "返修分析",
+  import: "批量导入",
   settings: "系统设置",
 };
 

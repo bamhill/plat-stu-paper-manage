@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { RevisionForm } from "@/components/revisions/revision-form";
+import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export function SubmissionTable({ submissions }: { submissions: any[] }) {
@@ -131,6 +132,14 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                         }}>
                           <Plus className="h-3.5 w-3.5 mr-1" />添加返修轮次
                         </Button>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {isExpanded && (
+                    <TableRow key={`att-${s.id}`} className="bg-gray-50 border-b">
+                      <TableCell />
+                      <TableCell colSpan={10} className="py-3 pl-10">
+                        <AttachmentUpload relatedType="submission" relatedId={s.id} existingAttachments={[]} />
                       </TableCell>
                     </TableRow>
                   )}

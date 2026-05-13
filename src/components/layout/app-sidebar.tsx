@@ -12,6 +12,7 @@ import {
   RefreshCw,
   Search,
   BarChart3,
+  Upload,
   Settings,
   Sun,
   Moon,
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/theses", label: "大论文", icon: BookOpen },
   { href: "/query", label: "综合查询", icon: Search },
   { href: "/analysis", label: "返修分析", icon: BarChart3 },
+  { href: "/import", label: "批量导入", icon: Upload },
   { href: "/settings", label: "系统设置", icon: Settings },
 ];
 
