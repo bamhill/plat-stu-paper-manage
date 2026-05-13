@@ -8,5 +8,9 @@
     "MEM非全",
     "MBA非全",
     "企管学硕"
-  ]
+  ],
+  "aiMode": "local",
+  "aiApiKey": "",
+  "aiApiUrl": "https://api.deepseek.com/v1",
+  "aiModel": "deepseek-chat"
 }

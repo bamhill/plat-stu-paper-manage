@@ -73,6 +73,7 @@ model Submission {
   paperId           Int       @map("paper_id")
   venueName         String    @map("venue_name")
   submissionRound   Int       @map("submission_round")
+  manuscriptNo      String?   @map("manuscript_no")
   submittedAt       DateTime? @map("submitted_at")
   decisionAt        DateTime? @map("decision_at")
   decision          String?

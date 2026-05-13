@@ -31,9 +31,9 @@ export function RevisionTable({ revisions }: { revisions: any[] }) {
           ) : (
             revisions.map((r: any) => (
               <TableRow key={r.id}>
-                <TableCell className="font-medium">{r.submission.paper.title}</TableCell>
-                <TableCell>{r.submission.paper.student.name}</TableCell>
-                <TableCell>{r.submission.venueName}</TableCell>
+                <TableCell className="font-medium max-w-[180px] truncate" title={r.submission.paper.title}>{r.submission.paper.title}</TableCell>
+                <TableCell className="max-w-[80px] truncate" title={r.submission.paper.student.name}>{r.submission.paper.student.name}</TableCell>
+                <TableCell className="max-w-[160px] truncate" title={r.submission.venueName}>{r.submission.venueName}</TableCell>
                 <TableCell>第{r.revisionRound}轮</TableCell>
                 <TableCell><StatusBadge value={r.revisionType} /></TableCell>
                 <TableCell className="text-gray-500">{r.dueAt ? new Date(r.dueAt).toLocaleDateString("zh-CN") : "-"}</TableCell>

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { createTimelineEvent } from "@/lib/timeline";
+import { syncPaperStatus } from "@/lib/paper-status";
 import { submissionSchema } from "@/lib/validators";
 import type { SubmissionFormData } from "@/lib/validators";
 
@@ -13,6 +14,7 @@ export async function createSubmission(data: SubmissionFormData) {
     data: {
       paperId: parsed.paperId, venueName: parsed.venueName,
       submissionRound: parsed.submissionRound,
+      manuscriptNo: parsed.manuscriptNo ?? null,
       submittedAt: parsed.submittedAt ? new Date(parsed.submittedAt) : null,
       decisionAt: parsed.decisionAt ? new Date(parsed.decisionAt) : null,
       decision: parsed.decision ?? null,
@@ -22,7 +24,7 @@ export async function createSubmission(data: SubmissionFormData) {
     },
   });
   if (paper) {
-    await prisma.paper.update({ where: { id: parsed.paperId }, data: { status: "submitted" } });
+    await syncPaperStatus(parsed.paperId);
     await createTimelineEvent({
       studentId: paper.studentId, relatedType: "submission", relatedId: sub.id,
       eventType: "paper_submitted", title: `投稿至 ${parsed.venueName}`,
@@ -41,6 +43,7 @@ export async function updateSubmission(id: number, data: SubmissionFormData) {
     data: {
       paperId: parsed.paperId, venueName: parsed.venueName,
       submissionRound: parsed.submissionRound,
+      manuscriptNo: parsed.manuscriptNo ?? null,
       submittedAt: parsed.submittedAt ? new Date(parsed.submittedAt) : null,
       decisionAt: parsed.decisionAt ? new Date(parsed.decisionAt) : null,
       decision: parsed.decision ?? null,
@@ -49,14 +52,10 @@ export async function updateSubmission(id: number, data: SubmissionFormData) {
       status: parsed.status, notes: parsed.notes ?? null,
     },
   });
+  await syncPaperStatus(parsed.paperId);
   if (parsed.status === "decisioned" && parsed.decision) {
     const paper = await prisma.paper.findUnique({ where: { id: parsed.paperId } });
     if (paper) {
-      const paperStatus = parsed.decision === "minor_revision" ? "minor_revision"
-        : parsed.decision === "major_revision" ? "major_revision"
-        : parsed.decision === "accept" ? "accepted"
-        : parsed.decision === "reject" ? "rejected" : paper.status;
-      await prisma.paper.update({ where: { id: parsed.paperId }, data: { status: paperStatus } });
       await createTimelineEvent({
         studentId: paper.studentId, relatedType: "submission", relatedId: sub.id,
         eventType: "decision_received", title: `${parsed.venueName} 审稿意见：${parsed.decision}`,

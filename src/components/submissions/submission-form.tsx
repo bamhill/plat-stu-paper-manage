@@ -21,6 +21,7 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
     resolver: zodResolver(submissionSchema),
     defaultValues: {
       paperId: 0, venueName: "", submissionRound: 1,
+      manuscriptNo: null,
       submittedAt: null, decisionAt: null, decision: null,
       editorComments: null, reviewerComments: null,
       status: "pending", notes: null,
@@ -32,6 +33,7 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
       form.reset({
         paperId: submission.paperId, venueName: submission.venueName,
         submissionRound: submission.submissionRound,
+        manuscriptNo: submission.manuscriptNo ?? null,
         submittedAt: submission.submittedAt?.split("T")[0] ?? null,
         decisionAt: submission.decisionAt?.split("T")[0] ?? null,
         decision: submission.decision ?? null,
@@ -70,6 +72,11 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
               <FormField control={form.control} name="venueName" render={({ field }) => (
                 <FormItem><FormLabel>期刊/会议名</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
               )} />
+              <FormField control={form.control} name="manuscriptNo" render={({ field }) => (
+                <FormItem><FormLabel>稿件编号</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
+              )} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="submissionRound" render={({ field }) => (
                 <FormItem><FormLabel>投稿轮次</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
               )} />

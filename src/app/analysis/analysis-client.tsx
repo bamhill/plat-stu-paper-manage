@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, ChevronDown, ChevronRight, BarChart3 } from "lucide-react";
 
 const CATEGORIES = [
@@ -127,6 +129,43 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
     });
   }, [revisions, studentFilter, venueFilter, typeFilter, dateFrom, dateTo, search]);
 
+  const statsTotal = revisions.length;
+  const statsByType = useMemo(() => ({
+    minor: revisions.filter(r => r.revisionType === "minor").length,
+    major: revisions.filter(r => r.revisionType === "major").length,
+    resubmit: revisions.filter(r => r.revisionType === "resubmit").length,
+  }), [revisions]);
+  const statsByJournal = useMemo(() => {
+    const map = new Map<string, { count: number; totalRounds: number }>();
+    revisions.forEach(r => {
+      const name = r.submission?.venueName || "未知";
+      const entry = map.get(name) || { count: 0, totalRounds: 0 };
+      entry.count++;
+      entry.totalRounds += r.revisionRound;
+      map.set(name, entry);
+    });
+    return Array.from(map.entries())
+      .map(([journal, data]) => ({ journal, count: data.count, avgRounds: +(data.totalRounds / data.count).toFixed(1) }))
+      .sort((a, b) => b.count - a.count);
+  }, [revisions]);
+  const statsByStudent = useMemo(() => {
+    const map = new Map<string, number>();
+    revisions.forEach(r => {
+      const name = r.submission?.paper?.student?.name || "未知";
+      map.set(name, (map.get(name) || 0) + 1);
+    });
+    return Array.from(map.entries())
+      .map(([student, count]) => ({ student, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [revisions]);
+
+  const statsDateEarliest = revisions.length > 0
+    ? revisions.reduce((min, r) => r.receivedAt && r.receivedAt < min ? r.receivedAt : min, revisions[0]?.receivedAt || "")
+    : null;
+  const statsDateLatest = revisions.length > 0
+    ? revisions.reduce((max, r) => r.receivedAt && r.receivedAt > max ? r.receivedAt : max, revisions[0]?.receivedAt || "")
+    : null;
+
   function toggleSelect(id: number) {
     const next = new Set(selectedIds);
     if (next.has(id)) next.delete(id);
@@ -169,7 +208,12 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
   }
 
   return (
-    <div className="space-y-4">
+    <Tabs defaultValue="ai">
+      <TabsList className="mb-4">
+        <TabsTrigger value="ai">AI 分析</TabsTrigger>
+        <TabsTrigger value="stats">统计分析</TabsTrigger>
+      </TabsList>
+      <TabsContent value="ai" className="space-y-4">
       {/* Filters */}
       <Card>
         <CardContent className="pt-4">
@@ -427,6 +471,107 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
           </Button>
         </div>
       )}
-    </div>
+      </TabsContent>
+      <TabsContent value="stats" className="space-y-4">
+        {/* Summary cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">返修总数</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <span className="text-2xl font-bold">{statsTotal}</span>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">小修</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <span className="text-2xl font-bold text-yellow-600">{statsByType.minor}</span>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">大修</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <span className="text-2xl font-bold text-orange-600">{statsByType.major}</span>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">重投</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <span className="text-2xl font-bold text-red-600">{statsByType.resubmit}</span>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Date range summary */}
+        {statsDateEarliest && statsDateLatest && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">日期范围</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              {new Date(statsDateEarliest).toLocaleDateString("zh-CN")} ~ {new Date(statsDateLatest).toLocaleDateString("zh-CN")}
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">按期刊统计</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>期刊/会议</TableHead>
+                    <TableHead className="text-right">返修数</TableHead>
+                    <TableHead className="text-right">平均轮次</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {statsByJournal.map((item) => (
+                    <TableRow key={item.journal}>
+                      <TableCell>{item.journal}</TableCell>
+                      <TableCell className="text-right">{item.count}</TableCell>
+                      <TableCell className="text-right">{item.avgRounds}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">按学生统计</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>学生</TableHead>
+                    <TableHead className="text-right">返修数</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {statsByStudent.map((item) => (
+                    <TableRow key={item.student}>
+                      <TableCell>{item.student}</TableCell>
+                      <TableCell className="text-right">{item.count}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 }

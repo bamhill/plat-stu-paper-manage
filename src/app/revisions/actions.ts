@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { createTimelineEvent } from "@/lib/timeline";
+import { syncPaperStatus } from "@/lib/paper-status";
 import { revisionSchema } from "@/lib/validators";
 import type { RevisionFormData } from "@/lib/validators";
 
@@ -22,6 +23,7 @@ export async function createRevision(data: RevisionFormData) {
     },
   });
   if (submission?.paper) {
+    await syncPaperStatus(submission.paperId);
     await createTimelineEvent({
       studentId: submission.paper.studentId, relatedType: "revision", relatedId: rev.id,
       eventType: "revision_started", title: `${submission.venueName} 返修第${parsed.revisionRound}轮（${parsed.revisionType}）`,

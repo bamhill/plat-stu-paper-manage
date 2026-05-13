@@ -35,6 +35,7 @@ export const submissionSchema = z.object({
   paperId: z.coerce.number().int(),
   venueName: z.string().min(1, "期刊/会议名不能为空"),
   submissionRound: z.coerce.number().int().min(1),
+  manuscriptNo: z.string().nullable().optional(),
   submittedAt: z.string().nullable().optional(),
   decisionAt: z.string().nullable().optional(),
   decision: z.enum(["under_review", "minor_revision", "major_revision", "reject", "accept"]).nullable().optional(),

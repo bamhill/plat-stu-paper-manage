@@ -32,6 +32,7 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
             <TableHead className="w-6" />
             <TableHead>小论文</TableHead><TableHead>学生</TableHead>
             <TableHead>投稿期刊/会议</TableHead><TableHead>轮次</TableHead>
+            <TableHead>稿件编号</TableHead>
             <TableHead>投稿日期</TableHead><TableHead>决定</TableHead>
             <TableHead>状态</TableHead>
             <TableHead>返修</TableHead>
@@ -40,7 +41,7 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
         </TableHeader>
         <TableBody>
           {submissions.length === 0 ? (
-            <TableRow><TableCell colSpan={10} className="text-center text-gray-400 py-8">暂无数据</TableCell></TableRow>
+            <TableRow><TableCell colSpan={11} className="text-center text-gray-400 py-8">暂无数据</TableCell></TableRow>
           ) : (
             submissions.map((s: any) => {
               const isExpanded = expanded.has(s.id);
@@ -57,10 +58,11 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                         <span className="w-4 inline-block" />
                       )}
                     </TableCell>
-                    <TableCell className="font-medium">{s.paper.title}</TableCell>
-                    <TableCell>{s.paper.student.name}</TableCell>
-                    <TableCell>{s.venueName}</TableCell>
-                    <TableCell>第{s.submissionRound}次</TableCell>
+                    <TableCell className="font-medium max-w-[180px] truncate" title={s.paper.title}>{s.paper.title}</TableCell>
+                    <TableCell className="max-w-[80px] truncate" title={s.paper.student.name}>{s.paper.student.name}</TableCell>
+                    <TableCell className="max-w-[160px] truncate" title={s.venueName}>{s.venueName}</TableCell>
+                    <TableCell className="whitespace-nowrap">第{s.submissionRound}次</TableCell>
+                    <TableCell className="max-w-[120px] truncate" title={s.manuscriptNo}>{s.manuscriptNo ?? "-"}</TableCell>
                     <TableCell className="text-gray-500">{s.submittedAt ? new Date(s.submittedAt).toLocaleDateString("zh-CN") : "-"}</TableCell>
                     <TableCell>{s.decision ? <StatusBadge value={s.decision} /> : "-"}</TableCell>
                     <TableCell><StatusBadge value={s.status} /></TableCell>
@@ -76,7 +78,7 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                   {isExpanded && (s.reviewerComments || s.editorComments) && (
                     <TableRow className="bg-gray-50 border-b">
                       <TableCell />
-                      <TableCell colSpan={9} className="py-2 pl-10">
+                      <TableCell colSpan={10} className="py-2 pl-10">
                         {s.reviewerComments && (
                           <div className="text-sm mb-1">
                             <span className="font-medium text-gray-500">审稿意见：</span>
@@ -96,7 +98,7 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                   {isExpanded && hasRevisions && s.revisions.map((r: any) => (
                     <TableRow key={`rev-${r.id}`} className="bg-gray-50 border-b">
                       <TableCell />
-                      <TableCell colSpan={9} className="py-2 pl-10">
+                      <TableCell colSpan={10} className="py-2 pl-10">
                         <div className="flex items-center gap-3 text-sm">
                           <span className="font-medium">第{r.revisionRound}轮返修</span>
                           <StatusBadge value={r.revisionType} />
@@ -122,7 +124,7 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                   {isExpanded && (
                     <TableRow key={`rev-actions-${s.id}`} className="bg-gray-50 border-b">
                       <TableCell />
-                      <TableCell colSpan={9} className="py-2 pl-10">
+                      <TableCell colSpan={10} className="py-2 pl-10">
                         <Button size="sm" variant="outline" onClick={(e) => {
                           e.stopPropagation();
                           setNewRevision({ submissionId: s.id, revisionRound: (s.revisions?.length || 0) + 1 });

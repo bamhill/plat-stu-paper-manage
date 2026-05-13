@@ -26,7 +26,7 @@ const navItems = [
   { href: "/revisions", label: "　返修记录", icon: RefreshCw, indent: true },
   { href: "/theses", label: "大论文", icon: BookOpen },
   { href: "/query", label: "综合查询", icon: Search },
-  { href: "/analysis", label: "分析", icon: BarChart3 },
+  { href: "/analysis", label: "返修分析", icon: BarChart3 },
   { href: "/settings", label: "系统设置", icon: Settings },
 ];
 

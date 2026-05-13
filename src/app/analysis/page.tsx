@@ -35,7 +35,7 @@ export default async function AnalysisPage() {
   return (
     <div>
       <AppBreadcrumb />
-      <h1 className="text-xl font-bold mb-4">返修意见分析</h1>
+      <h1 className="text-xl font-bold mb-4">返修分析</h1>
       <AnalysisClient
         revisions={JSON.parse(JSON.stringify(revisions))}
         students={JSON.parse(JSON.stringify(students))}
