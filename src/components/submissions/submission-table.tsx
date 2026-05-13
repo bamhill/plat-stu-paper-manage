@@ -1,19 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Pencil, Trash2, ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { deleteSubmission } from "@/app/submissions/actions";
 import { SubmissionForm } from "./submission-form";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
 import { Button } from "@/components/ui/button";
+import { RevisionForm } from "@/components/revisions/revision-form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export function SubmissionTable({ submissions }: { submissions: any[] }) {
   const [editTarget, setEditTarget] = useState<any | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [newRevision, setNewRevision] = useState<any | null>(null);
 
   function toggleExpand(id: number) {
     const next = new Set(expanded);
@@ -97,6 +99,19 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                       </TableCell>
                     </TableRow>
                   ))}
+                  {isExpanded && (
+                    <TableRow key={`rev-actions-${s.id}`} className="bg-gray-50 border-b">
+                      <TableCell />
+                      <TableCell colSpan={9} className="py-2 pl-10">
+                        <Button size="sm" variant="outline" onClick={(e) => {
+                          e.stopPropagation();
+                          setNewRevision({ submissionId: s.id, revisionRound: (s.revisions?.length || 0) + 1 });
+                        }}>
+                          <Plus className="h-3.5 w-3.5 mr-1" />添加返修轮次
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </>
               );
             })
@@ -104,6 +119,7 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
         </TableBody>
       </Table>
       <SubmissionForm open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} submission={editTarget} />
+      <RevisionForm open={!!newRevision} onOpenChange={(o) => !o && setNewRevision(null)} revision={newRevision} />
       <ConfirmDelete
         open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}
         title="删除投稿记录" description="确定删除此投稿记录及其返修数据？"

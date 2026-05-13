@@ -22,6 +22,19 @@ export default async function ThesisDetailPage({ params }: { params: { id: strin
     orderBy: { uploadedAt: "desc" },
   });
 
+  // Also fetch attachments for each review
+  const reviewIds = thesis.reviews.map(r => r.id);
+  const reviewAttachments = reviewIds.length > 0 ? await prisma.attachment.findMany({
+    where: { relatedType: "thesis_review", relatedId: { in: reviewIds } },
+    orderBy: { uploadedAt: "desc" },
+  }) : [];
+
+  // Merge review attachments into review objects
+  const reviewsWithAttachments = thesis.reviews.map(r => ({
+    ...r,
+    attachments: reviewAttachments.filter(a => a.relatedId === r.id),
+  }));
+
   return (
     <div>
       <AppBreadcrumb />
@@ -35,7 +48,7 @@ export default async function ThesisDetailPage({ params }: { params: { id: strin
           学生：<Link href={`/students/${thesis.student.id}`} className="text-blue-600 hover:underline">{thesis.student.name}</Link>
         </p>
       </div>
-      <ThesisDetailClient thesis={JSON.parse(JSON.stringify({ ...thesis, attachments: thesisAttachments }))} />
+      <ThesisDetailClient thesis={JSON.parse(JSON.stringify({ ...thesis, reviews: reviewsWithAttachments, attachments: thesisAttachments }))} />
     </div>
   );
 }

@@ -34,23 +34,26 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
       .then((r) => r.json())
       .then((d) => {
         if (d.degreeTypes?.length) {
-          if (student && !d.degreeTypes.includes(student.degreeType)) {
-            setDegreeTypes([...d.degreeTypes, student.degreeType]);
-          } else {
-            setDegreeTypes(d.degreeTypes);
-          }
+          const merged = student && !d.degreeTypes.includes(student.degreeType)
+            ? [...d.degreeTypes, student.degreeType]
+            : d.degreeTypes;
+          setDegreeTypes(merged);
         }
       });
   }, [student]);
 
   const form = useForm<StudentFormData>({
     resolver: zodResolver(studentSchema),
-    defaultValues: {
-      name: "", studentNo: "", degreeType: "",
-      enrollmentYear: new Date().getFullYear(), graduationYear: null,
-      direction: "", supervisor: "", coSupervisor: null,
-      status: "active", notes: null,
-    } as StudentFormData,
+    defaultValues: (() => {
+      // Use degreeTypes[0] as default if available
+      const defaultDeg = degreeTypes.length > 0 ? degreeTypes[0] : "";
+      return {
+        name: "", studentNo: "", degreeType: defaultDeg,
+        enrollmentYear: new Date().getFullYear(), graduationYear: null,
+        direction: "", supervisor: "", coSupervisor: null,
+        status: "active", notes: null,
+      } as StudentFormData;
+    })(),
   });
 
   useEffect(() => {

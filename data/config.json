@@ -1,5 +1,12 @@
 {
-  "fileRootDir": "data/files",
+  "fileRootDir": "d:\\研究生管理\\",
   "organizeByStudent": true,
-  "degreeTypes": ["工学硕士", "工业工程专硕", "MBA全日制", "MEM非全", "MBA非全", "工学博士", "联培硕士", "交换生"]
+  "degreeTypes": [
+    "管工学硕",
+    "工业工程专硕",
+    "MBA全日制",
+    "MEM非全",
+    "MBA非全",
+    "企管学硕"
+  ]
 }

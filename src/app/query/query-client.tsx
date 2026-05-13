@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { RevisionForm } from "@/components/revisions/revision-form";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
-import { ChevronDown, ChevronRight, Search } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, Search } from "lucide-react";
 
 export function QueryClient({ papers, students }: { papers: any[]; students: any[] }) {
   const router = useRouter();
@@ -15,6 +16,7 @@ export function QueryClient({ papers, students }: { papers: any[]; students: any
   const [expandedStudents, setExpandedStudents] = useState<Set<number>>(new Set());
   const [expandedPapers, setExpandedPapers] = useState<Set<number>>(new Set());
   const [expandedSubmissions, setExpandedSubmissions] = useState<Set<number>>(new Set());
+  const [newRevision, setNewRevision] = useState<any | null>(null);
 
   function toggleStudent(id: number) { const n = new Set(expandedStudents); if (n.has(id)) n.delete(id); else n.add(id); setExpandedStudents(n); }
   function togglePaper(id: number) { const n = new Set(expandedPapers); if (n.has(id)) n.delete(id); else n.add(id); setExpandedPapers(n); }
@@ -112,6 +114,13 @@ export function QueryClient({ papers, students }: { papers: any[]; students: any
                                 {rev.commentsSummary && <span className="text-gray-400 truncate max-w-xs">{rev.commentsSummary}</span>}
                               </div>
                             ))}
+                            {subExpanded && (
+                              <div className="ml-7 mb-2">
+                                <button className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1" onClick={() => setNewRevision({ submissionId: sub.id, revisionRound: (sub.revisions?.length || 0) + 1 })}>
+                                  <Plus className="h-3 w-3" />添加返修轮次
+                                </button>
+                              </div>
+                            )}
                           </div>
                         );
                       })
@@ -183,6 +192,13 @@ export function QueryClient({ papers, students }: { papers: any[]; students: any
                                       {rev.commentsSummary && <span className="text-gray-400 truncate max-w-xs">{rev.commentsSummary}</span>}
                                     </div>
                                   ))}
+                                  {se && (
+                                    <div className="ml-7 mb-1">
+                                      <button className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1" onClick={() => setNewRevision({ submissionId: sub.id, revisionRound: (sub.revisions?.length || 0) + 1 })}>
+                                        <Plus className="h-3 w-3" />添加返修轮次
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                               );
                             })}
@@ -201,6 +217,7 @@ export function QueryClient({ papers, students }: { papers: any[]; students: any
       {filteredPapers.length === 0 && filteredStudents.length === 0 && (
         <p className="text-center text-gray-400 py-12">无匹配结果</p>
       )}
+      <RevisionForm open={!!newRevision} onOpenChange={(o) => !o && setNewRevision(null)} revision={newRevision} />
     </div>
   );
 }
