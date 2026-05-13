@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ThesisReviewForm } from "@/components/theses/thesis-review-form";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
@@ -72,6 +73,20 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
           ))
         )}
         <ThesisReviewForm open={showReviewForm} onOpenChange={setShowReviewForm} thesisId={thesis.id} />
+
+        {/* Attachments */}
+        <div className="mt-6 pt-4 border-t">
+          <h2 className="font-medium mb-3">附件</h2>
+          <AttachmentUpload
+            relatedType="thesis"
+            relatedId={thesis.id}
+            existingAttachments={(thesis.attachments || []).map((a: any) => ({
+              id: a.id, fileName: a.fileName, filePath: a.filePath,
+              fileSize: a.fileSize, fileType: a.fileType,
+              description: a.description, uploadedAt: a.uploadedAt,
+            }))}
+          />
+        </div>
       </div>
     </div>
   );

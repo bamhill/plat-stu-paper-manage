@@ -17,6 +17,11 @@ export default async function ThesisDetailPage({ params }: { params: { id: strin
   });
   if (!thesis) notFound();
 
+  const thesisAttachments = await prisma.attachment.findMany({
+    where: { relatedType: "thesis", relatedId: Number(params.id) },
+    orderBy: { uploadedAt: "desc" },
+  });
+
   return (
     <div>
       <AppBreadcrumb />
@@ -30,7 +35,7 @@ export default async function ThesisDetailPage({ params }: { params: { id: strin
           学生：<Link href={`/students/${thesis.student.id}`} className="text-blue-600 hover:underline">{thesis.student.name}</Link>
         </p>
       </div>
-      <ThesisDetailClient thesis={JSON.parse(JSON.stringify(thesis))} />
+      <ThesisDetailClient thesis={JSON.parse(JSON.stringify({ ...thesis, attachments: thesisAttachments }))} />
     </div>
   );
 }

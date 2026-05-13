@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { PaperVersions } from "@/components/papers/paper-versions";
+import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,11 @@ export default async function PaperDetailPage({ params }: { params: { id: string
     },
   });
   if (!paper) notFound();
+
+  const paperAttachments = await prisma.attachment.findMany({
+    where: { relatedType: "paper", relatedId: Number(params.id) },
+    orderBy: { uploadedAt: "desc" },
+  });
 
   return (
     <div>
@@ -51,6 +57,18 @@ export default async function PaperDetailPage({ params }: { params: { id: string
           )}
           <div className="rounded-lg border bg-white p-4">
             <PaperVersions paperId={paper.id} versions={JSON.parse(JSON.stringify(paper.versions))} />
+          </div>
+          <div className="rounded-lg border bg-white p-4">
+            <h2 className="font-medium mb-3">附件</h2>
+            <AttachmentUpload
+              relatedType="paper"
+              relatedId={paper.id}
+              existingAttachments={JSON.parse(JSON.stringify(paperAttachments)).map((a: any) => ({
+                id: a.id, fileName: a.fileName, filePath: a.filePath,
+                fileSize: a.fileSize, fileType: a.fileType,
+                description: a.description, uploadedAt: a.uploadedAt,
+              }))}
+            />
           </div>
         </div>
         <div className="space-y-4">
