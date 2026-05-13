@@ -8,7 +8,7 @@ import { createThesis, updateThesis } from "@/app/theses/actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -62,10 +62,12 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="studentId" render={({ field }) => (
               <FormItem><FormLabel>所属学生</FormLabel>
-                <Select onValueChange={(v) => field.onChange(Number(v))} value={field.value ? String(field.value) : undefined}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="选择学生" /></SelectTrigger></FormControl>
-                  <SelectContent>{students.map((s: any) => <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>)}</SelectContent>
-                </Select><FormMessage />
+                <FormControl>
+                  <NativeSelect value={String(field.value ?? "")} onValueChange={(v) => field.onChange(Number(v))}>
+                    <option value="" disabled>选择学生</option>
+                    {students.map((s: any) => <option key={s.id} value={String(s.id)}>{s.name}</option>)}
+                  </NativeSelect>
+                </FormControl><FormMessage />
               </FormItem>
             )} />
             <FormField control={form.control} name="title" render={({ field }) => (
@@ -77,27 +79,25 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
               )} />
               <FormField control={form.control} name="stage" render={({ field }) => (
                 <FormItem><FormLabel>阶段</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="proposal">开题</SelectItem><SelectItem value="midterm">中期</SelectItem>
-                      <SelectItem value="draft">初稿</SelectItem><SelectItem value="review">外审</SelectItem>
-                      <SelectItem value="revision">修改</SelectItem><SelectItem value="defense">答辩</SelectItem>
-                      <SelectItem value="archived">归档</SelectItem>
-                    </SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="proposal">开题</option><option value="midterm">中期</option>
+                      <option value="draft">初稿</option><option value="review">外审</option>
+                      <option value="revision">修改</option><option value="defense">答辩</option>
+                      <option value="archived">归档</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="in_progress">进行中</SelectItem><SelectItem value="submitted">已提交</SelectItem>
-                      <SelectItem value="reviewed">已审阅</SelectItem><SelectItem value="revision">修改中</SelectItem>
-                      <SelectItem value="defended">已答辩</SelectItem>
-                    </SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="in_progress">进行中</option><option value="submitted">已提交</option>
+                      <option value="reviewed">已审阅</option><option value="revision">修改中</option>
+                      <option value="defended">已答辩</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
             </div>

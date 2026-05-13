@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function QueryPage() {
   const papers = await prisma.paper.findMany({
     include: {
-      student: { select: { id: true, name: true, status: true } },
+      student: { select: { id: true, name: true, status: true, enrollmentYear: true } },
       submissions: {
         include: { revisions: true },
         orderBy: { submissionRound: "desc" },
@@ -16,13 +16,26 @@ export default async function QueryPage() {
     orderBy: { updatedAt: "desc" },
   });
 
+  const students = await prisma.student.findMany({
+    orderBy: { enrollmentYear: "desc" },
+    include: {
+      papers: {
+        include: {
+          submissions: { include: { revisions: true }, orderBy: { submissionRound: "desc" } },
+        },
+        orderBy: { updatedAt: "desc" },
+      },
+    },
+  });
+
   return (
     <div>
       <AppBreadcrumb />
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold">综合查询</h1>
-      </div>
-      <QueryClient papers={JSON.parse(JSON.stringify(papers))} />
+      <h1 className="text-xl font-bold mb-4">综合查询</h1>
+      <QueryClient
+        papers={JSON.parse(JSON.stringify(papers))}
+        students={JSON.parse(JSON.stringify(students))}
+      />
     </div>
   );
 }

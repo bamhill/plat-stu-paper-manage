@@ -9,7 +9,7 @@ import { createStudent, updateStudent } from "@/app/students/actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
@@ -33,9 +33,15 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
     fetch("/api/settings")
       .then((r) => r.json())
       .then((d) => {
-        if (d.degreeTypes?.length) setDegreeTypes(d.degreeTypes);
+        if (d.degreeTypes?.length) {
+          if (student && !d.degreeTypes.includes(student.degreeType)) {
+            setDegreeTypes([...d.degreeTypes, student.degreeType]);
+          } else {
+            setDegreeTypes(d.degreeTypes);
+          }
+        }
       });
-  }, []);
+  }, [student]);
 
   const form = useForm<StudentFormData>({
     resolver: zodResolver(studentSchema),
@@ -86,27 +92,25 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="degreeType" render={({ field }) => (
                 <FormItem><FormLabel>学位类型</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
                       {degreeTypes.map((dt) => (
-                        <SelectItem key={dt} value={dt}>
+                        <option key={dt} value={dt}>
                           {dt}
-                        </SelectItem>
+                        </option>
                       ))}
-                    </SelectContent>
-                  </Select><FormMessage />
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="active">在读</SelectItem><SelectItem value="graduated">已毕业</SelectItem>
-                      <SelectItem value="delayed">延期</SelectItem><SelectItem value="suspended">休学</SelectItem>
-                    </SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="active">在读</option><option value="graduated">已毕业</option>
+                      <option value="delayed">延期</option><option value="suspended">休学</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
             </div>

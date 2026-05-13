@@ -19,7 +19,7 @@ async function main() {
     data: {
       name: "张三",
       studentNo: "2024001",
-      degreeType: "master",
+      degreeType: "工学硕士",
       enrollmentYear: 2024,
       direction: "自然语言处理",
       supervisor: "王教授",
@@ -31,7 +31,7 @@ async function main() {
     data: {
       name: "李四",
       studentNo: "2023001",
-      degreeType: "phd",
+      degreeType: "工学博士",
       enrollmentYear: 2023,
       direction: "计算机视觉",
       supervisor: "王教授",
@@ -43,7 +43,7 @@ async function main() {
     data: {
       name: "王五",
       studentNo: "2022001",
-      degreeType: "master",
+      degreeType: "工学硕士",
       enrollmentYear: 2022,
       graduationYear: 2025,
       direction: "数据挖掘",
@@ -197,7 +197,7 @@ async function main() {
     data: {
       studentId: s3.id,
       title: "基于图神经网络的推荐系统研究",
-      degreeType: "master",
+      degreeType: "工学硕士",
       stage: "defense",
       proposalDate: new Date("2024-06-01"),
       midtermDate: new Date("2024-12-01"),

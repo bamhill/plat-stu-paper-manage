@@ -8,7 +8,7 @@ import { createRevision, updateRevision } from "@/app/revisions/actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -58,10 +58,12 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="submissionId" render={({ field }) => (
               <FormItem><FormLabel>所属投稿</FormLabel>
-                <Select onValueChange={(v) => field.onChange(Number(v))} value={field.value ? String(field.value) : undefined}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="选择投稿" /></SelectTrigger></FormControl>
-                  <SelectContent>{submissions.map((s: any) => <SelectItem key={s.id} value={String(s.id)}>{s.venueName} ({s.paper?.title})</SelectItem>)}</SelectContent>
-                </Select><FormMessage />
+                <FormControl>
+                  <NativeSelect value={String(field.value ?? "")} onValueChange={(v) => field.onChange(Number(v))}>
+                    <option value="" disabled>选择投稿</option>
+                    {submissions.map((s: any) => <option key={s.id} value={String(s.id)}>{s.venueName} ({s.paper?.title})</option>)}
+                  </NativeSelect>
+                </FormControl><FormMessage />
               </FormItem>
             )} />
             <div className="grid grid-cols-3 gap-4">
@@ -70,27 +72,25 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
               )} />
               <FormField control={form.control} name="revisionType" render={({ field }) => (
                 <FormItem><FormLabel>返修类型</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="minor">小修</SelectItem>
-                      <SelectItem value="major">大修</SelectItem>
-                      <SelectItem value="resubmit">重投</SelectItem>
-                    </SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="minor">小修</option>
+                      <option value="major">大修</option>
+                      <option value="resubmit">重投</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="pending">待处理</SelectItem>
-                      <SelectItem value="revising">返修中</SelectItem>
-                      <SelectItem value="submitted">已提交</SelectItem>
-                      <SelectItem value="completed">已完成</SelectItem>
-                    </SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="pending">待处理</option>
+                      <option value="revising">返修中</option>
+                      <option value="submitted">已提交</option>
+                      <option value="completed">已完成</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
             </div>

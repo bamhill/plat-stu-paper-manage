@@ -21,9 +21,9 @@ const navItems = [
   { href: "/dashboard", label: "首页", icon: LayoutDashboard },
   { href: "/students", label: "学生管理", icon: GraduationCap },
   { href: "/papers", label: "小论文", icon: FileText },
+  { href: "/submissions", label: "　投稿记录", icon: Send, indent: true },
+  { href: "/revisions", label: "　返修记录", icon: RefreshCw, indent: true },
   { href: "/theses", label: "大论文", icon: BookOpen },
-  { href: "/submissions", label: "投稿记录", icon: Send },
-  { href: "/revisions", label: "返修记录", icon: RefreshCw },
   { href: "/query", label: "综合查询", icon: Search },
   { href: "/settings", label: "系统设置", icon: Settings },
 ];
@@ -47,13 +47,14 @@ export function AppSidebar() {
               href={item.href}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                (item as any).indent && "pl-9",
                 isActive
                   ? "bg-blue-50 text-blue-700 font-medium"
                   : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               )}
             >
-              <item.icon className="h-4 w-4" />
-              {item.label}
+              {(item as any).indent ? null : <item.icon className="h-4 w-4" />}
+              {item.label.trim()}
             </Link>
           );
         })}

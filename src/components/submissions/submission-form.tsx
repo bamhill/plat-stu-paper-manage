@@ -8,7 +8,7 @@ import { createSubmission, updateSubmission } from "@/app/submissions/actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -58,10 +58,12 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="paperId" render={({ field }) => (
               <FormItem><FormLabel>小论文</FormLabel>
-                <Select onValueChange={(v) => field.onChange(Number(v))} value={field.value ? String(field.value) : undefined}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="选择论文" /></SelectTrigger></FormControl>
-                  <SelectContent>{papers.map((p: any) => <SelectItem key={p.id} value={String(p.id)}>{p.title} ({p.student?.name})</SelectItem>)}</SelectContent>
-                </Select><FormMessage />
+                <FormControl>
+                  <NativeSelect value={String(field.value ?? "")} onValueChange={(v) => field.onChange(Number(v))}>
+                    <option value="" disabled>选择论文</option>
+                    {papers.map((p: any) => <option key={p.id} value={String(p.id)}>{p.title} ({p.student?.name})</option>)}
+                  </NativeSelect>
+                </FormControl><FormMessage />
               </FormItem>
             )} />
             <div className="grid grid-cols-2 gap-4">
@@ -81,29 +83,28 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="pending">待处理</SelectItem>
-                      <SelectItem value="under_review">审稿中</SelectItem>
-                      <SelectItem value="decisioned">已返回</SelectItem>
-                    </SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="pending">待处理</option>
+                      <option value="under_review">审稿中</option>
+                      <option value="decisioned">已返回</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
             </div>
             <FormField control={form.control} name="decision" render={({ field }) => (
               <FormItem><FormLabel>审稿决定</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? undefined}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="未决定" /></SelectTrigger></FormControl>
-                  <SelectContent>
-                    <SelectItem value="under_review">审稿中</SelectItem>
-                    <SelectItem value="minor_revision">小修</SelectItem>
-                    <SelectItem value="major_revision">大修</SelectItem>
-                    <SelectItem value="accept">接收</SelectItem>
-                    <SelectItem value="reject">拒稿</SelectItem>
-                  </SelectContent>
-                </Select><FormMessage />
+                <FormControl>
+                  <NativeSelect value={field.value ?? ""} onValueChange={field.onChange}>
+                    <option value="" disabled>未决定</option>
+                    <option value="under_review">审稿中</option>
+                    <option value="minor_revision">小修</option>
+                    <option value="major_revision">大修</option>
+                    <option value="accept">接收</option>
+                    <option value="reject">拒稿</option>
+                  </NativeSelect>
+                </FormControl><FormMessage />
               </FormItem>
             )} />
             <FormField control={form.control} name="reviewerComments" render={({ field }) => (

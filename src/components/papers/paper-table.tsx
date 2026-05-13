@@ -10,7 +10,7 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/select";
 
 const STATUS_OPTIONS = [
   { value: "全部", label: "全部状态" },
@@ -37,10 +37,9 @@ export function PaperTable({ papers }: { papers: any[] }) {
   return (
     <>
       <div className="mb-4">
-        <Select value={filter} onValueChange={(v) => v && setFilter(v)}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-          <SelectContent>{STATUS_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
-        </Select>
+        <NativeSelect value={filter} onValueChange={(v) => v && setFilter(v)} className="w-40">
+          {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </NativeSelect>
       </div>
       <Table>
         <TableHeader>

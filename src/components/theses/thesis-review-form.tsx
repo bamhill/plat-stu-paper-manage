@@ -8,7 +8,7 @@ import { createThesisReview } from "@/app/theses/actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
@@ -42,14 +42,13 @@ export function ThesisReviewForm({ open, onOpenChange, thesisId }: { open: boole
               )} />
               <FormField control={form.control} name="reviewerType" render={({ field }) => (
                 <FormItem><FormLabel>审稿类型</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="internal">校内</SelectItem>
-                      <SelectItem value="external">校外</SelectItem>
-                      <SelectItem value="anonymous">匿名</SelectItem>
-                    </SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="internal">校内</option>
+                      <option value="external">校外</option>
+                      <option value="anonymous">匿名</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
             </div>
@@ -59,15 +58,14 @@ export function ThesisReviewForm({ open, onOpenChange, thesisId }: { open: boole
               )} />
               <FormField control={form.control} name="decision" render={({ field }) => (
                 <FormItem><FormLabel>决定</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="pass">通过</SelectItem>
-                      <SelectItem value="minor_revision">小修</SelectItem>
-                      <SelectItem value="major_revision">大修</SelectItem>
-                      <SelectItem value="fail">不通过</SelectItem>
-                    </SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="pass">通过</option>
+                      <option value="minor_revision">小修</option>
+                      <option value="major_revision">大修</option>
+                      <option value="fail">不通过</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="reviewedAt" render={({ field }) => (

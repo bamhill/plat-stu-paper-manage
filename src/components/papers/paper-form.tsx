@@ -8,7 +8,7 @@ import { createPaper, updatePaper } from "@/app/papers/actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -62,10 +62,12 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="studentId" render={({ field }) => (
               <FormItem><FormLabel>所属学生</FormLabel>
-                <Select onValueChange={(v) => field.onChange(Number(v))} value={field.value ? String(field.value) : undefined}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="选择学生" /></SelectTrigger></FormControl>
-                  <SelectContent>{students.map(s => <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>)}</SelectContent>
-                </Select><FormMessage />
+                <FormControl>
+                  <NativeSelect value={String(field.value ?? "")} onValueChange={(v) => field.onChange(Number(v))}>
+                    <option value="" disabled>选择学生</option>
+                    {students.map(s => <option key={s.id} value={String(s.id)}>{s.name}</option>)}
+                  </NativeSelect>
+                </FormControl><FormMessage />
               </FormItem>
             )} />
             <FormField control={form.control} name="title" render={({ field }) => (
@@ -84,23 +86,23 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="paperType" render={({ field }) => (
                 <FormItem><FormLabel>论文类型</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent><SelectItem value="journal">期刊</SelectItem><SelectItem value="conference">会议</SelectItem></SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="journal">期刊</option><option value="conference">会议</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="writing">撰写中</SelectItem><SelectItem value="ready_to_submit">待投稿</SelectItem>
-                      <SelectItem value="submitted">已投稿</SelectItem><SelectItem value="with_editor">编辑处理中</SelectItem><SelectItem value="under_review">外审中</SelectItem><SelectItem value="minor_revision">小修</SelectItem>
-                      <SelectItem value="major_revision">大修</SelectItem><SelectItem value="accepted">已接收</SelectItem>
-                      <SelectItem value="rejected">已拒稿</SelectItem><SelectItem value="published">已发表</SelectItem>
-                    </SelectContent>
-                  </Select><FormMessage />
+                  <FormControl>
+                    <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      <option value="writing">撰写中</option><option value="ready_to_submit">待投稿</option>
+                      <option value="submitted">已投稿</option><option value="with_editor">编辑处理中</option><option value="under_review">外审中</option><option value="minor_revision">小修</option>
+                      <option value="major_revision">大修</option><option value="accepted">已接收</option>
+                      <option value="rejected">已拒稿</option><option value="published">已发表</option>
+                    </NativeSelect>
+                  </FormControl><FormMessage />
                 </FormItem>
               )} />
             </div>
