@@ -54,11 +54,11 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
 
   // Auto-set degree type for new student once options load
   useEffect(() => {
-    if (!student && degreeTypes.length > 0) {
+    if (!student && open && degreeTypes.length > 0) {
       const currentVal = form.getValues("degreeType");
       if (!currentVal) form.setValue("degreeType", degreeTypes[0]);
     }
-  }, [degreeTypes, student, form]);
+  }, [degreeTypes, student, form, open]);
 
   useEffect(() => {
     if (student) {
@@ -70,15 +70,22 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
         coSupervisor: student.coSupervisor ?? null,
         status: student.status, notes: student.notes ?? null,
       } as StudentFormData);
+    } else if (!open) {
+      // Reset form when dialog closes
+      form.reset({
+        name: "", studentNo: "", degreeType: "",
+        enrollmentYear: new Date().getFullYear(), graduationYear: null,
+        direction: "", supervisor: "", coSupervisor: null,
+        status: "active", notes: null,
+      });
     }
-  }, [student, form]);
+  }, [student, form, open]);
 
   async function onSubmit(data: StudentFormData) {
     try {
       if (student) { await updateStudent(student.id, data); toast.success("学生信息已更新"); }
       else { await createStudent(data); toast.success("学生已添加"); }
       onOpenChange(false);
-      form.reset();
     } catch (e) { toast.error("操作失败，请检查输入"); }
   }
 

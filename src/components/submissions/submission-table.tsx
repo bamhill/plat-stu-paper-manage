@@ -72,6 +72,26 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                       </div>
                     </TableCell>
                   </TableRow>
+                  {/* Submission-level comments */}
+                  {isExpanded && (s.reviewerComments || s.editorComments) && (
+                    <TableRow className="bg-gray-50 border-b">
+                      <TableCell />
+                      <TableCell colSpan={9} className="py-2 pl-10">
+                        {s.reviewerComments && (
+                          <div className="text-sm mb-1">
+                            <span className="font-medium text-gray-500">审稿意见：</span>
+                            <p className="text-gray-700 whitespace-pre-wrap mt-0.5 bg-white rounded border p-2">{s.reviewerComments}</p>
+                          </div>
+                        )}
+                        {s.editorComments && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-500">编辑意见：</span>
+                            <p className="text-gray-700 whitespace-pre-wrap mt-0.5 bg-white rounded border p-2">{s.editorComments}</p>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {/* Expandable revision rows */}
                   {isExpanded && hasRevisions && s.revisions.map((r: any) => (
                     <TableRow key={`rev-${r.id}`} className="bg-gray-50 border-b">
