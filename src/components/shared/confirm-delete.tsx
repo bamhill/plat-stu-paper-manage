@@ -29,7 +29,7 @@ export function ConfirmDelete({ open, onOpenChange, title, description, onConfir
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} className="bg-red-600 hover:bg-red-700">
+          <AlertDialogAction onClick={onConfirm} className="bg-blue-600 hover:bg-blue-700 text-white">
             确认删除
           </AlertDialogAction>
         </AlertDialogFooter>

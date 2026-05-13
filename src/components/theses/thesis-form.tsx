@@ -19,24 +19,32 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
 
   const form = useForm<ThesisFormData>({
     resolver: zodResolver(thesisSchema),
-    defaultValues: thesis ? {
-      ...thesis,
-      proposalDate: thesis.proposalDate?.split("T")[0] ?? null,
-      midtermDate: thesis.midtermDate?.split("T")[0] ?? null,
-      submittedAt: thesis.submittedAt?.split("T")[0] ?? null,
-      reviewedAt: thesis.reviewedAt?.split("T")[0] ?? null,
-      defenseDate: thesis.defenseDate?.split("T")[0] ?? null,
-      score: thesis.score ?? null,
-      reviewComments: thesis.reviewComments ?? null,
-      revisionNotes: thesis.revisionNotes ?? null,
-    } : {
-      studentId: 0, title: "", degreeType: "master", stage: "proposal",
-      proposalDate: null, midtermDate: null, submittedAt: null,
-      reviewedAt: null, defenseDate: null,
+    defaultValues: {
+      studentId: 0, title: "", degreeType: "master",
+      stage: "proposal", proposalDate: null, midtermDate: null,
+      submittedAt: null, reviewedAt: null, defenseDate: null,
       score: null, reviewComments: null, revisionNotes: null,
       status: "in_progress",
-    },
+    } as ThesisFormData,
   });
+
+  useEffect(() => {
+    if (thesis) {
+      form.reset({
+        studentId: thesis.studentId, title: thesis.title,
+        degreeType: thesis.degreeType, stage: thesis.stage,
+        proposalDate: thesis.proposalDate?.split("T")[0] ?? null,
+        midtermDate: thesis.midtermDate?.split("T")[0] ?? null,
+        submittedAt: thesis.submittedAt?.split("T")[0] ?? null,
+        reviewedAt: thesis.reviewedAt?.split("T")[0] ?? null,
+        defenseDate: thesis.defenseDate?.split("T")[0] ?? null,
+        score: thesis.score ?? null,
+        reviewComments: thesis.reviewComments ?? null,
+        revisionNotes: thesis.revisionNotes ?? null,
+        status: thesis.status,
+      } as ThesisFormData);
+    }
+  }, [thesis, form]);
 
   async function onSubmit(data: ThesisFormData) {
     try {

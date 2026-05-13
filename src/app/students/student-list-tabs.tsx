@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StudentTable } from "@/components/students/student-table";
 import { StudentForm } from "@/components/students/student-form";
@@ -18,10 +18,16 @@ export function StudentListTabs({ activeStudents, graduatedStudents, directions,
   const [showForm, setShowForm] = useState(false);
   const [dirFilter, setDirFilter] = useState<string>("全部");
   const [degFilter, setDegFilter] = useState<string>("全部");
+  const [statusFilter, setStatusFilter] = useState<string>("全部");
+  const [settingsDegreeTypes, setSettingsDegreeTypes] = useState<string[]>(degreeTypes);
 
-  const DEGREE_LABELS: Record<string, string> = {
-    master: "硕士", phd: "博士", joint: "联培", exchange: "交换",
-  };
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(r => r.json())
+      .then(d => {
+        if (d.degreeTypes?.length) setSettingsDegreeTypes(d.degreeTypes);
+      });
+  }, []);
 
   function filterStudents(students: any[]) {
     return students.filter(s => {
@@ -44,24 +50,33 @@ export function StudentListTabs({ activeStudents, graduatedStudents, directions,
               <Filter className="h-3.5 w-3.5" />筛选
             </div>
 
+            {/* Status filter */}
+            <div>
+              <p className="text-xs text-gray-400 mb-1">状态</p>
+              <div className="space-y-0.5">
+                <button onClick={() => setStatusFilter("全部")} className={`block w-full text-left text-xs px-2 py-1 rounded ${statusFilter === "全部" ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}>
+                  全部 ({activeStudents.length + graduatedStudents.length})
+                </button>
+                <button onClick={() => setStatusFilter("active")} className={`block w-full text-left text-xs px-2 py-1 rounded ${statusFilter === "active" ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}>
+                  在读 ({activeStudents.length})
+                </button>
+                <button onClick={() => setStatusFilter("graduated")} className={`block w-full text-left text-xs px-2 py-1 rounded ${statusFilter === "graduated" ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}>
+                  已毕业 ({graduatedStudents.length})
+                </button>
+              </div>
+            </div>
+
             {/* Direction filter */}
             <div>
               <p className="text-xs text-gray-400 mb-1">研究方向</p>
               <div className="space-y-0.5 max-h-48 overflow-y-auto">
-                <button
-                  onClick={() => setDirFilter("全部")}
-                  className={`block w-full text-left text-xs px-2 py-1 rounded ${dirFilter === "全部" ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}
-                >
+                <button onClick={() => setDirFilter("全部")} className={`block w-full text-left text-xs px-2 py-1 rounded ${dirFilter === "全部" ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}>
                   全部 ({activeStudents.length + graduatedStudents.length})
                 </button>
                 {directions.map(d => {
                   const count = [...activeStudents, ...graduatedStudents].filter(s => s.direction === d).length;
                   return (
-                    <button
-                      key={d}
-                      onClick={() => setDirFilter(d)}
-                      className={`block w-full text-left text-xs px-2 py-1 rounded ${dirFilter === d ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}
-                    >
+                    <button key={d} onClick={() => setDirFilter(d)} className={`block w-full text-left text-xs px-2 py-1 rounded ${dirFilter === d ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}>
                       {d} ({count})
                     </button>
                   );
@@ -73,21 +88,14 @@ export function StudentListTabs({ activeStudents, graduatedStudents, directions,
             <div>
               <p className="text-xs text-gray-400 mb-1">学位类型</p>
               <div className="space-y-0.5 max-h-48 overflow-y-auto">
-                <button
-                  onClick={() => setDegFilter("全部")}
-                  className={`block w-full text-left text-xs px-2 py-1 rounded ${degFilter === "全部" ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}
-                >
+                <button onClick={() => setDegFilter("全部")} className={`block w-full text-left text-xs px-2 py-1 rounded ${degFilter === "全部" ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}>
                   全部
                 </button>
-                {degreeTypes.map(dt => {
+                {settingsDegreeTypes.map(dt => {
                   const count = [...activeStudents, ...graduatedStudents].filter(s => s.degreeType === dt).length;
                   return (
-                    <button
-                      key={dt}
-                      onClick={() => setDegFilter(dt)}
-                      className={`block w-full text-left text-xs px-2 py-1 rounded ${degFilter === dt ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}
-                    >
-                      {DEGREE_LABELS[dt] || dt} ({count})
+                    <button key={dt} onClick={() => setDegFilter(dt)} className={`block w-full text-left text-xs px-2 py-1 rounded ${degFilter === dt ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}>
+                      {dt} ({count})
                     </button>
                   );
                 })}
@@ -103,18 +111,24 @@ export function StudentListTabs({ activeStudents, graduatedStudents, directions,
               <Plus className="h-4 w-4 mr-1" />添加学生
             </Button>
           </div>
-          <Tabs defaultValue="active">
-            <TabsList>
-              <TabsTrigger value="active">在读 ({filteredActive.length})</TabsTrigger>
-              <TabsTrigger value="graduated">已毕业 ({filteredGraduated.length})</TabsTrigger>
-            </TabsList>
-            <TabsContent value="active" className="mt-4">
-              <StudentTable students={filteredActive} />
-            </TabsContent>
-            <TabsContent value="graduated" className="mt-4">
-              <StudentTable students={filteredGraduated} />
-            </TabsContent>
-          </Tabs>
+          {statusFilter === "全部" ? (
+            <Tabs defaultValue="active">
+              <TabsList>
+                <TabsTrigger value="active">在读 ({filteredActive.length})</TabsTrigger>
+                <TabsTrigger value="graduated">已毕业 ({filteredGraduated.length})</TabsTrigger>
+              </TabsList>
+              <TabsContent value="active" className="mt-4">
+                <StudentTable students={filteredActive} />
+              </TabsContent>
+              <TabsContent value="graduated" className="mt-4">
+                <StudentTable students={filteredGraduated} />
+              </TabsContent>
+            </Tabs>
+          ) : statusFilter === "active" ? (
+            <div className="mt-4"><StudentTable students={filteredActive} /></div>
+          ) : (
+            <div className="mt-4"><StudentTable students={filteredGraduated} /></div>
+          )}
         </div>
       </div>
       <StudentForm open={showForm} onOpenChange={setShowForm} student={null} />

@@ -25,6 +25,7 @@ export const paperSchema = z.object({
     "minor_revision", "major_revision", "accepted", "rejected", "published",
   ]),
   targetVenue: z.string().nullable().optional(),
+  currentVersion: z.coerce.number().int().min(1).optional(),
   notes: z.string().nullable().optional(),
   myThoughts: z.string().nullable().optional(),
 });

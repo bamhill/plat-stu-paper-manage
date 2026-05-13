@@ -39,10 +39,26 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
 
   const form = useForm<StudentFormData>({
     resolver: zodResolver(studentSchema),
-    defaultValues: (student
-      ? { ...student, graduationYear: student.graduationYear ?? null, coSupervisor: student.coSupervisor ?? null, notes: student.notes ?? null }
-      : { name: "", studentNo: "", degreeType: degreeTypes[0] || "", enrollmentYear: new Date().getFullYear(), graduationYear: null, direction: "", supervisor: "", coSupervisor: null, status: "active", notes: null }) as StudentFormData,
+    defaultValues: {
+      name: "", studentNo: "", degreeType: "",
+      enrollmentYear: new Date().getFullYear(), graduationYear: null,
+      direction: "", supervisor: "", coSupervisor: null,
+      status: "active", notes: null,
+    } as StudentFormData,
   });
+
+  useEffect(() => {
+    if (student) {
+      form.reset({
+        name: student.name, studentNo: student.studentNo,
+        degreeType: student.degreeType, enrollmentYear: student.enrollmentYear,
+        graduationYear: student.graduationYear ?? null,
+        direction: student.direction, supervisor: student.supervisor,
+        coSupervisor: student.coSupervisor ?? null,
+        status: student.status, notes: student.notes ?? null,
+      } as StudentFormData);
+    }
+  }, [student, form]);
 
   async function onSubmit(data: StudentFormData) {
     try {

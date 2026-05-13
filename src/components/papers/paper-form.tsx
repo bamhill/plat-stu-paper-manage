@@ -24,10 +24,25 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
 
   const form = useForm<PaperFormData>({
     resolver: zodResolver(paperSchema),
-    defaultValues: paper
-      ? { ...paper, notes: paper.notes ?? null, myThoughts: paper.myThoughts ?? null, targetVenue: paper.targetVenue ?? null }
-      : { studentId: 0, title: "", paperType: "journal", direction: "", firstAuthor: "", correspondingAuthor: "", status: "writing", targetVenue: null, notes: null, myThoughts: null },
+    defaultValues: {
+      studentId: 0, title: "", paperType: "journal", direction: "",
+      firstAuthor: "", correspondingAuthor: "", status: "writing",
+      targetVenue: null, notes: null, myThoughts: null,
+    } as PaperFormData,
   });
+
+  useEffect(() => {
+    if (paper) {
+      form.reset({
+        studentId: paper.studentId, title: paper.title,
+        paperType: paper.paperType, direction: paper.direction,
+        firstAuthor: paper.firstAuthor, correspondingAuthor: paper.correspondingAuthor,
+        status: paper.status, targetVenue: paper.targetVenue ?? null,
+        currentVersion: paper.currentVersion ?? 1,
+        notes: paper.notes ?? null, myThoughts: paper.myThoughts ?? null,
+      } as PaperFormData);
+    }
+  }, [paper, form]);
 
   async function onSubmit(data: PaperFormData) {
     try {
@@ -55,6 +70,16 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
             <FormField control={form.control} name="title" render={({ field }) => (
               <FormItem><FormLabel>标题</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )} />
+            {paper && (
+              <FormField control={form.control} name="currentVersion" render={({ field }) => (
+                <FormItem><FormLabel>当前版本号</FormLabel><FormControl><Input type="number" {...field} value={field.value ?? paper.currentVersion} onChange={e => field.onChange(Number(e.target.value))} /></FormControl><FormMessage /></FormItem>
+              )} />
+            )}
+            {paper && (
+              <div className="rounded-md bg-blue-50 border border-blue-100 p-2 text-xs text-blue-700">
+                在论文详情页上传和管理各版本的论文文件
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="paperType" render={({ field }) => (
                 <FormItem><FormLabel>论文类型</FormLabel>
@@ -95,13 +120,6 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
             <FormField control={form.control} name="myThoughts" render={({ field }) => (
               <FormItem><FormLabel>我的思考</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} placeholder="导师对这篇论文的判断..." /></FormControl><FormMessage /></FormItem>
             )} />
-            {paper && (
-              <div className="rounded-md bg-gray-50 border p-3 text-sm">
-                <span className="text-gray-500">当前版本：</span>
-                <span className="font-medium">v{paper.currentVersion}</span>
-                <span className="text-gray-400 ml-2">（在论文详情页管理版本文件）</span>
-              </div>
-            )}
             <FormField control={form.control} name="notes" render={({ field }) => (
               <FormItem><FormLabel>备注</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
             )} />

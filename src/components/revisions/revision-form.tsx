@@ -19,21 +19,28 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
 
   const form = useForm<RevisionFormData>({
     resolver: zodResolver(revisionSchema),
-    defaultValues: revision ? {
-      ...revision,
-      receivedAt: revision.receivedAt?.split("T")[0] ?? null,
-      dueAt: revision.dueAt?.split("T")[0] ?? null,
-      submittedAt: revision.submittedAt?.split("T")[0] ?? null,
-      commentsSummary: revision.commentsSummary ?? null,
-      responseSummary: revision.responseSummary ?? null,
-      notes: revision.notes ?? null,
-    } : {
+    defaultValues: {
       submissionId: 0, revisionRound: 1,
       receivedAt: null, dueAt: null, submittedAt: null,
       revisionType: "minor", commentsSummary: null, responseSummary: null,
       status: "pending", notes: null,
-    },
+    } as RevisionFormData,
   });
+
+  useEffect(() => {
+    if (revision) {
+      form.reset({
+        submissionId: revision.submissionId, revisionRound: revision.revisionRound,
+        receivedAt: revision.receivedAt?.split("T")[0] ?? null,
+        dueAt: revision.dueAt?.split("T")[0] ?? null,
+        submittedAt: revision.submittedAt?.split("T")[0] ?? null,
+        revisionType: revision.revisionType,
+        commentsSummary: revision.commentsSummary ?? null,
+        responseSummary: revision.responseSummary ?? null,
+        status: revision.status, notes: revision.notes ?? null,
+      } as RevisionFormData);
+    }
+  }, [revision, form]);
 
   async function onSubmit(data: RevisionFormData) {
     try {

@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const STATUS_OPTIONS = [
-  { value: "all", label: "全部状态" },
+  { value: "全部", label: "全部状态" },
   { value: "writing", label: "撰写中" },
   { value: "ready_to_submit", label: "待投稿" },
   { value: "submitted", label: "已投稿" },
@@ -30,14 +30,14 @@ export function PaperTable({ papers }: { papers: any[] }) {
   const router = useRouter();
   const [editPaper, setEditPaper] = useState<any | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("全部");
 
-  const filtered = filter === "all" ? papers : papers.filter((p: any) => p.status === filter);
+  const filtered = filter === "全部" ? papers : papers.filter((p: any) => p.status === filter);
 
   return (
     <>
       <div className="mb-4">
-        <Select value={filter} onValueChange={(v) => setFilter(v ?? "all")}>
+        <Select value={filter} onValueChange={(v) => v && setFilter(v)}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>{STATUS_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
         </Select>

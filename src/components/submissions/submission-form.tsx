@@ -19,20 +19,28 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
 
   const form = useForm<SubmissionFormData>({
     resolver: zodResolver(submissionSchema),
-    defaultValues: submission ? {
-      ...submission,
-      submittedAt: submission.submittedAt?.split("T")[0] ?? null,
-      decisionAt: submission.decisionAt?.split("T")[0] ?? null,
-      decision: submission.decision ?? null,
-      editorComments: submission.editorComments ?? null,
-      reviewerComments: submission.reviewerComments ?? null,
-      notes: submission.notes ?? null,
-    } : {
+    defaultValues: {
       paperId: 0, venueName: "", submissionRound: 1,
       submittedAt: null, decisionAt: null, decision: null,
-      editorComments: null, reviewerComments: null, status: "pending", notes: null,
-    },
+      editorComments: null, reviewerComments: null,
+      status: "pending", notes: null,
+    } as SubmissionFormData,
   });
+
+  useEffect(() => {
+    if (submission) {
+      form.reset({
+        paperId: submission.paperId, venueName: submission.venueName,
+        submissionRound: submission.submissionRound,
+        submittedAt: submission.submittedAt?.split("T")[0] ?? null,
+        decisionAt: submission.decisionAt?.split("T")[0] ?? null,
+        decision: submission.decision ?? null,
+        editorComments: submission.editorComments ?? null,
+        reviewerComments: submission.reviewerComments ?? null,
+        status: submission.status, notes: submission.notes ?? null,
+      } as SubmissionFormData);
+    }
+  }, [submission, form]);
 
   async function onSubmit(data: SubmissionFormData) {
     try {
