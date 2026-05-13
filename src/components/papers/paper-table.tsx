@@ -41,7 +41,7 @@ export function PaperTable({ papers }: { papers: any[] }) {
           {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </NativeSelect>
       </div>
-      <Table>
+      <Table className="table-fixed">
         <TableHeader>
           <TableRow>
             <TableHead>标题</TableHead><TableHead>学生</TableHead><TableHead>类型</TableHead>
@@ -55,7 +55,7 @@ export function PaperTable({ papers }: { papers: any[] }) {
           ) : (
             filtered.map((p: any) => (
               <TableRow key={p.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/papers/${p.id}`)}>
-                <TableCell className="font-medium">{p.title}</TableCell>
+                <TableCell className="font-medium max-w-[200px] truncate">{p.title}</TableCell>
                 <TableCell>{p.student.name}</TableCell>
                 <TableCell>{p.paperType === "journal" ? "期刊" : "会议"}</TableCell>
                 <TableCell><StatusBadge value={p.status} /></TableCell>

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { NativeSelect } from "@/components/ui/select";
 import { Plus, Trash2, Pencil } from "lucide-react";
 
 export function SettingsClient() {
@@ -16,6 +17,10 @@ export function SettingsClient() {
   const [newDegreeType, setNewDegreeType] = useState("");
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [aiMode, setAiMode] = useState<"off" | "local" | "cloud">("local");
+  const [aiApiKey, setAiApiKey] = useState("");
+  const [aiApiUrl, setAiApiUrl] = useState("https://api.deepseek.com/v1");
+  const [aiModel, setAiModel] = useState("deepseek-chat");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,6 +31,10 @@ export function SettingsClient() {
         if (data.organizeByStudent !== undefined)
           setOrganizeByStudent(data.organizeByStudent);
         if (data.degreeTypes) setDegreeTypes(data.degreeTypes);
+        if (data.aiMode) setAiMode(data.aiMode);
+        if (data.aiApiKey !== undefined) setAiApiKey(data.aiApiKey);
+        if (data.aiApiUrl) setAiApiUrl(data.aiApiUrl);
+        if (data.aiModel) setAiModel(data.aiModel);
         setLoading(false);
       });
   }, []);
@@ -82,6 +91,16 @@ export function SettingsClient() {
       setEditingIdx(null);
       toast.success("学位类型已更新");
     }
+  }
+
+  async function saveAiSettings() {
+    const res = await fetch("/api/settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ aiMode, aiApiKey, aiApiUrl, aiModel }),
+    });
+    if (res.ok) toast.success("AI 设置已保存");
+    else toast.error("保存失败");
   }
 
   if (loading) return <div className="text-gray-400">加载中...</div>;
@@ -185,6 +204,56 @@ export function SettingsClient() {
               添加
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* AI Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>AI 分析设置</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>AI 模式</Label>
+            <NativeSelect value={aiMode} onValueChange={(v) => setAiMode(v as "off" | "local" | "cloud")}>
+              <option value="local">本地关键词（无需 API）</option>
+              <option value="cloud">云端 API</option>
+              <option value="off">关闭</option>
+            </NativeSelect>
+            <p className="text-xs text-gray-400 mt-1">
+              本地模式使用内置关键词规则进行分析，无需 API Key。云端模式需配置 API 信息。
+            </p>
+          </div>
+          {aiMode === "cloud" && (
+            <>
+              <div>
+                <Label>API Key</Label>
+                <Input
+                  type="password"
+                  value={aiApiKey}
+                  onChange={(e) => setAiApiKey(e.target.value)}
+                  placeholder="sk-xxxxxxxxxxxxxxxx"
+                />
+              </div>
+              <div>
+                <Label>API URL</Label>
+                <Input
+                  value={aiApiUrl}
+                  onChange={(e) => setAiApiUrl(e.target.value)}
+                  placeholder="https://api.deepseek.com/v1"
+                />
+              </div>
+              <div>
+                <Label>模型</Label>
+                <Input
+                  value={aiModel}
+                  onChange={(e) => setAiModel(e.target.value)}
+                  placeholder="deepseek-chat"
+                />
+              </div>
+            </>
+          )}
+          <Button onClick={saveAiSettings}>保存 AI 设置</Button>
         </CardContent>
       </Card>
     </div>

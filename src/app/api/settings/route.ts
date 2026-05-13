@@ -12,6 +12,10 @@ export async function PUT(req: NextRequest) {
   if (body.organizeByStudent !== undefined)
     settings.organizeByStudent = body.organizeByStudent;
   if (body.degreeTypes !== undefined) settings.degreeTypes = body.degreeTypes;
+  if (body.aiMode !== undefined) settings.aiMode = body.aiMode;
+  if (body.aiApiKey !== undefined) settings.aiApiKey = body.aiApiKey;
+  if (body.aiApiUrl !== undefined) settings.aiApiUrl = body.aiApiUrl;
+  if (body.aiModel !== undefined) settings.aiModel = body.aiModel;
   saveSettings(settings);
   return NextResponse.json(settings);
 }

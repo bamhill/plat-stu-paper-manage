@@ -58,18 +58,6 @@ export default async function PaperDetailPage({ params }: { params: { id: string
           <div className="rounded-lg border bg-white p-4">
             <PaperVersions paperId={paper.id} versions={JSON.parse(JSON.stringify(paper.versions))} />
           </div>
-          <div className="rounded-lg border bg-white p-4">
-            <h2 className="font-medium mb-3">附件</h2>
-            <AttachmentUpload
-              relatedType="paper"
-              relatedId={paper.id}
-              existingAttachments={JSON.parse(JSON.stringify(paperAttachments)).map((a: any) => ({
-                id: a.id, fileName: a.fileName, filePath: a.filePath,
-                fileSize: a.fileSize, fileType: a.fileType,
-                description: a.description, uploadedAt: a.uploadedAt,
-              }))}
-            />
-          </div>
         </div>
         <div className="space-y-4">
           <h2 className="font-medium">投稿历程</h2>
@@ -98,6 +86,18 @@ export default async function PaperDetailPage({ params }: { params: { id: string
               </div>
             ))
           )}
+          <div className="rounded-lg border bg-white p-4">
+            <h2 className="font-medium mb-3">附件</h2>
+            <AttachmentUpload
+              relatedType="paper"
+              relatedId={paper.id}
+              existingAttachments={JSON.parse(JSON.stringify(paperAttachments)).map((a: any) => ({
+                id: a.id, fileName: a.fileName, filePath: a.filePath,
+                fileSize: a.fileSize, fileType: a.fileType,
+                description: a.description, uploadedAt: a.uploadedAt,
+              }))}
+            />
+          </div>
         </div>
       </div>
     </div>

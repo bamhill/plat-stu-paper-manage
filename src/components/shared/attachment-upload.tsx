@@ -95,7 +95,7 @@ export function AttachmentUpload({ relatedType, relatedId, existingAttachments }
             <Upload className="h-3.5 w-3.5 mr-1" />
             {uploading ? "上传中..." : "上传附件"}
           </Button>
-          <input type="file" className="hidden" onChange={handleUpload} accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.png,.jpg" />
+          <input type="file" className="hidden" onChange={handleUpload} accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.png,.jpg,.zip,.rar,.7z" />
         </label>
       </div>
 

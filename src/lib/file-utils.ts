@@ -12,6 +12,9 @@ const ALLOWED_TYPES = [
   "text/plain",
   "image/png",
   "image/jpeg",
+  "application/zip",
+  "application/x-rar-compressed",
+  "application/x-7z-compressed",
 ];
 const MAX_SIZE = 50 * 1024 * 1024;
 

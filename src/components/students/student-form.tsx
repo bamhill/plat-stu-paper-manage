@@ -44,17 +44,21 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
 
   const form = useForm<StudentFormData>({
     resolver: zodResolver(studentSchema),
-    defaultValues: (() => {
-      // Use degreeTypes[0] as default if available
-      const defaultDeg = degreeTypes.length > 0 ? degreeTypes[0] : "";
-      return {
-        name: "", studentNo: "", degreeType: defaultDeg,
-        enrollmentYear: new Date().getFullYear(), graduationYear: null,
-        direction: "", supervisor: "", coSupervisor: null,
-        status: "active", notes: null,
-      } as StudentFormData;
-    })(),
+    defaultValues: {
+      name: "", studentNo: "", degreeType: "",
+      enrollmentYear: new Date().getFullYear(), graduationYear: null,
+      direction: "", supervisor: "", coSupervisor: null,
+      status: "active", notes: null,
+    },
   });
+
+  // Auto-set degree type for new student once options load
+  useEffect(() => {
+    if (!student && degreeTypes.length > 0) {
+      const currentVal = form.getValues("degreeType");
+      if (!currentVal) form.setValue("degreeType", degreeTypes[0]);
+    }
+  }, [degreeTypes, student, form]);
 
   useEffect(() => {
     if (student) {
@@ -97,6 +101,7 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
                 <FormItem><FormLabel>学位类型</FormLabel>
                   <FormControl>
                     <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
+                      {degreeTypes.length === 0 && <option value="" disabled>加载中...</option>}
                       {degreeTypes.map((dt) => (
                         <option key={dt} value={dt}>
                           {dt}

@@ -12,6 +12,7 @@ const LABELS: Record<string, string> = {
   submissions: "投稿记录",
   revisions: "返修记录",
   query: "综合查询",
+  analysis: "返修分析",
   settings: "系统设置",
 };
 
