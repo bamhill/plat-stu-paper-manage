@@ -12,6 +12,7 @@ export default async function AnalysisPage() {
           venueName: true,
           submittedAt: true,
           decision: true,
+          reviewerComments: true,
           paper: {
             select: {
               id: true,

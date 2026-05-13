@@ -49,7 +49,7 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
       if (submission) { await updateSubmission(submission.id, data); toast.success("投稿已更新"); }
       else { await createSubmission(data); toast.success("投稿已记录"); }
       onOpenChange(false); form.reset();
-    } catch (e) { toast.error("操作失败"); }
+    } catch (e: any) { toast.error(e?.message || "操作失败，请检查输入"); }
   }
 
   return (

@@ -34,6 +34,7 @@ interface RevisionItem {
     venueName: string;
     submittedAt: string | null;
     decision: string | null;
+    reviewerComments: string | null;
     paper: {
       id: number;
       title: string;
@@ -69,13 +70,14 @@ function analyzeReviews(revisions: RevisionItem[]): AnalysisResult[] {
   }));
 
   revisions.forEach((rev) => {
-    const text = (rev.commentsSummary || "").toLowerCase();
+    const allComments = [rev.commentsSummary, rev.submission?.reviewerComments].filter(Boolean).join(" ");
+    const text = allComments.toLowerCase();
     CATEGORIES.forEach((cat, idx) => {
       const matched = cat.keywords.some((kw) => text.includes(kw.toLowerCase()));
       if (matched) {
         results[idx].count++;
         results[idx].excerpts.push({
-          text: rev.commentsSummary || "",
+          text: [rev.commentsSummary, rev.submission?.reviewerComments].filter(Boolean).join(" | ") || "(无文本)",
           studentName: rev.submission?.paper?.student?.name || "",
           paperTitle: rev.submission?.paper?.title || "",
           venue: rev.submission?.venueName || "",
@@ -120,7 +122,7 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
       }
       if (search.trim()) {
         const q = search.toLowerCase();
-        const comments = (rev.commentsSummary || "").toLowerCase();
+        const comments = [rev.commentsSummary, rev.submission?.reviewerComments].filter(Boolean).join(" ").toLowerCase();
         const title = (rev.submission?.paper?.title || "").toLowerCase();
         const studentName = (rev.submission?.paper?.student?.name || "").toLowerCase();
         if (!comments.includes(q) && !title.includes(q) && !studentName.includes(q)) return false;
@@ -367,10 +369,10 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
                         </Badge>
                       </td>
                       <td className="px-3 py-2 max-w-[250px] truncate text-gray-500">
-                        {rev.commentsSummary ? (
+                        {(rev.commentsSummary || rev.submission?.reviewerComments) ? (
                           <span className="flex items-center gap-1">
-                            {rev.commentsSummary.slice(0, 60)}
-                            {rev.commentsSummary.length > 60 && "..."}
+                            {(rev.commentsSummary || rev.submission?.reviewerComments || "").slice(0, 60)}
+                            {((rev.commentsSummary || rev.submission?.reviewerComments || "").length > 60) && "..."}
                             {expandedRow === rev.id ? (
                               <ChevronDown className="h-3 w-3 shrink-0" />
                             ) : (
@@ -389,7 +391,7 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
                             <div>
                               <span className="font-medium text-gray-700">完整评论：</span>
                               <p className="mt-1 whitespace-pre-wrap text-gray-600">
-                                {rev.commentsSummary || "无评论内容"}
+                                {rev.commentsSummary || rev.submission?.reviewerComments || "无评论内容"}
                               </p>
                             </div>
                             {rev.responseSummary && (
