@@ -45,7 +45,19 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
     }
   }, [paper, form]);
 
+  // Auto-select first student when creating new paper
+  useEffect(() => {
+    if (!paper && open && students.length > 0) {
+      const currentVal = form.getValues("studentId");
+      if (!currentVal) form.setValue("studentId", students[0].id);
+    }
+  }, [students, paper, form, open]);
+
   async function onSubmit(data: PaperFormData) {
+    if (!paper && !data.studentId) {
+      toast.error("请选择所属学生");
+      return;
+    }
     try {
       if (paper) { await updatePaper(paper.id, data); toast.success("小论文已更新"); }
       else { await createPaper(data); toast.success("小论文已创建"); }

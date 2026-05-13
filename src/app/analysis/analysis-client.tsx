@@ -365,7 +365,7 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
                       </td>
                       <td className="px-3 py-2">
                         <Badge className={getStatusBadge(rev.status)}>
-                          {{ pending: "待处理", completed: "已完成", overdue: "逾期", in_progress: "进行中" }[rev.status] || rev.status}
+                          {{ pending: "待处理", completed: "已完成", overdue: "逾期", in_progress: "进行中", revising: "返修中", submitted: "已提交" }[rev.status] || rev.status}
                         </Badge>
                       </td>
                       <td className="px-3 py-2 max-w-[250px] truncate text-gray-500">
