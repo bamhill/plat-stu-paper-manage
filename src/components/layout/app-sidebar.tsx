@@ -10,6 +10,7 @@ import {
   BookOpen,
   Send,
   RefreshCw,
+  Search,
   Settings,
   Sun,
   Moon,
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/theses", label: "大论文", icon: BookOpen },
   { href: "/submissions", label: "投稿记录", icon: Send },
   { href: "/revisions", label: "返修记录", icon: RefreshCw },
+  { href: "/query", label: "综合查询", icon: Search },
   { href: "/settings", label: "系统设置", icon: Settings },
 ];
 

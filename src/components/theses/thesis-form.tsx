@@ -62,7 +62,7 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="studentId" render={({ field }) => (
               <FormItem><FormLabel>所属学生</FormLabel>
-                <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={field.value ? String(field.value) : undefined}>
+                <Select onValueChange={(v) => field.onChange(Number(v))} value={field.value ? String(field.value) : undefined}>
                   <FormControl><SelectTrigger><SelectValue placeholder="选择学生" /></SelectTrigger></FormControl>
                   <SelectContent>{students.map((s: any) => <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>)}</SelectContent>
                 </Select><FormMessage />
@@ -77,7 +77,7 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
               )} />
               <FormField control={form.control} name="stage" render={({ field }) => (
                 <FormItem><FormLabel>阶段</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="proposal">开题</SelectItem><SelectItem value="midterm">中期</SelectItem>
@@ -90,7 +90,7 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="in_progress">进行中</SelectItem><SelectItem value="submitted">已提交</SelectItem>

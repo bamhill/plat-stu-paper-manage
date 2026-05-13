@@ -26,6 +26,7 @@ export const paperSchema = z.object({
   ]),
   targetVenue: z.string().nullable().optional(),
   currentVersion: z.coerce.number().int().min(1).optional(),
+  versionLabel: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
   myThoughts: z.string().nullable().optional(),
 });

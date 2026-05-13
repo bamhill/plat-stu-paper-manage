@@ -46,7 +46,7 @@ export default async function PaperDetailPage({ params }: { params: { id: string
               <div><span className="text-gray-500">第一作者：</span>{paper.firstAuthor}</div>
               <div><span className="text-gray-500">通讯作者：</span>{paper.correspondingAuthor}</div>
               <div><span className="text-gray-500">研究方向：</span>{paper.direction}</div>
-              <div><span className="text-gray-500">当前版本：</span>v{paper.currentVersion}</div>
+              <div><span className="text-gray-500">当前版本：</span>{paper.versionLabel || `v${paper.currentVersion}`}</div>
             </div>
           </div>
           {paper.myThoughts && (

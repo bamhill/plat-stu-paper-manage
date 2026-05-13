@@ -40,6 +40,7 @@ model Paper {
   status               String    @default("writing")
   targetVenue          String?   @map("target_venue")
   currentVersion       Int       @default(1) @map("current_version")
+  versionLabel         String?   @map("version_label")
   notes                String?
   myThoughts           String?   @map("my_thoughts")
   createdAt            DateTime  @default(now()) @map("created_at")

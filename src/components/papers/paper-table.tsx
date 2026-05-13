@@ -61,7 +61,7 @@ export function PaperTable({ papers }: { papers: any[] }) {
                 <TableCell>{p.paperType === "journal" ? "期刊" : "会议"}</TableCell>
                 <TableCell><StatusBadge value={p.status} /></TableCell>
                 <TableCell className="text-gray-500">{p.targetVenue ?? "-"}</TableCell>
-                <TableCell>v{p.currentVersion}</TableCell>
+                <TableCell>{p.versionLabel || `v${p.currentVersion}`}</TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" onClick={() => setEditPaper(p)}><Pencil className="h-3.5 w-3.5" /></Button>

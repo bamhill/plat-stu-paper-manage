@@ -39,6 +39,7 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
         firstAuthor: paper.firstAuthor, correspondingAuthor: paper.correspondingAuthor,
         status: paper.status, targetVenue: paper.targetVenue ?? null,
         currentVersion: paper.currentVersion ?? 1,
+        versionLabel: paper.versionLabel ?? null,
         notes: paper.notes ?? null, myThoughts: paper.myThoughts ?? null,
       } as PaperFormData);
     }
@@ -61,7 +62,7 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="studentId" render={({ field }) => (
               <FormItem><FormLabel>所属学生</FormLabel>
-                <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={field.value ? String(field.value) : undefined}>
+                <Select onValueChange={(v) => field.onChange(Number(v))} value={field.value ? String(field.value) : undefined}>
                   <FormControl><SelectTrigger><SelectValue placeholder="选择学生" /></SelectTrigger></FormControl>
                   <SelectContent>{students.map(s => <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>)}</SelectContent>
                 </Select><FormMessage />
@@ -71,8 +72,8 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
               <FormItem><FormLabel>标题</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )} />
             {paper && (
-              <FormField control={form.control} name="currentVersion" render={({ field }) => (
-                <FormItem><FormLabel>当前版本号</FormLabel><FormControl><Input type="number" {...field} value={field.value ?? paper.currentVersion} onChange={e => field.onChange(Number(e.target.value))} /></FormControl><FormMessage /></FormItem>
+              <FormField control={form.control} name="versionLabel" render={({ field }) => (
+                <FormItem><FormLabel>版本标签</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} placeholder="如：V1_202601" /></FormControl><FormMessage /></FormItem>
               )} />
             )}
             {paper && (
@@ -83,7 +84,7 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="paperType" render={({ field }) => (
                 <FormItem><FormLabel>论文类型</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent><SelectItem value="journal">期刊</SelectItem><SelectItem value="conference">会议</SelectItem></SelectContent>
                   </Select><FormMessage />
@@ -91,7 +92,7 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="writing">撰写中</SelectItem><SelectItem value="ready_to_submit">待投稿</SelectItem>

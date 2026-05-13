@@ -58,7 +58,7 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="paperId" render={({ field }) => (
               <FormItem><FormLabel>小论文</FormLabel>
-                <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={field.value ? String(field.value) : undefined}>
+                <Select onValueChange={(v) => field.onChange(Number(v))} value={field.value ? String(field.value) : undefined}>
                   <FormControl><SelectTrigger><SelectValue placeholder="选择论文" /></SelectTrigger></FormControl>
                   <SelectContent>{papers.map((p: any) => <SelectItem key={p.id} value={String(p.id)}>{p.title} ({p.student?.name})</SelectItem>)}</SelectContent>
                 </Select><FormMessage />
@@ -81,7 +81,7 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="pending">待处理</SelectItem>
@@ -94,7 +94,7 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
             </div>
             <FormField control={form.control} name="decision" render={({ field }) => (
               <FormItem><FormLabel>审稿决定</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
+                <Select onValueChange={field.onChange} value={field.value ?? undefined}>
                   <FormControl><SelectTrigger><SelectValue placeholder="未决定" /></SelectTrigger></FormControl>
                   <SelectContent>
                     <SelectItem value="under_review">审稿中</SelectItem>

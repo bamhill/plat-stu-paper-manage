@@ -86,7 +86,7 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="degreeType" render={({ field }) => (
                 <FormItem><FormLabel>学位类型</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       {degreeTypes.map((dt) => (
@@ -100,7 +100,7 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="active">在读</SelectItem><SelectItem value="graduated">已毕业</SelectItem>

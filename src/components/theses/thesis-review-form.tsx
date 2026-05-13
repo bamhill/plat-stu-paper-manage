@@ -42,7 +42,7 @@ export function ThesisReviewForm({ open, onOpenChange, thesisId }: { open: boole
               )} />
               <FormField control={form.control} name="reviewerType" render={({ field }) => (
                 <FormItem><FormLabel>审稿类型</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="internal">校内</SelectItem>
@@ -59,7 +59,7 @@ export function ThesisReviewForm({ open, onOpenChange, thesisId }: { open: boole
               )} />
               <FormField control={form.control} name="decision" render={({ field }) => (
                 <FormItem><FormLabel>决定</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="pass">通过</SelectItem>

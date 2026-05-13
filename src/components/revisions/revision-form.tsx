@@ -58,7 +58,7 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="submissionId" render={({ field }) => (
               <FormItem><FormLabel>所属投稿</FormLabel>
-                <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={field.value ? String(field.value) : undefined}>
+                <Select onValueChange={(v) => field.onChange(Number(v))} value={field.value ? String(field.value) : undefined}>
                   <FormControl><SelectTrigger><SelectValue placeholder="选择投稿" /></SelectTrigger></FormControl>
                   <SelectContent>{submissions.map((s: any) => <SelectItem key={s.id} value={String(s.id)}>{s.venueName} ({s.paper?.title})</SelectItem>)}</SelectContent>
                 </Select><FormMessage />
@@ -70,7 +70,7 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
               )} />
               <FormField control={form.control} name="revisionType" render={({ field }) => (
                 <FormItem><FormLabel>返修类型</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="minor">小修</SelectItem>
@@ -82,7 +82,7 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
               )} />
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem><FormLabel>状态</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="pending">待处理</SelectItem>
