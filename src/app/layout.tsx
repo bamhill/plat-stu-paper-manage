@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "next-themes";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import "./globals.css";
 
@@ -16,15 +17,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body className={inter.className}>
-        <TooltipProvider>
-          <div className="flex min-h-screen">
-            <AppSidebar />
-            <main className="flex-1 ml-56 p-6 bg-gray-50 min-h-screen">
-              {children}
-            </main>
-          </div>
-          <Toaster position="top-right" richColors />
-        </TooltipProvider>
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <TooltipProvider>
+            <div className="flex min-h-screen">
+              <AppSidebar />
+              <main className="flex-1 ml-56 p-6 bg-gray-50 min-h-screen">
+                {children}
+              </main>
+            </div>
+            <Toaster position="top-right" richColors />
+          </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

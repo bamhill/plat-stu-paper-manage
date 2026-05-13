@@ -5,3 +5,16 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.dark body {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+.dark .bg-white { background-color: #1e1e30; }
+.dark .border { border-color: #333; }
+.dark .text-gray-600 { color: #aaa; }
+.dark .text-gray-900 { color: #e0e0e0; }
+.dark .bg-gray-50 { background-color: #252540; }
+.dark .bg-blue-50 { background-color: #1a2240; }
+.dark .hover\:bg-gray-50:hover { background-color: #2a2a40; }
+.dark aside { background-color: #151528 !important; }

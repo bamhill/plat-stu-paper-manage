@@ -39,7 +39,7 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog key={paper?.id ?? "new"} open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>{paper ? "编辑小论文" : "添加小论文"}</DialogTitle></DialogHeader>
         <Form {...form}>
@@ -70,7 +70,7 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="writing">撰写中</SelectItem><SelectItem value="ready_to_submit">待投稿</SelectItem>
-                      <SelectItem value="submitted">已投稿</SelectItem><SelectItem value="minor_revision">小修</SelectItem>
+                      <SelectItem value="submitted">已投稿</SelectItem><SelectItem value="with_editor">编辑处理中</SelectItem><SelectItem value="under_review">外审中</SelectItem><SelectItem value="minor_revision">小修</SelectItem>
                       <SelectItem value="major_revision">大修</SelectItem><SelectItem value="accepted">已接收</SelectItem>
                       <SelectItem value="rejected">已拒稿</SelectItem><SelectItem value="published">已发表</SelectItem>
                     </SelectContent>
@@ -95,6 +95,13 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
             <FormField control={form.control} name="myThoughts" render={({ field }) => (
               <FormItem><FormLabel>我的思考</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} placeholder="导师对这篇论文的判断..." /></FormControl><FormMessage /></FormItem>
             )} />
+            {paper && (
+              <div className="rounded-md bg-gray-50 border p-3 text-sm">
+                <span className="text-gray-500">当前版本：</span>
+                <span className="font-medium">v{paper.currentVersion}</span>
+                <span className="text-gray-400 ml-2">（在论文详情页管理版本文件）</span>
+              </div>
+            )}
             <FormField control={form.control} name="notes" render={({ field }) => (
               <FormItem><FormLabel>备注</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
             )} />

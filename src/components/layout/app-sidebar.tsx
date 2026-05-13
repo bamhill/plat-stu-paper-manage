@@ -11,7 +11,10 @@ import {
   Send,
   RefreshCw,
   Settings,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 
 const navItems = [
   { href: "/dashboard", label: "首页", icon: LayoutDashboard },
@@ -25,6 +28,7 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
 
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-56 border-r bg-white">
@@ -52,6 +56,15 @@ export function AppSidebar() {
           );
         })}
       </nav>
+      <div className="absolute bottom-4 left-3 right-3">
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+        >
+          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {theme === "dark" ? "浅色模式" : "深色模式"}
+        </button>
+      </div>
     </aside>
   );
 }

@@ -17,6 +17,8 @@ const STATUS_OPTIONS = [
   { value: "writing", label: "撰写中" },
   { value: "ready_to_submit", label: "待投稿" },
   { value: "submitted", label: "已投稿" },
+  { value: "with_editor", label: "编辑处理中" },
+  { value: "under_review", label: "外审中" },
   { value: "minor_revision", label: "小修" },
   { value: "major_revision", label: "大修" },
   { value: "accepted", label: "已接收" },

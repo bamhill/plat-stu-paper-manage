@@ -44,7 +44,7 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog key={revision?.id ?? "new"} open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader><DialogTitle>{revision ? "编辑返修" : "添加返修"}</DialogTitle></DialogHeader>
         <Form {...form}>

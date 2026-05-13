@@ -54,7 +54,7 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog key={student?.id ?? "new"} open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader><DialogTitle>{student ? "编辑学生" : "添加学生"}</DialogTitle></DialogHeader>
         <Form {...form}>

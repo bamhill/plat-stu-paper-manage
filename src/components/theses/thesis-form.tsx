@@ -47,7 +47,7 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog key={thesis?.id ?? "new"} open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>{thesis ? "编辑大论文" : "添加大论文"}</DialogTitle></DialogHeader>
         <Form {...form}>

@@ -7,13 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Pencil } from "lucide-react";
 
 export function SettingsClient() {
   const [fileRootDir, setFileRootDir] = useState("data/files");
   const [organizeByStudent, setOrganizeByStudent] = useState(true);
   const [degreeTypes, setDegreeTypes] = useState<string[]>([]);
   const [newDegreeType, setNewDegreeType] = useState("");
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -63,6 +65,22 @@ export function SettingsClient() {
     if (res.ok) {
       setDegreeTypes(updated);
       toast.success("学位类型已删除");
+    }
+  }
+
+  async function saveDegreeTypeEdit(idx: number) {
+    if (!editValue.trim()) return;
+    const updated = [...degreeTypes];
+    updated[idx] = editValue.trim();
+    const res = await fetch("/api/settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ degreeTypes: updated }),
+    });
+    if (res.ok) {
+      setDegreeTypes(updated);
+      setEditingIdx(null);
+      toast.success("学位类型已更新");
     }
   }
 
@@ -125,14 +143,33 @@ export function SettingsClient() {
                 key={idx}
                 className="flex items-center justify-between rounded-md border px-3 py-2"
               >
-                <span className="text-sm">{dt}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeDegreeType(idx)}
-                >
-                  <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                </Button>
+                {editingIdx === idx ? (
+                  <div className="flex gap-2 flex-1 mr-2">
+                    <Input value={editValue} onChange={e => setEditValue(e.target.value)} onKeyDown={e => e.key === "Enter" && saveDegreeTypeEdit(idx)} />
+                    <Button size="sm" onClick={() => saveDegreeTypeEdit(idx)}>保存</Button>
+                    <Button size="sm" variant="outline" onClick={() => setEditingIdx(null)}>取消</Button>
+                  </div>
+                ) : (
+                  <>
+                    <span className="text-sm">{dt}</span>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => { setEditingIdx(idx); setEditValue(dt); }}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeDegreeType(idx)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>

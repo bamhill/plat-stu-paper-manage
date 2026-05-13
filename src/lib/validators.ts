@@ -21,7 +21,7 @@ export const paperSchema = z.object({
   firstAuthor: z.string().min(1, "第一作者不能为空"),
   correspondingAuthor: z.string().min(1, "通讯作者不能为空"),
   status: z.enum([
-    "writing", "ready_to_submit", "submitted",
+    "writing", "ready_to_submit", "submitted", "with_editor", "under_review",
     "minor_revision", "major_revision", "accepted", "rejected", "published",
   ]),
   targetVenue: z.string().nullable().optional(),

@@ -43,7 +43,7 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog key={submission?.id ?? "new"} open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader><DialogTitle>{submission ? "编辑投稿" : "添加投稿"}</DialogTitle></DialogHeader>
         <Form {...form}>
