@@ -1,0 +1,50 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
+import { createTimelineEvent } from "@/lib/timeline";
+import { studentSchema } from "@/lib/validators";
+import type { StudentFormData } from "@/lib/validators";
+
+export async function createStudent(data: StudentFormData) {
+  const parsed = studentSchema.parse(data);
+  const student = await prisma.student.create({
+    data: {
+      name: parsed.name, studentNo: parsed.studentNo,
+      degreeType: parsed.degreeType, enrollmentYear: parsed.enrollmentYear,
+      graduationYear: parsed.graduationYear ?? null,
+      direction: parsed.direction, supervisor: parsed.supervisor,
+      coSupervisor: parsed.coSupervisor ?? null,
+      status: parsed.status, notes: parsed.notes ?? null,
+    },
+  });
+  await createTimelineEvent({
+    studentId: student.id, relatedType: "student", relatedId: student.id,
+    eventType: "student_created", title: `添加学生：${student.name}`,
+  });
+  revalidatePath("/students");
+  return student;
+}
+
+export async function updateStudent(id: number, data: StudentFormData) {
+  const parsed = studentSchema.parse(data);
+  const student = await prisma.student.update({
+    where: { id },
+    data: {
+      name: parsed.name, studentNo: parsed.studentNo,
+      degreeType: parsed.degreeType, enrollmentYear: parsed.enrollmentYear,
+      graduationYear: parsed.graduationYear ?? null,
+      direction: parsed.direction, supervisor: parsed.supervisor,
+      coSupervisor: parsed.coSupervisor ?? null,
+      status: parsed.status, notes: parsed.notes ?? null,
+    },
+  });
+  revalidatePath("/students");
+  revalidatePath(`/students/${id}`);
+  return student;
+}
+
+export async function deleteStudent(id: number) {
+  await prisma.student.delete({ where: { id } });
+  revalidatePath("/students");
+}
