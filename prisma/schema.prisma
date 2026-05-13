@@ -1,13 +1,179 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id              Int       @id @default(autoincrement())
+  name            String
+  studentNo       String    @unique @map("student_no")
+  degreeType      String    @map("degree_type")
+  enrollmentYear  Int       @map("enrollment_year")
+  graduationYear  Int?      @map("graduation_year")
+  direction       String
+  supervisor      String
+  coSupervisor    String?   @map("co_supervisor")
+  status          String    @default("active")
+  notes           String?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  papers          Paper[]
+  theses          Thesis[]
+  timelineEvents  TimelineEvent[]
+
+  @@map("students")
+}
+
+model Paper {
+  id                   Int       @id @default(autoincrement())
+  studentId            Int       @map("student_id")
+  title                String
+  paperType            String    @map("paper_type")
+  direction            String
+  firstAuthor          String    @map("first_author")
+  correspondingAuthor  String    @map("corresponding_author")
+  status               String    @default("writing")
+  targetVenue          String?   @map("target_venue")
+  currentVersion       Int       @default(1) @map("current_version")
+  notes                String?
+  myThoughts           String?   @map("my_thoughts")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  student        Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  versions       PaperVersion[]
+  submissions    Submission[]
+
+  @@map("papers")
+}
+
+model PaperVersion {
+  id            Int      @id @default(autoincrement())
+  paperId       Int      @map("paper_id")
+  versionNumber Int      @map("version_number")
+  fileName      String   @map("file_name")
+  filePath      String   @map("file_path")
+  fileSize      Int      @map("file_size")
+  description   String?
+  uploadedAt    DateTime @default(now()) @map("uploaded_at")
+
+  paper Paper @relation(fields: [paperId], references: [id], onDelete: Cascade)
+
+  @@map("paper_versions")
+}
+
+model Submission {
+  id                Int       @id @default(autoincrement())
+  paperId           Int       @map("paper_id")
+  venueName         String    @map("venue_name")
+  submissionRound   Int       @map("submission_round")
+  submittedAt       DateTime? @map("submitted_at")
+  decisionAt        DateTime? @map("decision_at")
+  decision          String?
+  editorComments    String?   @map("editor_comments")
+  reviewerComments  String?   @map("reviewer_comments")
+  status            String    @default("pending")
+  notes             String?
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  paper      Paper       @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  revisions  Revision[]
+
+  @@map("submissions")
+}
+
+model Revision {
+  id               Int       @id @default(autoincrement())
+  submissionId     Int       @map("submission_id")
+  revisionRound    Int       @map("revision_round")
+  receivedAt       DateTime? @map("received_at")
+  dueAt            DateTime? @map("due_at")
+  submittedAt      DateTime? @map("submitted_at")
+  revisionType     String    @map("revision_type")
+  commentsSummary  String?   @map("comments_summary")
+  responseSummary  String?   @map("response_summary")
+  status           String    @default("pending")
+  notes            String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  submission  Submission   @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@map("revisions")
+}
+
+model Thesis {
+  id             Int       @id @default(autoincrement())
+  studentId      Int       @map("student_id")
+  title          String
+  degreeType     String    @map("degree_type")
+  stage          String    @default("proposal")
+  proposalDate   DateTime? @map("proposal_date")
+  midtermDate    DateTime? @map("midterm_date")
+  submittedAt    DateTime? @map("submitted_at")
+  reviewedAt     DateTime? @map("reviewed_at")
+  defenseDate    DateTime? @map("defense_date")
+  score          String?
+  reviewComments String?   @map("review_comments")
+  revisionNotes  String?   @map("revision_notes")
+  status         String    @default("in_progress")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  student     Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  reviews     ThesisReview[]
+
+  @@map("theses")
+}
+
+model ThesisReview {
+  id           Int       @id @default(autoincrement())
+  thesisId     Int       @map("thesis_id")
+  reviewerName String    @map("reviewer_name")
+  reviewerType String    @map("reviewer_type")
+  score        String?
+  decision     String
+  comments     String?
+  reviewedAt   DateTime? @map("reviewed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  thesis      Thesis       @relation(fields: [thesisId], references: [id], onDelete: Cascade)
+
+  @@map("thesis_reviews")
+}
+
+model Attachment {
+  id          Int      @id @default(autoincrement())
+  relatedType String   @map("related_type")
+  relatedId   Int      @map("related_id")
+  fileName    String   @map("file_name")
+  filePath    String   @map("file_path")
+  fileType    String   @map("file_type")
+  fileSize    Int      @map("file_size")
+  description String?
+  uploadedAt  DateTime @default(now()) @map("uploaded_at")
+
+  @@map("attachments")
+}
+
+model TimelineEvent {
+  id          Int      @id @default(autoincrement())
+  studentId   Int      @map("student_id")
+  relatedType String   @map("related_type")
+  relatedId   Int      @map("related_id")
+  eventType   String   @map("event_type")
+  title       String
+  description String?
+  eventDate   DateTime @map("event_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("timeline_events")
 }
