@@ -82,17 +82,21 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
 
         {EXPERT_SLOTS.map((label, idx) => {
           const review = reviews[idx];
+          const expertScore = [thesis.expert1Score, thesis.expert2Score, thesis.expert3Score][idx];
           return (
             <div key={idx} className="rounded-lg border bg-white p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="font-medium text-sm">{label}</h3>
-                {review ? (
-                  <StatusBadge value={review.decision} />
-                ) : (
-                  <Button size="sm" variant="outline" onClick={() => setShowReviewForm(true)}>
-                    <Plus className="h-3 w-3 mr-1" />录入评审
-                  </Button>
-                )}
+                <div className="flex items-center gap-2">
+                  {expertScore && <span className="text-sm font-bold text-blue-600">{expertScore}分</span>}
+                  {review ? (
+                    <StatusBadge value={review.decision} />
+                  ) : (
+                    <Button size="sm" variant="outline" onClick={() => setShowReviewForm(true)}>
+                      <Plus className="h-3 w-3 mr-1" />录入评审
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {review && (

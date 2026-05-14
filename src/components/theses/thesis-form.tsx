@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
+import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
@@ -21,7 +22,8 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
     defaultValues: {
       studentId: 0, title: "", degreeType: "",
       stage: "proposal", proposalDate: null, defenseDate: null,
-      score: null, reviewComments: null, revisionNotes: null,
+      score: null, expert1Score: null, expert2Score: null, expert3Score: null,
+      reviewComments: null, revisionNotes: null,
       status: "in_progress",
     } as ThesisFormData,
   });
@@ -34,6 +36,9 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
         proposalDate: thesis.proposalDate?.split("T")[0] ?? null,
         defenseDate: thesis.defenseDate?.split("T")[0] ?? null,
         score: thesis.score ?? null,
+        expert1Score: thesis.expert1Score ?? null,
+        expert2Score: thesis.expert2Score ?? null,
+        expert3Score: thesis.expert3Score ?? null,
         reviewComments: thesis.reviewComments ?? null,
         revisionNotes: thesis.revisionNotes ?? null,
         status: thesis.status,
@@ -51,7 +56,7 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
 
   return (
     <Dialog key={thesis?.id ?? "new"} open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>{thesis ? "编辑大论文" : "添加大论文"}</DialogTitle></DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -104,6 +109,56 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
                 <FormItem><FormLabel>答辩日期</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
               )} />
             </div>
+
+            {/* 外审专家评分 */}
+            <div className="border-t pt-4">
+              <h3 className="text-sm font-medium mb-3">外审专家评分</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <FormField control={form.control} name="expert1Score" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">专家一分数</FormLabel>
+                    <FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} placeholder="如: 85" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="expert2Score" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">专家二分数</FormLabel>
+                    <FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} placeholder="如: 82" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="expert3Score" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">专家三分数</FormLabel>
+                    <FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} placeholder="如: 78" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+            </div>
+
+            {/* 答辩成绩 */}
+            <FormField control={form.control} name="score" render={({ field }) => (
+              <FormItem>
+                <FormLabel>答辩成绩</FormLabel>
+                <FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} placeholder="如: 85" /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            {/* 附件上传 (for existing thesis) */}
+            {thesis && (
+              <div className="border-t pt-4">
+                <h3 className="text-sm font-medium mb-3">答辩附件</h3>
+                <AttachmentUpload
+                  relatedType="thesis"
+                  relatedId={thesis.id}
+                  existingAttachments={[]}
+                />
+              </div>
+            )}
+
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
               <Button type="submit">{thesis ? "保存" : "添加"}</Button>

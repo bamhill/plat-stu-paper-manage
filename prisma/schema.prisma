@@ -121,7 +121,10 @@ model Thesis {
   submittedAt    DateTime? @map("submitted_at")
   reviewedAt     DateTime? @map("reviewed_at")
   defenseDate    DateTime? @map("defense_date")
-  score          String?
+  score          String?   // defense score (答辩成绩)
+  expert1Score   String?   @map("expert1_score")
+  expert2Score   String?   @map("expert2_score")
+  expert3Score   String?   @map("expert3_score")
   reviewComments String?   @map("review_comments")
   revisionNotes  String?   @map("revision_notes")
   status         String    @default("in_progress")
