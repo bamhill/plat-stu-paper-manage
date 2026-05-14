@@ -118,28 +118,64 @@ export function StudentDetailTabs({ student }: { student: any }) {
         )}
       </div>
 
-      {/* Section: Timeline */}
+      {/* Section: Timeline (derived from actual paper/submission/revision data) */}
       <div className="pt-4 border-t">
-        <h2 className="font-semibold text-base mb-3">时间线 ({student.timelineEvents.length})</h2>
-        {student.timelineEvents.length === 0 ? (
-          <p className="text-gray-400 text-sm">暂无记录</p>
+        <h2 className="font-semibold text-base mb-3">时间线</h2>
+        {student.papers.length === 0 ? (
+          <p className="text-gray-400 text-sm">暂无论文</p>
         ) : (
-          <div className="space-y-2 ml-2">
-            {student.timelineEvents.map((evt: any) => (
-              <div key={evt.id} className="flex gap-3 text-sm">
-                <div className="text-gray-400 w-28 shrink-0 text-xs pt-0.5">
-                  {new Date(evt.eventDate).toLocaleDateString("zh-CN")}
+          <div className="space-y-4 ml-2">
+            {student.papers.map((paper: any) => {
+              // Collect all events from this paper's submissions and revisions
+              const events: { date: Date; label: string; detail: string; color: string }[] = [];
+
+              paper.submissions.forEach((sub: any) => {
+                if (sub.submittedAt) {
+                  events.push({ date: new Date(sub.submittedAt), label: `投稿`, detail: `${sub.venueName} (第${sub.submissionRound}次)`, color: "bg-blue-400" });
+                }
+                if (sub.decisionAt && sub.decision && sub.decision !== "under_review") {
+                  const decLabels: Record<string, string> = { minor_revision: "小修", major_revision: "大修", accept: "接收", reject: "拒稿" };
+                  events.push({ date: new Date(sub.decisionAt), label: `审稿决定`, detail: `${decLabels[sub.decision] || sub.decision} — ${sub.venueName}`, color: sub.decision === "accept" ? "bg-green-400" : sub.decision === "reject" ? "bg-red-400" : "bg-yellow-400" });
+                }
+                sub.revisions.forEach((rev: any) => {
+                  if (rev.receivedAt) {
+                    const typeLabels: Record<string, string> = { minor: "小修", major: "大修", resubmit: "重投" };
+                    events.push({ date: new Date(rev.receivedAt), label: `返修`, detail: `${typeLabels[rev.revisionType] || rev.revisionType} 第${rev.revisionRound}轮 — ${sub.venueName}`, color: "bg-purple-400" });
+                  }
+                  if (rev.submittedAt) {
+                    events.push({ date: new Date(rev.submittedAt), label: `返修提交`, detail: `第${rev.revisionRound}轮返修已提交 — ${sub.venueName}`, color: "bg-indigo-400" });
+                  }
+                });
+              });
+
+              events.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+              if (events.length === 0) return null;
+
+              return (
+                <div key={paper.id}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-3 h-3 rounded-full bg-blue-500 shrink-0" />
+                    <span className="font-medium text-sm cursor-pointer hover:text-blue-600" onClick={() => router.push(`/papers/${paper.id}`)}>
+                      {paper.title}
+                    </span>
+                  </div>
+                  <div className="ml-1.5 pl-4 border-l-2 border-blue-100 space-y-1.5">
+                    {events.map((evt, i) => (
+                      <div key={i} className="flex gap-2 text-xs">
+                        <div className="text-gray-400 w-24 shrink-0 pt-0.5">
+                          {evt.date.toLocaleDateString("zh-CN")}
+                        </div>
+                        <div className={`w-1.5 h-1.5 rounded-full ${evt.color} shrink-0 mt-1`} />
+                        <div className="pb-1.5">
+                          <p><span className="font-medium">{evt.label}</span> — {evt.detail}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="relative flex flex-col items-center">
-                  <div className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
-                  <div className="w-0.5 flex-1 bg-gray-200" />
-                </div>
-                <div className="pb-3 flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">{evt.title}</p>
-                  {evt.description && <p className="text-gray-500 text-xs truncate">{evt.description}</p>}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
