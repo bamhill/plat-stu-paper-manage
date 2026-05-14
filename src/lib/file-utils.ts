@@ -25,10 +25,13 @@ export async function saveFile(
   entityId: number,
   mimeType: string,
   studentDir?: string,
+  subDir?: string,
 ): Promise<{ fileName: string; filePath: string; fileSize: number; fileType: string }> {
   const settings = getSettings();
   let dir: string;
-  if (studentDir) {
+  if (studentDir && subDir) {
+    dir = path.join(process.cwd(), settings.fileRootDir, studentDir, subDir);
+  } else if (studentDir) {
     dir = path.join(process.cwd(), settings.fileRootDir, studentDir, category);
   } else {
     dir = path.join(process.cwd(), settings.fileRootDir, category);
