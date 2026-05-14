@@ -89,10 +89,7 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
                 {review ? (
                   <StatusBadge value={review.decision} />
                 ) : (
-                  <Button size="sm" variant="outline" onClick={() => {
-                    setActiveSlot(idx);
-                    setShowReviewForm(true);
-                  }}>
+                  <Button size="sm" variant="outline" onClick={() => setShowReviewForm(true)}>
                     <Plus className="h-3 w-3 mr-1" />录入评审
                   </Button>
                 )}
