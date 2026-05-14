@@ -5,8 +5,11 @@ import { ThesisReviewForm } from "@/components/theses/thesis-review-form";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, Pencil } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import { updateThesis } from "@/app/theses/actions";
 
 const STAGES = [
   { key: "proposal", label: "开题", dateField: "proposalDate" as string | null },
@@ -17,20 +20,28 @@ const STAGES = [
   { key: "archived", label: "归档", dateField: null as string | null },
 ];
 
+const EXPERT_SLOTS = ["外审专家一", "外审专家二", "外审专家三"];
+
 export function ThesisDetailClient({ thesis }: { thesis: any }) {
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [activeSlot, setActiveSlot] = useState<number | null>(null);
+  const [editScore, setEditScore] = useState(false);
+  const [finalScore, setFinalScore] = useState(thesis.score || "");
   const currentStageIdx = STAGES.findIndex(s => s.key === thesis.stage);
 
   const reviews = thesis.reviews || [];
 
-  // Filter external/anonymous reviews for score slots (up to 3)
-  const externalReviews = reviews.filter(
-    (r: any) => r.reviewerType === "external" || r.reviewerType === "anonymous"
-  ).slice(0, 3);
+  async function saveFinalScore() {
+    try {
+      await updateThesis(thesis.id, { ...thesis, score: finalScore || null, proposalDate: thesis.proposalDate, defenseDate: thesis.defenseDate } as any);
+      toast.success("答辩成绩已保存");
+      setEditScore(false);
+    } catch { toast.error("保存失败"); }
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Left: Progress + External Score Slots */}
+      {/* Left: Progress */}
       <div className="space-y-4">
         <h2 className="font-medium">进度</h2>
         <div className="space-y-1">
@@ -47,84 +58,78 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
           })}
         </div>
 
-        {/* External review score cards */}
-        {externalReviews.length > 0 && (
-          <div className="space-y-2">
-            <h2 className="font-medium text-sm text-gray-500">外审评分</h2>
-            {externalReviews.map((r: any, i: number) => (
-              <div key={r.id} className="rounded-lg border bg-white p-3 space-y-1">
-                <div className="text-xs text-gray-400">外审专家{i + 1}</div>
-                <div className="font-medium text-sm">{r.reviewerName || "未命名"}</div>
-                {r.score && <div className="text-lg font-bold text-blue-600">{r.score}分</div>}
-                <StatusBadge value={r.decision} />
-              </div>
-            ))}
+        {/* Final Defense Score */}
+        <div className="rounded-lg border bg-white p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">答辩成绩</span>
+            <Button variant="ghost" size="icon" onClick={() => setEditScore(!editScore)}>
+              <Pencil className="h-3 w-3" />
+            </Button>
           </div>
-        )}
-
-        {thesis.score && (
-          <div className="rounded-lg border bg-gray-50 p-3">
-            <span className="text-gray-500 text-sm">综合评分：</span>
-            <span className="font-bold text-lg">{thesis.score}</span>
-          </div>
-        )}
+          {editScore ? (
+            <div className="flex gap-2">
+              <Input value={finalScore} onChange={e => setFinalScore(e.target.value)} placeholder="如: 85" className="h-8" />
+              <Button size="sm" onClick={saveFinalScore}>保存</Button>
+            </div>
+          ) : (
+            <div className="text-xl font-bold text-blue-600">{thesis.score || "未录入"}{thesis.score ? "分" : ""}</div>
+          )}
+        </div>
       </div>
 
-      {/* Right: Reviews + Attachments */}
+      {/* Right: 3 Expert Reviews + Attachments */}
       <div className="lg:col-span-2 space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="font-medium">审稿意见</h2>
-          <Button size="sm" onClick={() => setShowReviewForm(true)}>
-            <Plus className="h-3.5 w-3.5 mr-1" />添加审稿意见
-          </Button>
-        </div>
+        <h2 className="font-medium">外审专家评审</h2>
 
-        {reviews.length === 0 ? (
-          <p className="text-gray-400 text-sm">暂无审稿意见，请添加外审专家评审</p>
-        ) : (
-          reviews.map((r: any) => (
-            <div key={r.id} className="rounded-lg border bg-white p-4 space-y-3">
+        {EXPERT_SLOTS.map((label, idx) => {
+          const review = reviews[idx];
+          return (
+            <div key={idx} className="rounded-lg border bg-white p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{r.reviewerName}</span>
-                  <StatusBadge value={r.reviewerType} />
-                </div>
-                <StatusBadge value={r.decision} />
+                <h3 className="font-medium text-sm">{label}</h3>
+                {review ? (
+                  <StatusBadge value={review.decision} />
+                ) : (
+                  <Button size="sm" variant="outline" onClick={() => {
+                    setActiveSlot(idx);
+                    setShowReviewForm(true);
+                  }}>
+                    <Plus className="h-3 w-3 mr-1" />录入评审
+                  </Button>
+                )}
               </div>
-              {r.score && (
-                <p className="text-sm">
-                  <span className="text-gray-500">分数：</span>
-                  <span className="font-bold text-blue-600">{r.score}</span>
-                </p>
-              )}
-              {r.comments && (
-                <p className="text-sm text-gray-700 whitespace-pre-wrap bg-gray-50 rounded p-2">
-                  {r.comments}
-                </p>
-              )}
-              {r.reviewedAt && (
-                <p className="text-xs text-gray-400">评审日期：{format(new Date(r.reviewedAt), "yyyy-MM-dd")}</p>
-              )}
 
-              {/* Attachments for this review */}
-              <div className="pt-2 border-t">
-                <AttachmentUpload
-                  relatedType="thesis_review"
-                  relatedId={r.id}
-                  existingAttachments={(r.attachments || []).map((a: any) => ({
-                    id: a.id,
-                    fileName: a.fileName,
-                    filePath: a.filePath,
-                    fileSize: a.fileSize,
-                    fileType: a.fileType,
-                    description: a.description,
-                    uploadedAt: a.uploadedAt,
-                  }))}
-                />
-              </div>
+              {review && (
+                <>
+                  <div className="flex items-center gap-4 text-sm">
+                    <span>评审人：<span className="font-medium">{review.reviewerName}</span></span>
+                    <span>类型：<StatusBadge value={review.reviewerType} /></span>
+                    {review.score && <span>分数：<span className="font-bold text-blue-600">{review.score}分</span></span>}
+                    {review.reviewedAt && <span className="text-gray-400 text-xs">日期：{format(new Date(review.reviewedAt), "yyyy-MM-dd")}</span>}
+                  </div>
+                  {review.comments && (
+                    <div className="bg-gray-50 rounded p-2 text-sm whitespace-pre-wrap">{review.comments}</div>
+                  )}
+                  {/* Attachments for this review */}
+                  <div className="pt-2 border-t">
+                    <AttachmentUpload
+                      relatedType="thesis_review"
+                      relatedId={review.id}
+                      existingAttachments={(review.attachments || []).map((a: any) => ({
+                        id: a.id, fileName: a.fileName, filePath: a.filePath,
+                        fileSize: a.fileSize, fileType: a.fileType,
+                        description: a.description, uploadedAt: a.uploadedAt,
+                      }))}
+                    />
+                  </div>
+                </>
+              )}
+              {!review && (
+                <p className="text-xs text-gray-400">点击"录入评审"添加外审专家评分和意见</p>
+              )}
             </div>
-          ))
-        )}
+          );
+        })}
 
         {/* Thesis-level attachments */}
         <div className="pt-4 border-t">
@@ -133,13 +138,9 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
             relatedType="thesis"
             relatedId={thesis.id}
             existingAttachments={(thesis.attachments || []).map((a: any) => ({
-              id: a.id,
-              fileName: a.fileName,
-              filePath: a.filePath,
-              fileSize: a.fileSize,
-              fileType: a.fileType,
-              description: a.description,
-              uploadedAt: a.uploadedAt,
+              id: a.id, fileName: a.fileName, filePath: a.filePath,
+              fileSize: a.fileSize, fileType: a.fileType,
+              description: a.description, uploadedAt: a.uploadedAt,
             }))}
           />
         </div>
