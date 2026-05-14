@@ -80,13 +80,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
   }
 
-  // Determine folder structure
-  const folder = await getPaperFolder(category, entityId);
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const result = await saveFile(
-    buffer, file.name, category, entityId, file.type,
-    folder?.studentDir,
-    folder?.subDir,
-  );
-  return NextResponse.json(result);
+  try {
+    // Determine folder structure
+    const folder = await getPaperFolder(category, entityId);
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const result = await saveFile(
+      buffer, file.name, category, entityId, file.type,
+      folder?.studentDir,
+      folder?.subDir,
+    );
+    return NextResponse.json(result);
+  } catch (e: any) {
+    return NextResponse.json({ error: `上传失败: ${e.message || e}` }, { status: 500 });
+  }
 }
