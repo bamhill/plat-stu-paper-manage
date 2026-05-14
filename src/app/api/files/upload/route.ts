@@ -35,7 +35,7 @@ async function getPaperFolder(category: string, entityId: number): Promise<{ stu
         const subDir = `${ym}${venueAbbr}_${paperTitle}`;
         return { studentDir, subDir };
       }
-    } else if (category === "thesis" || category === "thesis_review") {
+    } else if (category === "thesis" || category === "thesis_expert" || category === "thesis_review") {
       const thesisId = category === "thesis_review"
         ? (await prisma.thesisReview.findUnique({ where: { id: entityId } }))?.thesisId
         : entityId;

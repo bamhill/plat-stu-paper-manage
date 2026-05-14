@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
-  return NextResponse.json({ ok: true });
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const relatedType = searchParams.get("relatedType");
+  const relatedId = searchParams.get("relatedId");
+  if (relatedType && relatedId) {
+    const attachments = await prisma.attachment.findMany({
+      where: { relatedType, relatedId: Number(relatedId) },
+      orderBy: { uploadedAt: "desc" },
+    });
+    return NextResponse.json(attachments);
+  }
+  return NextResponse.json([]);
 }
 
 export async function POST(req: NextRequest) {

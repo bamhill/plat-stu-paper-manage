@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,22 @@ export function AttachmentUpload({ relatedType, relatedId, existingAttachments }
   const [uploading, setUploading] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>(existingAttachments);
   const [description, setDescription] = useState("");
+
+  // Load existing attachments on mount
+  useEffect(() => {
+    fetch(`/api/attachments?relatedType=${relatedType}&relatedId=${relatedId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setAttachments(data);
+        } else if (existingAttachments.length > 0) {
+          setAttachments(existingAttachments);
+        }
+      })
+      .catch(() => {
+        if (existingAttachments.length > 0) setAttachments(existingAttachments);
+      });
+  }, [relatedType, relatedId]);
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

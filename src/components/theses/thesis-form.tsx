@@ -149,13 +149,25 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
 
             {/* 附件上传 (for existing thesis) */}
             {thesis && (
-              <div className="border-t pt-4">
-                <h3 className="text-sm font-medium mb-3">答辩附件</h3>
-                <AttachmentUpload
-                  relatedType="thesis"
-                  relatedId={thesis.id}
-                  existingAttachments={[]}
-                />
+              <div className="border-t pt-4 space-y-6">
+                <div>
+                  <h3 className="text-sm font-medium mb-3">外审专家意见附件</h3>
+                  <p className="text-xs text-gray-400 mb-2">上传外审专家的评阅意见书（Word/PDF/压缩包）</p>
+                  <AttachmentUpload
+                    relatedType="thesis_expert"
+                    relatedId={thesis.id}
+                    existingAttachments={[]}
+                  />
+                </div>
+                <div className="pt-4 border-t">
+                  <h3 className="text-sm font-medium mb-3">大论文附件</h3>
+                  <p className="text-xs text-gray-400 mb-2">上传大论文终稿、答辩决议等其他文档</p>
+                  <AttachmentUpload
+                    relatedType="thesis"
+                    relatedId={thesis.id}
+                    existingAttachments={[]}
+                  />
+                </div>
               </div>
             )}
 

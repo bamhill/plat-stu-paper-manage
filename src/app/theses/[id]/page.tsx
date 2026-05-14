@@ -22,6 +22,11 @@ export default async function ThesisDetailPage({ params }: { params: { id: strin
     orderBy: { uploadedAt: "desc" },
   });
 
+  const expertAttachments = await prisma.attachment.findMany({
+    where: { relatedType: "thesis_expert", relatedId: Number(params.id) },
+    orderBy: { uploadedAt: "desc" },
+  });
+
   // Also fetch attachments for each review
   const reviewIds = thesis.reviews.map(r => r.id);
   const reviewAttachments = reviewIds.length > 0 ? await prisma.attachment.findMany({
