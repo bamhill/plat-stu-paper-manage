@@ -21,7 +21,16 @@ export function SettingsClient() {
   const [aiApiKey, setAiApiKey] = useState("");
   const [aiApiUrl, setAiApiUrl] = useState("https://api.deepseek.com/v1");
   const [aiModel, setAiModel] = useState("deepseek-chat");
+  const [dashboardFilter, setDashboardFilter] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const STATUS_OPTIONS = [
+    { value: "writing", label: "撰写中" }, { value: "ready_to_submit", label: "待投稿" },
+    { value: "submitted", label: "已投稿" }, { value: "with_editor", label: "编辑处理中" },
+    { value: "under_review", label: "外审中" }, { value: "minor_revision", label: "小修" },
+    { value: "major_revision", label: "大修" }, { value: "accepted", label: "已接收" },
+    { value: "rejected", label: "已拒稿" }, { value: "published", label: "已发表" },
+  ];
 
   useEffect(() => {
     fetch("/api/settings")
@@ -35,6 +44,7 @@ export function SettingsClient() {
         if (data.aiApiKey !== undefined) setAiApiKey(data.aiApiKey);
         if (data.aiApiUrl) setAiApiUrl(data.aiApiUrl);
         if (data.aiModel) setAiModel(data.aiModel);
+        if (data.dashboardStatusFilter) setDashboardFilter(data.dashboardStatusFilter);
         setLoading(false);
       });
   }, []);
@@ -254,6 +264,43 @@ export function SettingsClient() {
             </>
           )}
           <Button onClick={saveAiSettings}>保存 AI 设置</Button>
+        </CardContent>
+      </Card>
+
+      {/* Dashboard Card Filter */}
+      <Card>
+        <CardHeader><CardTitle>首页卡片显示</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-gray-500">选择在首页学生卡片中显示的小论文状态。未勾选的状态不会出现在卡片上。</p>
+          <div className="grid grid-cols-2 gap-2">
+            {STATUS_OPTIONS.map(opt => (
+              <label key={opt.value} className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={dashboardFilter.includes(opt.value)}
+                  onChange={e => {
+                    if (e.target.checked) setDashboardFilter([...dashboardFilter, opt.value]);
+                    else setDashboardFilter(dashboardFilter.filter(v => v !== opt.value));
+                  }}
+                  className="rounded"
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => setDashboardFilter(STATUS_OPTIONS.map(o => o.value))}>全选</Button>
+            <Button variant="outline" size="sm" onClick={() => setDashboardFilter([])}>全不选</Button>
+          </div>
+          <Button onClick={async () => {
+            const res = await fetch("/api/settings", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ dashboardStatusFilter: dashboardFilter }),
+            });
+            if (res.ok) toast.success("首页显示设置已保存");
+            else toast.error("保存失败");
+          }}>保存显示设置</Button>
         </CardContent>
       </Card>
     </div>

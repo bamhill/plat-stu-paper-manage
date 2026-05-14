@@ -11,7 +11,10 @@ interface AppSettings {
   aiApiKey: string;
   aiApiUrl: string;
   aiModel: string;
+  dashboardStatusFilter: string[];
 }
+
+const ALL_STATUSES = ["writing", "ready_to_submit", "submitted", "with_editor", "under_review", "minor_revision", "major_revision", "accepted", "rejected", "published"];
 
 const DEFAULT_SETTINGS: AppSettings = {
   fileRootDir: "data/files",
@@ -21,6 +24,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   aiApiKey: "",
   aiApiUrl: "https://api.deepseek.com/v1",
   aiModel: "deepseek-chat",
+  dashboardStatusFilter: ALL_STATUSES,
 };
 
 export function getSettings(): AppSettings {

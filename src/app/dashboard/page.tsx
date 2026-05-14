@@ -1,13 +1,18 @@
 import { prisma } from "@/lib/prisma";
+import { getSettings } from "@/lib/settings";
 import { GradeGroup } from "@/components/dashboard/grade-group";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  const settings = getSettings();
+  const statusFilter = settings.dashboardStatusFilter?.length ? settings.dashboardStatusFilter : undefined;
+
   const students = await prisma.student.findMany({
     where: { status: "active" },
     include: {
       papers: {
+        where: statusFilter ? { status: { in: statusFilter } } : undefined,
         include: {
           submissions: { orderBy: { submittedAt: "desc" }, take: 1 },
         },
