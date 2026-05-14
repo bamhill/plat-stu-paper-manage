@@ -4,7 +4,7 @@ import { saveFile, validateFile } from "@/lib/file-utils";
 
 async function getPaperFolder(category: string, entityId: number): Promise<{ studentDir: string; subDir: string } | null> {
   try {
-    if (category === "submission") {
+    if (category === "submission" || category === "submission_paper" || category === "submission_supplement") {
       const sub = await prisma.submission.findUnique({
         where: { id: entityId },
         include: { paper: { include: { student: true } } },
@@ -19,7 +19,7 @@ async function getPaperFolder(category: string, entityId: number): Promise<{ stu
         const subDir = `${ym}${venueAbbr}_${paperTitle}`;
         return { studentDir, subDir };
       }
-    } else if (category === "revision") {
+    } else if (category === "revision" || category === "revision_review" || category === "revision_manuscript" || category === "revision_supplement") {
       const rev = await prisma.revision.findUnique({
         where: { id: entityId },
         include: { submission: { include: { paper: { include: { student: true } } } } },

@@ -10,11 +10,15 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 export function SubmissionForm({ open, onOpenChange, submission }: { open: boolean; onOpenChange: (o: boolean) => void; submission: any | null }) {
   const [papers, setPapers] = useState<any[]>([]);
+  const [createdId, setCreatedId] = useState<number | null>(null);
+  const activeId = submission?.id || createdId;
+
   useEffect(() => { if (open) fetch("/api/papers/list").then(r => r.json()).then(setPapers); }, [open]);
 
   const form = useForm<SubmissionFormData>({
@@ -45,7 +49,6 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
     }
   }, [submission, form]);
 
-  // Auto-select first paper when creating new submission
   useEffect(() => {
     if (!submission && open && papers.length > 0) {
       const currentVal = form.getValues("paperId");
@@ -59,18 +62,27 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
       return;
     }
     try {
-      if (submission) { await updateSubmission(submission.id, data); toast.success("投稿已更新"); }
-      else { await createSubmission(data); toast.success("投稿已记录"); }
-      onOpenChange(false); form.reset();
+      if (submission) {
+        await updateSubmission(submission.id, data);
+        toast.success("投稿已更新");
+        onOpenChange(false);
+      } else {
+        const result = await createSubmission(data);
+        setCreatedId(result.id);
+        toast.success("投稿已记录，可上传附件");
+      }
+      form.reset();
     } catch (e: any) { toast.error(e?.message || "操作失败，请检查输入"); }
   }
 
   return (
     <Dialog key={submission?.id ?? "new"} open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>{submission ? "编辑投稿" : "添加投稿"}</DialogTitle></DialogHeader>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader><DialogTitle>{submission ? "编辑投稿" : activeId ? "投稿已创建 — 上传附件" : "添加投稿"}</DialogTitle></DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {!activeId && (
+              <>
             <FormField control={form.control} name="paperId" render={({ field }) => (
               <FormItem><FormLabel>小论文</FormLabel>
                 <FormControl>
@@ -89,11 +101,9 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
                 <FormItem><FormLabel>稿件编号</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
               )} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="submissionRound" render={({ field }) => (
-                <FormItem><FormLabel>投稿轮次</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-            </div>
+            <FormField control={form.control} name="submissionRound" render={({ field }) => (
+              <FormItem><FormLabel>投稿轮次</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
             <div className="grid grid-cols-3 gap-4">
               <FormField control={form.control} name="submittedAt" render={({ field }) => (
                 <FormItem><FormLabel>投稿日期</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
@@ -133,10 +143,33 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
             <FormField control={form.control} name="editorComments" render={({ field }) => (
               <FormItem><FormLabel>编辑意见</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
             )} />
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
-              <Button type="submit">{submission ? "保存" : "添加"}</Button>
-            </div>
+              </>
+            )}
+
+            {/* 附件上传 — 编辑模式或新建后 */}
+            {activeId ? (
+              <div className="border-t pt-4 space-y-6">
+                <div>
+                  <h3 className="text-sm font-medium mb-2">投稿文章</h3>
+                  <AttachmentUpload relatedType="submission_paper" relatedId={activeId} existingAttachments={[]} />
+                </div>
+                <div className="pt-4 border-t">
+                  <h3 className="text-sm font-medium mb-2">补充材料（压缩包）</h3>
+                  <AttachmentUpload relatedType="submission_supplement" relatedId={activeId} existingAttachments={[]} />
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
+                <Button type="submit">{submission ? "保存" : "添加投稿"}</Button>
+              </div>
+            )}
+
+            {activeId && (
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>关闭</Button>
+              </div>
+            )}
           </form>
         </Form>
       </DialogContent>

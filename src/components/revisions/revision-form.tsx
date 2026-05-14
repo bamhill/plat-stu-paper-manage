@@ -10,17 +10,21 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; onOpenChange: (o: boolean) => void; revision: any | null }) {
   const [submissions, setSubmissions] = useState<any[]>([]);
+  const [createdId, setCreatedId] = useState<number | null>(null);
+  const activeId = revision?.id || createdId;
+
   useEffect(() => { if (open) fetch("/api/submissions/list").then(r => r.json()).then(setSubmissions); }, [open]);
 
   const form = useForm<RevisionFormData>({
     resolver: zodResolver(revisionSchema),
     defaultValues: {
-      submissionId: 0, revisionRound: 1,
+      submissionId: 0 as unknown as number, revisionRound: 1,
       receivedAt: null, dueAt: null, submittedAt: null,
       revisionType: "minor", commentsSummary: null, responseSummary: null,
       status: "pending", notes: null,
@@ -42,20 +46,38 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
     }
   }, [revision, form]);
 
+  useEffect(() => {
+    if (!revision && open && submissions.length > 0) {
+      const currentVal = form.getValues("submissionId");
+      if (!currentVal) form.setValue("submissionId", submissions[0].id);
+    }
+  }, [submissions, revision, form, open]);
+
   async function onSubmit(data: RevisionFormData) {
     try {
-      if (revision) { await updateRevision(revision.id, data); toast.success("返修已更新"); }
-      else { await createRevision(data); toast.success("返修已记录"); }
-      onOpenChange(false); form.reset();
-    } catch (e) { toast.error("操作失败"); }
+      if (revision) {
+        await updateRevision(revision.id, data);
+        toast.success("返修已更新");
+        onOpenChange(false);
+      } else {
+        const result = await createRevision(data);
+        setCreatedId(result.id);
+        toast.success("返修已记录，可上传附件");
+      }
+      form.reset();
+    } catch (e: any) { toast.error(e?.message || "操作失败"); }
   }
 
   return (
     <Dialog key={revision?.id ?? "new"} open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>{revision ? "编辑返修" : "添加返修"}</DialogTitle></DialogHeader>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{revision ? "编辑返修" : activeId ? "返修已创建 — 上传附件" : "添加返修"}</DialogTitle>
+        </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {!activeId && (
+              <>
             <FormField control={form.control} name="submissionId" render={({ field }) => (
               <FormItem><FormLabel>所属投稿</FormLabel>
                 <FormControl>
@@ -74,9 +96,7 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
                 <FormItem><FormLabel>返修类型</FormLabel>
                   <FormControl>
                     <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
-                      <option value="minor">小修</option>
-                      <option value="major">大修</option>
-                      <option value="resubmit">重投</option>
+                      <option value="minor">小修</option><option value="major">大修</option><option value="resubmit">重投</option>
                     </NativeSelect>
                   </FormControl><FormMessage />
                 </FormItem>
@@ -85,10 +105,8 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
                 <FormItem><FormLabel>状态</FormLabel>
                   <FormControl>
                     <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
-                      <option value="pending">待处理</option>
-                      <option value="revising">返修中</option>
-                      <option value="submitted">已提交</option>
-                      <option value="completed">已完成</option>
+                      <option value="pending">待处理</option><option value="revising">返修中</option>
+                      <option value="submitted">已提交</option><option value="completed">已完成</option>
                     </NativeSelect>
                   </FormControl><FormMessage />
                 </FormItem>
@@ -111,10 +129,36 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
             <FormField control={form.control} name="responseSummary" render={({ field }) => (
               <FormItem><FormLabel>回复摘要</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} rows={2} /></FormControl><FormMessage /></FormItem>
             )} />
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
-              <Button type="submit">{revision ? "保存" : "添加"}</Button>
-            </div>
+              </>
+            )}
+
+            {activeId ? (
+              <div className="border-t pt-4 space-y-6">
+                <div>
+                  <h3 className="text-sm font-medium mb-2">审稿意见附件</h3>
+                  <AttachmentUpload relatedType="revision_review" relatedId={activeId} existingAttachments={[]} />
+                </div>
+                <div className="pt-4 border-t">
+                  <h3 className="text-sm font-medium mb-2">修改稿</h3>
+                  <AttachmentUpload relatedType="revision_manuscript" relatedId={activeId} existingAttachments={[]} />
+                </div>
+                <div className="pt-4 border-t">
+                  <h3 className="text-sm font-medium mb-2">修改说明 / 补充材料</h3>
+                  <AttachmentUpload relatedType="revision_supplement" relatedId={activeId} existingAttachments={[]} />
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
+                <Button type="submit">{revision ? "保存" : "添加返修"}</Button>
+              </div>
+            )}
+
+            {activeId && (
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>关闭</Button>
+              </div>
+            )}
           </form>
         </Form>
       </DialogContent>
