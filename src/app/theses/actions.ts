@@ -75,6 +75,7 @@ export async function createThesisReview(data: ThesisReviewFormData) {
     await createTimelineEvent({
       studentId: thesis.studentId, relatedType: "thesis", relatedId: thesis.id,
       eventType: "thesis_reviewed", title: `大论文审稿意见：${parsed.reviewerName} (${parsed.decision})`,
+      eventDate: review.reviewedAt ?? new Date(),
     });
     revalidatePath(`/students/${thesis.studentId}`);
   }

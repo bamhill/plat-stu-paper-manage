@@ -7,6 +7,7 @@ interface CreateTimelineEventArgs {
   eventType: string;
   title: string;
   description?: string;
+  eventDate?: Date;
 }
 
 export async function createTimelineEvent(args: CreateTimelineEventArgs) {
@@ -18,7 +19,7 @@ export async function createTimelineEvent(args: CreateTimelineEventArgs) {
       eventType: args.eventType,
       title: args.title,
       description: args.description ?? null,
-      eventDate: new Date(),
+      eventDate: args.eventDate ?? new Date(),
     },
   });
 }

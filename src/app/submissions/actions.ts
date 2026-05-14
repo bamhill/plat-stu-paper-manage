@@ -28,6 +28,7 @@ export async function createSubmission(data: SubmissionFormData) {
     await createTimelineEvent({
       studentId: paper.studentId, relatedType: "submission", relatedId: sub.id,
       eventType: "paper_submitted", title: `投稿至 ${parsed.venueName}`,
+      eventDate: sub.submittedAt ?? new Date(),
     });
     revalidatePath(`/students/${paper.studentId}`);
     revalidatePath(`/papers/${parsed.paperId}`);
@@ -59,6 +60,7 @@ export async function updateSubmission(id: number, data: SubmissionFormData) {
       await createTimelineEvent({
         studentId: paper.studentId, relatedType: "submission", relatedId: sub.id,
         eventType: "decision_received", title: `${parsed.venueName} 审稿意见：${parsed.decision}`,
+        eventDate: sub.decisionAt ?? new Date(),
       });
       revalidatePath(`/students/${paper.studentId}`);
     }

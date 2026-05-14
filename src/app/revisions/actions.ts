@@ -27,6 +27,7 @@ export async function createRevision(data: RevisionFormData) {
     await createTimelineEvent({
       studentId: submission.paper.studentId, relatedType: "revision", relatedId: rev.id,
       eventType: "revision_started", title: `${submission.venueName} 返修第${parsed.revisionRound}轮（${parsed.revisionType}）`,
+      eventDate: rev.receivedAt ?? new Date(),
     });
     revalidatePath(`/students/${submission.paper.studentId}`);
   }
