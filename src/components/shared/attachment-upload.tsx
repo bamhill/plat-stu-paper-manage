@@ -41,6 +41,7 @@ export function AttachmentUpload({ relatedType, relatedId, existingAttachments }
       .catch(() => {
         if (existingAttachments.length > 0) setAttachments(existingAttachments);
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [relatedType, relatedId]);
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
