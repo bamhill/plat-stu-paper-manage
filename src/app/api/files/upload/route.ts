@@ -46,9 +46,7 @@ async function getPaperFolder(category: string, entityId: number): Promise<{ stu
         });
         if (thesis?.student) {
           const s = thesis.student;
-          const studentDir = `${s.name}_${s.studentNo}`;
-          const thesisTitle = thesis.title.replace(/[\/\\:*?"<>|]/g, "_").slice(0, 20);
-          return { studentDir, subDir: `大论文_${thesisTitle}` };
+          return { studentDir: `${s.name}_大论文`, subDir: "" };
         }
       }
     } else if (category === "papers") {

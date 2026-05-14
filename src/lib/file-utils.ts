@@ -61,8 +61,9 @@ export async function saveFile(
 }
 
 export function validateFile(file: File): { valid: boolean; error?: string } {
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    return { valid: false, error: `不支持的文件类型: ${file.type}` };
+  // Allow files with empty mime type (browser may not recognize .7z, .rar etc)
+  if (file.type && !ALLOWED_TYPES.includes(file.type)) {
+    return { valid: false, error: `不支持的文件类型: ${file.type || "未知"}` };
   }
   if (file.size > MAX_SIZE) {
     return { valid: false, error: "文件大小不能超过50MB" };
