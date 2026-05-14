@@ -9,7 +9,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
@@ -20,9 +19,8 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
   const form = useForm<ThesisFormData>({
     resolver: zodResolver(thesisSchema),
     defaultValues: {
-      studentId: 0, title: "", degreeType: "master",
-      stage: "proposal", proposalDate: null, midtermDate: null,
-      submittedAt: null, reviewedAt: null, defenseDate: null,
+      studentId: 0, title: "", degreeType: "",
+      stage: "proposal", proposalDate: null, defenseDate: null,
       score: null, reviewComments: null, revisionNotes: null,
       status: "in_progress",
     } as ThesisFormData,
@@ -34,9 +32,6 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
         studentId: thesis.studentId, title: thesis.title,
         degreeType: thesis.degreeType, stage: thesis.stage,
         proposalDate: thesis.proposalDate?.split("T")[0] ?? null,
-        midtermDate: thesis.midtermDate?.split("T")[0] ?? null,
-        submittedAt: thesis.submittedAt?.split("T")[0] ?? null,
-        reviewedAt: thesis.reviewedAt?.split("T")[0] ?? null,
         defenseDate: thesis.defenseDate?.split("T")[0] ?? null,
         score: thesis.score ?? null,
         reviewComments: thesis.reviewComments ?? null,
@@ -101,23 +96,14 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
                 </FormItem>
               )} />
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="proposalDate" render={({ field }) => (
                 <FormItem><FormLabel>开题日期</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="midtermDate" render={({ field }) => (
-                <FormItem><FormLabel>中期日期</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="defenseDate" render={({ field }) => (
                 <FormItem><FormLabel>答辩日期</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
               )} />
             </div>
-            <FormField control={form.control} name="score" render={({ field }) => (
-              <FormItem><FormLabel>分数</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="reviewComments" render={({ field }) => (
-              <FormItem><FormLabel>评语</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
-            )} />
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
               <Button type="submit">{thesis ? "保存" : "添加"}</Button>

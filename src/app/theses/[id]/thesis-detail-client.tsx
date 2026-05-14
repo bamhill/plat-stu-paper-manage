@@ -9,13 +9,12 @@ import { Plus } from "lucide-react";
 import { format } from "date-fns";
 
 const STAGES = [
-  { key: "proposal", label: "开题", dateField: "proposalDate" },
-  { key: "midterm", label: "中期检查", dateField: "midtermDate" },
-  { key: "draft", label: "初稿", dateField: "submittedAt" },
-  { key: "review", label: "外审", dateField: "reviewedAt" },
-  { key: "revision", label: "修改", dateField: null },
-  { key: "defense", label: "答辩", dateField: "defenseDate" },
-  { key: "archived", label: "归档", dateField: null },
+  { key: "proposal", label: "开题", dateField: "proposalDate" as string | null },
+  { key: "draft", label: "初稿", dateField: null as string | null },
+  { key: "review", label: "外审", dateField: null as string | null },
+  { key: "revision", label: "修改", dateField: null as string | null },
+  { key: "defense", label: "答辩", dateField: "defenseDate" as string | null },
+  { key: "archived", label: "归档", dateField: null as string | null },
 ];
 
 export function ThesisDetailClient({ thesis }: { thesis: any }) {
