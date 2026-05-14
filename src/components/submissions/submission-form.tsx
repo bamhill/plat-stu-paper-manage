@@ -81,7 +81,8 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
         <DialogHeader><DialogTitle>{submission ? "编辑投稿" : activeId ? "投稿已创建 — 上传附件" : "添加投稿"}</DialogTitle></DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {!activeId && (
+            {/* Show form fields when editing or when creating (before creation) */}
+            {(submission || !activeId) && (
               <>
             <FormField control={form.control} name="paperId" render={({ field }) => (
               <FormItem><FormLabel>小论文</FormLabel>
@@ -146,8 +147,8 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
               </>
             )}
 
-            {/* 附件上传 — 编辑模式或新建后 */}
-            {activeId ? (
+            {/* 附件上传 — 编辑模式始终显示，新建模式创建后显示 */}
+            {activeId && (
               <div className="border-t pt-4 space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-2">投稿文章</h3>
@@ -158,18 +159,12 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
                   <AttachmentUpload relatedType="submission_supplement" relatedId={activeId} existingAttachments={[]} />
                 </div>
               </div>
-            ) : (
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
-                <Button type="submit">{submission ? "保存" : "添加投稿"}</Button>
-              </div>
             )}
 
-            {activeId && (
-              <div className="flex justify-end gap-2 pt-4 border-t">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>关闭</Button>
-              </div>
-            )}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
+              {(submission || !activeId) && <Button type="submit">{submission ? "保存" : "添加投稿"}</Button>}
+            </div>
           </form>
         </Form>
       </DialogContent>

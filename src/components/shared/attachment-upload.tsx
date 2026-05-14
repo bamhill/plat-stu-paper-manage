@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, Download, FileText } from "lucide-react";
@@ -106,11 +105,9 @@ export function AttachmentUpload({ relatedType, relatedId, existingAttachments }
             className="h-8 text-sm"
           />
         </div>
-        <label className="cursor-pointer">
-          <Button size="sm" disabled={uploading} type="button">
-            <Upload className="h-3.5 w-3.5 mr-1" />
-            {uploading ? "上传中..." : "上传附件"}
-          </Button>
+        <label className="cursor-pointer inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90">
+          <Upload className="h-3.5 w-3.5" />
+          {uploading ? "上传中..." : "上传附件"}
           <input type="file" className="hidden" onChange={handleUpload} accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.png,.jpg,.zip,.rar,.7z" />
         </label>
       </div>

@@ -76,7 +76,7 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {!activeId && (
+            {(revision || !activeId) && (
               <>
             <FormField control={form.control} name="submissionId" render={({ field }) => (
               <FormItem><FormLabel>所属投稿</FormLabel>
@@ -132,7 +132,7 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
               </>
             )}
 
-            {activeId ? (
+            {activeId && (
               <div className="border-t pt-4 space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-2">审稿意见附件</h3>
@@ -147,18 +147,12 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
                   <AttachmentUpload relatedType="revision_supplement" relatedId={activeId} existingAttachments={[]} />
                 </div>
               </div>
-            ) : (
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
-                <Button type="submit">{revision ? "保存" : "添加返修"}</Button>
-              </div>
             )}
 
-            {activeId && (
-              <div className="flex justify-end gap-2 pt-4 border-t">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>关闭</Button>
-              </div>
-            )}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
+              {(revision || !activeId) && <Button type="submit">{revision ? "保存" : "添加返修"}</Button>}
+            </div>
           </form>
         </Form>
       </DialogContent>
