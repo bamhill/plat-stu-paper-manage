@@ -19,7 +19,11 @@ export default async function StudentDetailPage({ params }: { params: { id: stri
       theses: {
         include: { reviews: { orderBy: { createdAt: "desc" } } },
       },
-      timelineEvents: { orderBy: { eventDate: "desc" }, take: 50 },
+      timelineEvents: {
+        where: { eventType: { notIn: ["student_created", "paper_created"] } },
+        orderBy: { eventDate: "desc" },
+        take: 50,
+      },
     },
   });
   if (!student) notFound();
