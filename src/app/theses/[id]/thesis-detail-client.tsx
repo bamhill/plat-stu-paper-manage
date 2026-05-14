@@ -24,7 +24,6 @@ const EXPERT_SLOTS = ["外审专家一", "外审专家二", "外审专家三"];
 
 export function ThesisDetailClient({ thesis }: { thesis: any }) {
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [activeSlot, setActiveSlot] = useState<number | null>(null);
   const [editScore, setEditScore] = useState(false);
   const [finalScore, setFinalScore] = useState(thesis.score || "");
   const currentStageIdx = STAGES.findIndex(s => s.key === thesis.stage);
@@ -125,7 +124,7 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
                 </>
               )}
               {!review && (
-                <p className="text-xs text-gray-400">点击"录入评审"添加外审专家评分和意见</p>
+                <p className="text-xs text-gray-400">点击录入评审添加外审专家评分和意见</p>
               )}
             </div>
           );
