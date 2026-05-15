@@ -27,7 +27,7 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
     defaultValues: {
       studentId: 0, title: "", paperType: "journal", direction: "",
       firstAuthor: "", correspondingAuthor: "", status: "writing",
-      targetVenue: null, notes: null, myThoughts: null,
+      targetVenue: null, versionLabel: null, notes: null, myThoughts: null,
     } as PaperFormData,
   });
 

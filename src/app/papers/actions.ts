@@ -15,7 +15,7 @@ export async function createPaper(data: PaperFormData) {
       firstAuthor: parsed.firstAuthor, correspondingAuthor: parsed.correspondingAuthor,
       status: parsed.status, targetVenue: parsed.targetVenue ?? null,
       notes: parsed.notes ?? null, myThoughts: parsed.myThoughts ?? null,
-      currentVersion: 1,
+      currentVersion: 1, versionLabel: parsed.versionLabel ?? null,
     },
   });
   await createTimelineEvent({
@@ -37,6 +37,7 @@ export async function updatePaper(id: number, data: PaperFormData) {
       firstAuthor: parsed.firstAuthor, correspondingAuthor: parsed.correspondingAuthor,
       status: parsed.status, targetVenue: parsed.targetVenue ?? null,
       notes: parsed.notes ?? null, myThoughts: parsed.myThoughts ?? null,
+      versionLabel: parsed.versionLabel ?? null,
     },
   });
   revalidatePath("/papers");
