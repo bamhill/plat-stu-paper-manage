@@ -48,7 +48,7 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
       name: "", studentNo: "", degreeType: "",
       enrollmentYear: new Date().getFullYear(), graduationYear: null,
       direction: "", supervisor: "", coSupervisor: null,
-      status: "active", notes: null,
+      status: "active", showOnDashboard: true, notes: null,
     },
   });
 
@@ -68,15 +68,14 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
         graduationYear: student.graduationYear ?? null,
         direction: student.direction, supervisor: student.supervisor,
         coSupervisor: student.coSupervisor ?? null,
-        status: student.status, notes: student.notes ?? null,
+        status: student.status, showOnDashboard: student.showOnDashboard ?? true, notes: student.notes ?? null,
       } as StudentFormData);
     } else if (!open) {
-      // Reset form when dialog closes
       form.reset({
         name: "", studentNo: "", degreeType: "",
         enrollmentYear: new Date().getFullYear(), graduationYear: null,
         direction: "", supervisor: "", coSupervisor: null,
-        status: "active", notes: null,
+        status: "active", showOnDashboard: true, notes: null,
       });
     }
   }, [student, form, open]);
@@ -128,6 +127,17 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
                   </FormControl><FormMessage />
                 </FormItem>
               )} />
+            </div>
+            <FormField control={form.control} name="showOnDashboard" render={({ field }) => (
+              <FormItem className="flex items-center gap-2">
+                <FormControl>
+                  <input type="checkbox" checked={field.value ?? true} onChange={e => field.onChange(e.target.checked)} className="rounded" />
+                </FormControl>
+                <FormLabel className="!mt-0 cursor-pointer">首页看板可见</FormLabel>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="enrollmentYear" render={({ field }) => (

@@ -10,6 +10,7 @@ export const studentSchema = z.object({
   supervisor: z.string().min(1, "导师不能为空"),
   coSupervisor: z.string().nullable().optional(),
   status: z.enum(["active", "graduated", "delayed", "suspended"]),
+  showOnDashboard: z.boolean().optional().default(true),
   notes: z.string().nullable().optional(),
 });
 

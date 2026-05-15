@@ -40,6 +40,7 @@ export function StudentTable({ students }: { students: Student[] }) {
             <TableHead>方向</TableHead>
             <TableHead>导师</TableHead>
             <TableHead>状态</TableHead>
+            <TableHead className="w-12 text-center">看板</TableHead>
             <TableHead className="w-24">操作</TableHead>
           </TableRow>
         </TableHeader>
@@ -56,6 +57,7 @@ export function StudentTable({ students }: { students: Student[] }) {
                 <TableCell>{s.direction}</TableCell>
                 <TableCell>{s.supervisor}</TableCell>
                 <TableCell><StatusBadge value={s.status} /></TableCell>
+                <TableCell className="text-center">{s.showOnDashboard !== false ? "✓" : "-"}</TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" onClick={() => setEditStudent(s)}>

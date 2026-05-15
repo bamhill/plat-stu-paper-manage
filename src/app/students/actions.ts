@@ -15,7 +15,7 @@ export async function createStudent(data: StudentFormData) {
       graduationYear: parsed.graduationYear ?? null,
       direction: parsed.direction, supervisor: parsed.supervisor,
       coSupervisor: parsed.coSupervisor ?? null,
-      status: parsed.status, notes: parsed.notes ?? null,
+      status: parsed.status, showOnDashboard: parsed.showOnDashboard ?? true, notes: parsed.notes ?? null,
     },
   });
   await createTimelineEvent({

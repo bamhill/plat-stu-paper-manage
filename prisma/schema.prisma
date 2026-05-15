@@ -18,6 +18,7 @@ model Student {
   supervisor      String
   coSupervisor    String?   @map("co_supervisor")
   status          String    @default("active")
+  showOnDashboard Boolean   @default(true) @map("show_on_dashboard")
   notes           String?
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
