@@ -16,8 +16,8 @@ import {
   Settings,
   Sun,
   Moon,
+  Palette,
 } from "lucide-react";
-import { useTheme } from "next-themes";
 
 const navItems = [
   { href: "/dashboard", label: "首页", icon: LayoutDashboard },
@@ -32,9 +32,59 @@ const navItems = [
   { href: "/settings", label: "系统设置", icon: Settings },
 ];
 
+const THEMES = ["light", "pro", "dark"] as const;
+const THEME_LABELS: Record<string, string> = { light: "浅色模式", pro: "专业蓝调", dark: "深色模式" };
+const THEME_ICONS: Record<string, typeof Sun> = { light: Sun, pro: Palette, dark: Moon };
+
 export function AppSidebar() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
+
+  function getTheme(): string {
+    if (typeof document === "undefined") return "light";
+    const cls = document.documentElement.className;
+    if (cls.includes("dark")) return "dark";
+    if (cls.includes("pro-theme")) return "pro";
+    return "light";
+  }
+
+  function cycleTheme() {
+    const current = getTheme();
+    const idx = THEMES.indexOf(current as typeof THEMES[number]);
+    const next = THEMES[(idx + 1) % THEMES.length];
+
+    const html = document.documentElement;
+    html.classList.remove("light", "dark", "pro-theme");
+
+    if (next === "dark") {
+      html.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else if (next === "pro") {
+      html.classList.add("light", "pro-theme");
+      localStorage.setItem("theme", "pro");
+    } else {
+      html.classList.add("light");
+      localStorage.setItem("theme", "light");
+    }
+  }
+
+  // On mount, restore saved theme
+  function initTheme() {
+    if (typeof window === "undefined") return;
+    const saved = localStorage.getItem("theme") || "light";
+    const html = document.documentElement;
+    html.classList.remove("light", "dark", "pro-theme");
+    if (saved === "dark") html.classList.add("dark");
+    else if (saved === "pro") { html.classList.add("light", "pro-theme"); }
+    else html.classList.add("light");
+  }
+
+  if (typeof window !== "undefined" && !(window as any).__themeInited) {
+    (window as any).__themeInited = true;
+    initTheme();
+  }
+
+  const currentTheme = typeof document !== "undefined" ? getTheme() : "light";
+  const ThemeIcon = THEME_ICONS[currentTheme] || Palette;
 
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-56 border-r bg-white">
@@ -65,11 +115,11 @@ export function AppSidebar() {
       </nav>
       <div className="absolute bottom-4 left-3 right-3">
         <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          onClick={cycleTheme}
           className="flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
         >
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          {theme === "dark" ? "浅色模式" : "深色模式"}
+          <ThemeIcon className="h-4 w-4" />
+          {THEME_LABELS[currentTheme] || "浅色模式"}
         </button>
       </div>
     </aside>

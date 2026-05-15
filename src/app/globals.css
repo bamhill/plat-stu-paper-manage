@@ -6,6 +6,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Dark theme */
 .dark body {
   background-color: #1a1a2e;
   color: #e0e0e0;
@@ -18,3 +19,81 @@ body {
 .dark .bg-blue-50 { background-color: #1a2240; }
 .dark .hover\:bg-gray-50:hover { background-color: #2a2a40; }
 .dark aside { background-color: #151528 !important; }
+
+/* Professional academic theme */
+.pro-theme body {
+  background-color: #f0f2f5;
+}
+.pro-theme .bg-gray-50 { background-color: #f0f2f5; }
+.pro-theme .bg-white { background-color: #ffffff; }
+
+/* Professional sidebar */
+.pro-theme aside {
+  background: linear-gradient(180deg, #1a2744 0%, #0f1d36 100%) !important;
+  border-right: 1px solid rgba(255,255,255,0.06) !important;
+}
+.pro-theme aside .border-b { border-color: rgba(255,255,255,0.08) !important; }
+.pro-theme aside .text-blue-600 { color: #93c5fd !important; }
+.pro-theme aside .font-semibold { color: #e2e8f0 !important; }
+.pro-theme aside a {
+  color: #94a3b8 !important;
+  border-left: 3px solid transparent;
+  border-radius: 0 4px 4px 0;
+  margin-left: -3px;
+}
+.pro-theme aside a:hover {
+  color: #e2e8f0 !important;
+  background: rgba(255,255,255,0.06) !important;
+}
+.pro-theme aside a.bg-blue-50,
+.pro-theme aside a.text-blue-700 {
+  color: #ffffff !important;
+  background: rgba(59,130,246,0.25) !important;
+  border-left-color: #60a5fa;
+  font-weight: 600;
+}
+
+/* Professional cards and borders */
+.pro-theme .rounded-lg.border,
+.pro-theme .rounded-xl.border {
+  border-color: #dde4ed !important;
+  box-shadow: 0 1px 3px rgba(15,29,54,0.04);
+}
+.pro-theme .bg-blue-50 { background-color: #eff6ff; }
+.pro-theme .text-blue-700 { color: #1e40af; }
+
+/* Professional table header */
+.pro-theme thead tr,
+.pro-theme .bg-gray-50\/50 {
+  background: #f7f9fb !important;
+}
+.pro-theme th {
+  color: #475569 !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+/* Professional status badges refinement */
+.pro-theme .bg-blue-100,
+.pro-theme [class*="bg-blue-100"] {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+.pro-theme .bg-green-100,
+.pro-theme [class*="bg-green-100"] {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+/* Professional button accent */
+.pro-theme .bg-primary {
+  background-color: #1e40af !important;
+}
+.pro-theme .bg-primary:hover {
+  background-color: #1e3a8a !important;
+}
+
+/* Professional breadcrumb & heading */
+.pro-theme h1 { color: #1a2744; }
+.pro-theme .font-bold { font-weight: 700; }

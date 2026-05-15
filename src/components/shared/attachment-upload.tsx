@@ -20,9 +20,23 @@ interface Props {
   relatedType: string;
   relatedId: number;
   existingAttachments: Attachment[];
+  placeholder?: string;
 }
 
-export function AttachmentUpload({ relatedType, relatedId, existingAttachments }: Props) {
+const DEFAULT_PLACEHOLDERS: Record<string, string> = {
+  submission_paper: "如：投稿文章_初稿.docx",
+  submission_supplement: "如：补充材料_数据集.zip",
+  submission: "如：审稿意见_01.pdf",
+  revision_review: "如：外审意见书_第1轮.pdf",
+  revision_manuscript: "如：修改稿_V2.docx",
+  revision_supplement: "如：修改说明_V2.docx",
+  thesis: "如：大论文终稿.pdf",
+  thesis_expert: "如：外审专家评阅意见书.pdf",
+  thesis_review: "如：评审意见表_专家1.pdf",
+  paper: "如：论文手稿_V1.docx",
+};
+
+export function AttachmentUpload({ relatedType, relatedId, existingAttachments, placeholder }: Props) {
   const [uploading, setUploading] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>(existingAttachments);
   const [description, setDescription] = useState("");
@@ -102,7 +116,7 @@ export function AttachmentUpload({ relatedType, relatedId, existingAttachments }
           <Input
             value={description}
             onChange={e => setDescription(e.target.value)}
-            placeholder="如：审稿意见_01、大修回复_V2"
+            placeholder={placeholder || DEFAULT_PLACEHOLDERS[relatedType] || "附件描述（可选）"}
             className="h-8 text-sm"
           />
         </div>
