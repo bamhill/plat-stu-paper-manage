@@ -29,7 +29,7 @@ export function SubmissionTimeline({ submissions, subAttachments }: { submission
 
   return (
     <div className="space-y-3">
-      {submissions.map((sub: any, idx: number) => {
+      {submissions.map((sub: any) => {
         const isExpanded = expandedComments.has(sub.id);
         const revExpanded = expandedRevisions.has(sub.id);
         const atts = (subAttachments || []).filter((a: any) => a.relatedId === sub.id);
