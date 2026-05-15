@@ -46,8 +46,18 @@ export async function saveFile(
   } else {
     dir = path.join(root, category);
   }
-  if (!existsSync(dir)) {
+  try {
     await mkdir(dir, { recursive: true });
+  } catch {
+    // Fallback: try creating parent dirs one by one
+    const parts = dir.split(path.sep);
+    let current = "";
+    for (const part of parts) {
+      current = current ? path.join(current, part) : part;
+      if (!existsSync(current)) {
+        await mkdir(current);
+      }
+    }
   }
 
   const timestamp = Date.now();
