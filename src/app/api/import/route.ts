@@ -22,8 +22,10 @@ export async function POST(req: NextRequest) {
           data: {
             name: row["姓名"] || "", studentNo: String(row["学号"] || ""),
             degreeType: row["学位类型"] || "", enrollmentYear: Number(row["入学年份"]) || new Date().getFullYear(),
+            graduationYear: row["毕业年份"] ? Number(row["毕业年份"]) : null,
             direction: row["研究方向"] || "", supervisor: row["导师"] || "",
-            status: "active",
+            coSupervisor: row["副导师"] || null,
+            status: row["状态"] || "active", notes: row["备注"] || null,
           },
         });
         results.push(`学生 ${row["姓名"]} 导入成功`);
@@ -39,14 +41,18 @@ export async function POST(req: NextRequest) {
       try {
         const student = await prisma.student.findFirst({ where: { studentNo: String(row["学号"] || "") } });
         if (!student) { results.push(`论文 ${row["标题"]} 导入失败: 未找到学生`); continue; }
+        const pType = String(row["类型(journal/conference)"] || "").toLowerCase();
         await prisma.paper.create({
           data: {
             studentId: student.id, title: row["标题"] || "",
-            paperType: row["类型"] === "会议" ? "conference" : "journal",
+            paperType: pType === "conference" || pType === "会议" ? "conference" : "journal",
             direction: row["方向"] || "", firstAuthor: row["第一作者"] || "",
             correspondingAuthor: row["通讯作者"] || student.supervisor,
             status: row["状态"] || "writing",
             targetVenue: row["目标期刊"] || null,
+            versionLabel: row["版本标签"] || null,
+            myThoughts: row["我的思考"] || null,
+            notes: row["备注"] || null,
           },
         });
         results.push(`论文 ${row["标题"]} 导入成功`);
@@ -66,13 +72,16 @@ export async function POST(req: NextRequest) {
         if (!paper) { results.push(`投稿 ${row["期刊"]} 导入失败: 未找到论文`); continue; }
         await prisma.submission.create({
           data: {
-            paperId: paper.id, venueName: row["期刊"] || "",
+            paperId: paper.id, venueName: row["期刊/会议名"] || "",
             submissionRound: Number(row["轮次"]) || 1,
             manuscriptNo: row["稿件编号"] || null,
             submittedAt: row["投稿日期"] ? new Date(row["投稿日期"]) : null,
+            decisionAt: row["决定日期"] ? new Date(row["决定日期"]) : null,
             decision: row["决定"] || null,
             reviewerComments: row["审稿意见"] || null,
-            status: "decisioned",
+            editorComments: row["编辑意见"] || null,
+            status: row["状态"] || "pending",
+            notes: row["备注"] || null,
           },
         });
         results.push(`投稿 ${row["期刊"]} 导入成功`);
@@ -90,17 +99,20 @@ export async function POST(req: NextRequest) {
         if (!student) { results.push(`返修 导入失败: 未找到学生`); continue; }
         const paper = await prisma.paper.findFirst({ where: { studentId: student.id, title: row["论文标题"] || "" } });
         if (!paper) { results.push(`返修 导入失败: 未找到论文`); continue; }
-        const submission = await prisma.submission.findFirst({ where: { paperId: paper.id, venueName: row["期刊"] || "" } });
+        const submission = await prisma.submission.findFirst({ where: { paperId: paper.id, venueName: row["期刊/会议名"] || "" } });
         if (!submission) { results.push(`返修 导入失败: 未找到投稿`); continue; }
         await prisma.revision.create({
           data: {
             submissionId: submission.id,
             revisionRound: Number(row["返修轮次"]) || 1,
-            revisionType: row["类型"] || "minor",
+            revisionType: row["类型(minor/major/resubmit)"] || "minor",
             receivedAt: row["收到日期"] ? new Date(row["收到日期"]) : null,
             dueAt: row["截止日期"] ? new Date(row["截止日期"]) : null,
-            commentsSummary: row["意见摘要"] || null,
-            status: "pending",
+            submittedAt: row["提交日期"] ? new Date(row["提交日期"]) : null,
+            commentsSummary: row["审稿意见摘要"] || null,
+            responseSummary: row["回复摘要"] || null,
+            status: row["状态"] || "pending",
+            notes: row["备注"] || null,
           },
         });
         results.push(`返修 导入成功`);

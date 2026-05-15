@@ -52,7 +52,7 @@ export default async function PaperDetailPage({ params }: { params: { id: string
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Left: Info + Versions + Attachments */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-4 bg-gray-50/50 -m-3 p-3 rounded-lg">
           <div className="rounded-lg border bg-white p-3">
             <h2 className="font-medium text-sm mb-2">基本信息</h2>
             <div className="grid grid-cols-1 gap-1 text-xs">
