@@ -15,7 +15,7 @@ async function getPaperFolder(category: string, entityId: number): Promise<{ stu
         const date = sub.submittedAt || new Date();
         const ym = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}`;
         const venueAbbr = sub.venueName.replace(/[^a-zA-Z0-9一-鿿]/g, "").slice(0, 8);
-        const paperTitle = sub.paper.title.replace(/[\/\\:*?"<>|]/g, "_").slice(0, 20);
+        const paperTitle = sub.paper.title.replace(/[\/\\:*?"<>|\s]/g, "_").slice(0, 12);
         const subDir = `${ym}${venueAbbr}_${paperTitle}`;
         return { studentDir, subDir };
       }
@@ -31,7 +31,7 @@ async function getPaperFolder(category: string, entityId: number): Promise<{ stu
         const date = sub.submittedAt || new Date();
         const ym = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}`;
         const venueAbbr = sub.venueName.replace(/[^a-zA-Z0-9一-鿿]/g, "").slice(0, 8);
-        const paperTitle = sub.paper.title.replace(/[\/\\:*?"<>|]/g, "_").slice(0, 20);
+        const paperTitle = sub.paper.title.replace(/[\/\\:*?"<>|\s]/g, "_").slice(0, 12);
         const subDir = `${ym}${venueAbbr}_${paperTitle}`;
         return { studentDir, subDir };
       }
