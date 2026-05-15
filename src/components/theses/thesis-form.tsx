@@ -28,6 +28,14 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
     } as ThesisFormData,
   });
 
+  // Auto-select first student
+  useEffect(() => {
+    if (!thesis && open && students.length > 0) {
+      const currentVal = form.getValues("studentId");
+      if (!currentVal) form.setValue("studentId", students[0].id);
+    }
+  }, [students, thesis, form, open]);
+
   useEffect(() => {
     if (thesis) {
       form.reset({
@@ -47,6 +55,7 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
   }, [thesis, form]);
 
   async function onSubmit(data: ThesisFormData) {
+    if (!thesis && !data.studentId) { toast.error("请选择所属学生"); return; }
     try {
       if (thesis) { await updateThesis(thesis.id, data); toast.success("大论文已更新"); }
       else { await createThesis(data); toast.success("大论文已创建"); }

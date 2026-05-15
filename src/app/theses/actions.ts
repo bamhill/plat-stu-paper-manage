@@ -33,7 +33,7 @@ export async function updateThesis(id: number, data: ThesisFormData) {
   const thesis = await prisma.thesis.update({
     where: { id },
     data: {
-      title: parsed.title, degreeType: parsed.degreeType, stage: parsed.stage,
+      studentId: parsed.studentId, title: parsed.title, degreeType: parsed.degreeType, stage: parsed.stage,
       proposalDate: parsed.proposalDate ? new Date(parsed.proposalDate) : null,
       defenseDate: parsed.defenseDate ? new Date(parsed.defenseDate) : null,
       score: parsed.score ?? null,
@@ -88,7 +88,7 @@ export async function updateThesisReview(id: number, data: ThesisReviewFormData)
   const review = await prisma.thesisReview.update({
     where: { id },
     data: {
-      reviewerName: parsed.reviewerName, reviewerType: parsed.reviewerType,
+      thesisId: parsed.thesisId, reviewerName: parsed.reviewerName, reviewerType: parsed.reviewerType,
       score: parsed.score ?? null, decision: parsed.decision,
       comments: parsed.comments ?? null,
       reviewedAt: parsed.reviewedAt ? new Date(parsed.reviewedAt) : null,
