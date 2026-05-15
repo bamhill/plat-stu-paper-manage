@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { PaperVersions } from "@/components/papers/paper-versions";
-import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import { SubmissionTimeline } from "./submission-timeline";
 import Link from "next/link";
 
@@ -19,11 +18,6 @@ export default async function PaperDetailPage({ params }: { params: { id: string
     },
   });
   if (!paper) notFound();
-
-  const paperAttachments = await prisma.attachment.findMany({
-    where: { relatedType: "paper", relatedId: Number(params.id) },
-    orderBy: { uploadedAt: "desc" },
-  });
 
   // Fetch attachments for each submission
   const subIds = paper.submissions.map(s => s.id);
