@@ -36,3 +36,11 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# database and user data
+/data/dev.db
+/data/files/
+/prisma/data/
+
+# env
+.env
