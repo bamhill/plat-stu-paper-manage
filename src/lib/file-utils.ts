@@ -18,6 +18,16 @@ const ALLOWED_TYPES = [
 ];
 const MAX_SIZE = 50 * 1024 * 1024;
 
+function resolveRoot(): string {
+  const settings = getSettings();
+  const dir = settings.fileRootDir;
+  // If absolute path (Windows: D:\... or Unix: /...), use directly
+  if (path.isAbsolute(dir) || /^[A-Z]:\\/i.test(dir)) {
+    return dir;
+  }
+  return path.join(process.cwd(), dir);
+}
+
 export async function saveFile(
   buffer: Buffer,
   originalName: string,
@@ -27,14 +37,14 @@ export async function saveFile(
   studentDir?: string,
   subDir?: string,
 ): Promise<{ fileName: string; filePath: string; fileSize: number; fileType: string }> {
-  const settings = getSettings();
+  const root = resolveRoot();
   let dir: string;
   if (studentDir && subDir) {
-    dir = path.join(process.cwd(), settings.fileRootDir, studentDir, subDir);
+    dir = path.join(root, studentDir, subDir);
   } else if (studentDir) {
-    dir = path.join(process.cwd(), settings.fileRootDir, studentDir, category);
+    dir = path.join(root, studentDir, category);
   } else {
-    dir = path.join(process.cwd(), settings.fileRootDir, category);
+    dir = path.join(root, category);
   }
   if (!existsSync(dir)) {
     await mkdir(dir, { recursive: true });
@@ -47,10 +57,8 @@ export async function saveFile(
 
   await writeFile(fullPath, buffer);
 
-  // Store path relative to the fileRootDir for backward compatibility
-  const relPath = path
-    .relative(path.join(process.cwd(), settings.fileRootDir), fullPath)
-    .replace(/\\/g, "/");
+  // Store path relative to root for download
+  const relPath = path.relative(root, fullPath).replace(/\\/g, "/");
 
   return {
     fileName: originalName,
@@ -61,7 +69,6 @@ export async function saveFile(
 }
 
 export function validateFile(file: File): { valid: boolean; error?: string } {
-  // Allow files with empty mime type (browser may not recognize .7z, .rar etc)
   if (file.type && !ALLOWED_TYPES.includes(file.type)) {
     return { valid: false, error: `不支持的文件类型: ${file.type || "未知"}` };
   }
@@ -72,6 +79,5 @@ export function validateFile(file: File): { valid: boolean; error?: string } {
 }
 
 export function getFilePath(relativePath: string): string {
-  const settings = getSettings();
-  return path.join(process.cwd(), settings.fileRootDir, relativePath);
+  return path.join(resolveRoot(), relativePath);
 }
