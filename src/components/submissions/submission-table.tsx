@@ -17,6 +17,7 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
   const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [newRevision, setNewRevision] = useState<any | null>(null);
+  const [editRevision, setEditRevision] = useState<any | null>(null);
 
   function toggleExpand(id: number) {
     const next = new Set(expanded);
@@ -113,6 +114,9 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                           <span className="text-gray-400">
                             提交：{r.submittedAt ? new Date(r.submittedAt).toLocaleDateString("zh-CN") : "-"}
                           </span>
+                          <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); setEditRevision(r); }}>
+                            <Pencil className="h-3 w-3" />
+                          </Button>
                         </div>
                         {r.commentsSummary && (
                           <div className="mt-1 text-xs text-gray-500 ml-0 pl-0 border-l-2 border-blue-300 pl-2">
@@ -151,6 +155,7 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
       </Table>
       <SubmissionForm open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} submission={editTarget} />
       <RevisionForm open={!!newRevision} onOpenChange={(o) => !o && setNewRevision(null)} revision={newRevision} />
+      <RevisionForm open={!!editRevision} onOpenChange={(o) => !o && setEditRevision(null)} revision={editRevision} />
       <ConfirmDelete
         open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}
         title="删除投稿记录" description="确定删除此投稿记录及其返修数据？"
