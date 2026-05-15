@@ -81,10 +81,8 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
                 <FormItem><FormLabel>阶段</FormLabel>
                   <FormControl>
                     <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
-                      <option value="proposal">开题</option><option value="midterm">中期</option>
-                      <option value="draft">初稿</option><option value="review">外审</option>
-                      <option value="revision">修改</option><option value="defense">答辩</option>
-                      <option value="archived">归档</option>
+                      <option value="proposal">开题</option>
+                      <option value="defense">答辩</option>
                     </NativeSelect>
                   </FormControl><FormMessage />
                 </FormItem>

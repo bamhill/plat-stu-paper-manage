@@ -1,10 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { thesisReviewSchema, type ThesisReviewFormData } from "@/lib/validators";
-import { createThesisReview } from "@/app/theses/actions";
+import { createThesisReview, updateThesisReview } from "@/app/theses/actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -12,41 +13,72 @@ import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
-export function ThesisReviewForm({ open, onOpenChange, thesisId }: { open: boolean; onOpenChange: (o: boolean) => void; thesisId: number }) {
+interface Props {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  thesisId: number;
+  review?: {
+    id: number; reviewerName: string; reviewerType: string;
+    score: string | null; decision: string;
+    comments: string | null; reviewedAt: string | null;
+  } | null;
+}
+
+export function ThesisReviewForm({ open, onOpenChange, thesisId, review }: Props) {
   const form = useForm<ThesisReviewFormData>({
     resolver: zodResolver(thesisReviewSchema),
     defaultValues: {
-      thesisId, reviewerName: "", reviewerType: "external",
+      thesisId, reviewerName: "匿名评审", reviewerType: "anonymous",
       score: null, decision: "pass", comments: null, reviewedAt: null,
     },
   });
 
+  useEffect(() => {
+    if (review) {
+      form.reset({
+        thesisId, reviewerName: review.reviewerName,
+        reviewerType: review.reviewerType, score: review.score ?? null,
+        decision: review.decision, comments: review.comments ?? null,
+        reviewedAt: review.reviewedAt?.split("T")[0] ?? null,
+      });
+    } else {
+      form.reset({
+        thesisId, reviewerName: "匿名评审", reviewerType: "anonymous",
+        score: null, decision: "pass", comments: null, reviewedAt: null,
+      });
+    }
+  }, [review, thesisId, form, open]);
+
   async function onSubmit(data: ThesisReviewFormData) {
     try {
-      await createThesisReview(data);
-      toast.success("审稿意见已添加");
+      if (review) {
+        await updateThesisReview(review.id, data);
+        toast.success("审稿意见已更新");
+      } else {
+        await createThesisReview(data);
+        toast.success("审稿意见已添加");
+      }
       onOpenChange(false);
-      form.reset();
     } catch (e) { toast.error("操作失败"); }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>添加审稿意见</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{review ? "编辑审稿意见" : "添加审稿意见"}</DialogTitle></DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="reviewerName" render={({ field }) => (
-                <FormItem><FormLabel>审稿人</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>审稿人（盲审可留空）</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="reviewerType" render={({ field }) => (
                 <FormItem><FormLabel>审稿类型</FormLabel>
                   <FormControl>
                     <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
-                      <option value="internal">校内</option>
+                      <option value="anonymous">匿名（盲审）</option>
                       <option value="external">校外</option>
-                      <option value="anonymous">匿名</option>
+                      <option value="internal">校内</option>
                     </NativeSelect>
                   </FormControl><FormMessage />
                 </FormItem>
@@ -77,7 +109,7 @@ export function ThesisReviewForm({ open, onOpenChange, thesisId }: { open: boole
             )} />
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>取消</Button>
-              <Button type="submit">添加</Button>
+              <Button type="submit">{review ? "保存" : "添加"}</Button>
             </div>
           </form>
         </Form>

@@ -13,17 +13,14 @@ import { updateThesis } from "@/app/theses/actions";
 
 const STAGES = [
   { key: "proposal", label: "开题", dateField: "proposalDate" as string | null },
-  { key: "draft", label: "初稿", dateField: null as string | null },
-  { key: "review", label: "外审", dateField: null as string | null },
-  { key: "revision", label: "修改", dateField: null as string | null },
   { key: "defense", label: "答辩", dateField: "defenseDate" as string | null },
-  { key: "archived", label: "归档", dateField: null as string | null },
 ];
 
 const EXPERT_SLOTS = ["外审专家一", "外审专家二", "外审专家三"];
 
 export function ThesisDetailClient({ thesis }: { thesis: any }) {
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [editReview, setEditReview] = useState<any | null>(null);
   const [editScore, setEditScore] = useState(false);
   const [finalScore, setFinalScore] = useState(thesis.score || "");
   const currentStageIdx = STAGES.findIndex(s => s.key === thesis.stage);
@@ -90,9 +87,14 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
                 <div className="flex items-center gap-2">
                   {expertScore && <span className="text-sm font-bold text-blue-600">{expertScore}分</span>}
                   {review ? (
-                    <StatusBadge value={review.decision} />
+                    <>
+                      <StatusBadge value={review.decision} />
+                      <Button size="sm" variant="ghost" onClick={() => { setEditReview(review); setShowReviewForm(true); }}>
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                    </>
                   ) : (
-                    <Button size="sm" variant="outline" onClick={() => setShowReviewForm(true)}>
+                    <Button size="sm" variant="outline" onClick={() => { setEditReview(null); setShowReviewForm(true); }}>
                       <Plus className="h-3 w-3 mr-1" />录入评审
                     </Button>
                   )}
@@ -145,7 +147,7 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
           />
         </div>
 
-        <ThesisReviewForm open={showReviewForm} onOpenChange={setShowReviewForm} thesisId={thesis.id} />
+        <ThesisReviewForm open={showReviewForm} onOpenChange={setShowReviewForm} thesisId={thesis.id} review={editReview} />
       </div>
     </div>
   );

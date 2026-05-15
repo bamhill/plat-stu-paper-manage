@@ -83,6 +83,21 @@ export async function createThesisReview(data: ThesisReviewFormData) {
   return review;
 }
 
+export async function updateThesisReview(id: number, data: ThesisReviewFormData) {
+  const parsed = thesisReviewSchema.parse(data);
+  const review = await prisma.thesisReview.update({
+    where: { id },
+    data: {
+      reviewerName: parsed.reviewerName, reviewerType: parsed.reviewerType,
+      score: parsed.score ?? null, decision: parsed.decision,
+      comments: parsed.comments ?? null,
+      reviewedAt: parsed.reviewedAt ? new Date(parsed.reviewedAt) : null,
+    },
+  });
+  revalidatePath(`/theses/${review.thesisId}`);
+  return review;
+}
+
 export async function deleteThesisReview(id: number) {
   const review = await prisma.thesisReview.findUnique({ where: { id }, include: { thesis: true } });
   if (!review) throw new Error("Review not found");
