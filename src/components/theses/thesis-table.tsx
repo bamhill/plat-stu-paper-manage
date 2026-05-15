@@ -21,8 +21,8 @@ export function ThesisTable({ theses }: { theses: any[] }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[200px]">标题</TableHead><TableHead className="w-[80px]">学生</TableHead>
-            <TableHead>阶段</TableHead><TableHead>状态</TableHead>
+            <TableHead>标题</TableHead><TableHead>学生</TableHead>
+            <TableHead className="w-16">阶段</TableHead><TableHead className="w-16">状态</TableHead>
             <TableHead className="text-center w-14">外审1</TableHead>
             <TableHead className="text-center w-14">外审2</TableHead>
             <TableHead className="text-center w-14">外审3</TableHead>
@@ -36,8 +36,8 @@ export function ThesisTable({ theses }: { theses: any[] }) {
           ) : (
             theses.map((t: any) => (
               <TableRow key={t.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/theses/${t.id}`)}>
-                <TableCell className="font-medium max-w-[200px] truncate" title={t.title}>{t.title}</TableCell>
-                <TableCell className="truncate">{t.student.name}</TableCell>
+                <TableCell className="font-medium truncate max-w-[300px]" title={t.title}>{t.title}</TableCell>
+                <TableCell className="truncate" title={t.student.name}>{t.student.name}</TableCell>
                 <TableCell><StatusBadge value={t.stage} /></TableCell>
                 <TableCell><StatusBadge value={t.status} /></TableCell>
                 <TableCell className="text-center font-medium text-sm">{t.expert1Score || "-"}</TableCell>
