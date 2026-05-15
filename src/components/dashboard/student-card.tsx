@@ -38,7 +38,7 @@ export function StudentCard({ student }: { student: any }) {
           <div className="space-y-1">
             {displayPapers.map((paper: any) => (
               <div key={paper.id} className="rounded border p-1.5 text-[10px] flex items-center justify-between gap-2">
-                <span className="font-medium truncate flex-1">{paper.title}</span>
+                <span className="font-medium truncate flex-1">{paper.targetVenue && <span className="text-gray-400">({paper.targetVenue}) </span>}{paper.title}</span>
                 <StatusBadge value={paper.status} />
               </div>
             ))}
