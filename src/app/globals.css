@@ -6,7 +6,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Dark theme */
+/* ============== Dark Theme ============== */
 .dark body {
   background-color: #1a1a2e;
   color: #e0e0e0;
@@ -20,14 +20,12 @@ body {
 .dark .hover\:bg-gray-50:hover { background-color: #2a2a40; }
 .dark aside { background-color: #151528 !important; }
 
-/* Professional academic theme */
+/* ============== Professional Theme ============== */
 .pro-theme body {
   background-color: #f0f2f5;
 }
-.pro-theme .bg-gray-50 { background-color: #f0f2f5; }
-.pro-theme .bg-white { background-color: #ffffff; }
 
-/* Professional sidebar */
+/* --- Sidebar --- */
 .pro-theme aside {
   background: linear-gradient(180deg, #1a2744 0%, #0f1d36 100%) !important;
   border-right: 1px solid rgba(255,255,255,0.06) !important;
@@ -35,65 +33,106 @@ body {
 .pro-theme aside .border-b { border-color: rgba(255,255,255,0.08) !important; }
 .pro-theme aside .text-blue-600 { color: #93c5fd !important; }
 .pro-theme aside .font-semibold { color: #e2e8f0 !important; }
+.pro-theme aside button,
+.pro-theme aside .text-gray-600 { color: #94a3b8 !important; }
+.pro-theme aside button:hover,
+.pro-theme aside .hover\:bg-gray-100:hover { color: #e2e8f0 !important; background: rgba(255,255,255,0.06) !important; }
+
+/* Sidebar nav links */
 .pro-theme aside a {
   color: #94a3b8 !important;
   border-left: 3px solid transparent;
-  border-radius: 0 4px 4px 0;
-  margin-left: -3px;
 }
 .pro-theme aside a:hover {
   color: #e2e8f0 !important;
   background: rgba(255,255,255,0.06) !important;
 }
-.pro-theme aside a.bg-blue-50,
-.pro-theme aside a.text-blue-700 {
+.pro-theme aside a.bg-blue-50, .pro-theme aside a.text-blue-700 {
   color: #ffffff !important;
   background: rgba(59,130,246,0.25) !important;
   border-left-color: #60a5fa;
   font-weight: 600;
 }
 
-/* Professional cards and borders */
+/* --- Page background override --- */
+.pro-theme .bg-gray-50 { background-color: #f0f2f5; }
+.pro-theme .bg-white { background-color: #ffffff; }
+.pro-theme .bg-gray-50\/50 { background: #f7f9fb !important; }
+
+/* --- Buttons: ensure light text on primary/dark bg --- */
+.pro-theme .bg-primary {
+  background-color: #1e40af !important;
+  color: #ffffff !important;
+}
+.pro-theme .bg-primary:hover {
+  background-color: #1e3a8a !important;
+}
+
+/* --- Cards --- */
 .pro-theme .rounded-lg.border,
-.pro-theme .rounded-xl.border {
+.pro-theme .rounded-xl.border,
+.pro-theme .rounded-md.border {
   border-color: #dde4ed !important;
   box-shadow: 0 1px 3px rgba(15,29,54,0.04);
 }
 .pro-theme .bg-blue-50 { background-color: #eff6ff; }
 .pro-theme .text-blue-700 { color: #1e40af; }
 
-/* Professional table header */
+/* --- Tables --- */
 .pro-theme thead tr,
-.pro-theme .bg-gray-50\/50 {
-  background: #f7f9fb !important;
-}
+.pro-theme thead { background: #f7f9fb !important; }
 .pro-theme th {
   color: #475569 !important;
   font-weight: 600;
   letter-spacing: 0.01em;
-  text-transform: none;
 }
 
-/* Professional status badges refinement */
-.pro-theme .bg-blue-100,
-.pro-theme [class*="bg-blue-100"] {
-  background-color: #dbeafe;
-  color: #1d4ed8;
-}
-.pro-theme .bg-green-100,
-.pro-theme [class*="bg-green-100"] {
-  background-color: #dcfce7;
-  color: #15803d;
-}
+/* --- Badges --- */
+.pro-theme .bg-blue-100 { background-color: #dbeafe; color: #1d4ed8; }
+.pro-theme .bg-green-100 { background-color: #dcfce7; color: #15803d; }
+.pro-theme .bg-red-100 { background-color: #fee2e2; color: #b91c1c; }
+.pro-theme .bg-yellow-100 { background-color: #fef3c7; color: #a16207; }
+.pro-theme .bg-orange-100 { background-color: #ffedd5; color: #c2410c; }
+.pro-theme .bg-purple-100 { background-color: #f3e8ff; color: #7e22ce; }
+.pro-theme .bg-teal-100 { background-color: #ccfbf1; color: #0f766e; }
+.pro-theme .bg-gray-100 { background-color: #f1f5f9; color: #475569; }
+.pro-theme .bg-cyan-100 { background-color: #cffafe; color: #0e7490; }
+.pro-theme .bg-indigo-100 { background-color: #e0e7ff; color: #4338ca; }
+.pro-theme .bg-pink-100 { background-color: #fce7f3; color: #be185d; }
+.pro-theme .bg-gray-200 { background-color: #e2e8f0; color: #64748b; }
 
-/* Professional button accent */
-.pro-theme .bg-primary {
-  background-color: #1e40af !important;
-}
-.pro-theme .bg-primary:hover {
-  background-color: #1e3a8a !important;
-}
-
-/* Professional breadcrumb & heading */
+/* --- Headings --- */
 .pro-theme h1 { color: #1a2744; }
 .pro-theme .font-bold { font-weight: 700; }
+
+/* --- Tabs --- */
+.pro-theme [data-slot="tabs-list"] {
+  background: #f1f5f9;
+}
+.pro-theme [data-state="active"][data-slot="tabs-trigger"] {
+  background: #ffffff;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+/* --- Selects / Inputs --- */
+.pro-theme select,
+.pro-theme input[type="text"],
+.pro-theme input[type="number"],
+.pro-theme input[type="date"],
+.pro-theme textarea {
+  border-color: #cbd5e1;
+}
+.pro-theme select:focus,
+.pro-theme input:focus,
+.pro-theme textarea:focus {
+  border-color: #3b82f6;
+  ring-color: #93c5fd;
+}
+
+/* --- Dialog --- */
+.pro-theme [data-slot="dialog-content"],
+.pro-theme [role="dialog"] {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
