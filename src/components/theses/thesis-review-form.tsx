@@ -40,12 +40,12 @@ export function ThesisReviewForm({ open, onOpenChange, thesisId, review }: Props
         reviewerType: review.reviewerType, score: review.score ?? null,
         decision: review.decision, comments: review.comments ?? null,
         reviewedAt: review.reviewedAt?.split("T")[0] ?? null,
-      });
+      } as ThesisReviewFormData);
     } else {
       form.reset({
         thesisId, reviewerName: "匿名评审", reviewerType: "anonymous",
         score: null, decision: "pass", comments: null, reviewedAt: null,
-      });
+      } as ThesisReviewFormData);
     }
   }, [review, thesisId, form, open]);
 
