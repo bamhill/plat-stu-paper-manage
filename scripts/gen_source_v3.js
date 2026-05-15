@@ -90,7 +90,34 @@ const CORE_FILES=[
   'src/components/ui/dialog.tsx',
   'src/components/ui/alert-dialog.tsx',
   'src/components/ui/table.tsx',
+  'src/components/ui/badge.tsx',
+  'src/components/ui/button.tsx',
+  'src/components/ui/card.tsx',
+  'src/components/ui/input.tsx',
+  'src/components/ui/textarea.tsx',
+  'src/components/ui/tabs.tsx',
+  'src/components/ui/sidebar.tsx',
+  'src/components/ui/breadcrumb.tsx',
+  'src/components/ui/dropdown-menu.tsx',
+  'src/components/ui/sonner.tsx',
+  'src/components/ui/label.tsx',
   'src/hooks/use-mobile.ts',
+  'src/app/students/student-list-tabs.tsx',
+  'src/app/students/[id]/student-detail-tabs.tsx',
+  'src/app/papers/paper-list-client.tsx',
+  'src/app/submissions/submission-list-client.tsx',
+  'src/app/revisions/revision-list-client.tsx',
+  'src/app/theses/thesis-list-client.tsx',
+  'src/app/theses/[id]/thesis-detail-client.tsx',
+  'src/app/import/import-client.tsx',
+  'src/app/settings/settings-client.tsx',
+  'src/app/api/settings/route.ts',
+  'src/app/api/files/[...path]/route.ts',
+  'src/app/api/import/route.ts',
+  'src/app/api/import/template/route.ts',
+  'src/app/api/papers/list/route.ts',
+  'src/app/api/students/list/route.ts',
+  'src/app/api/submissions/list/route.ts',
 ];
 
 async function main(){
@@ -100,7 +127,7 @@ async function main(){
   pages.push(new Paragraph({spacing:{after:60}}));
 
   let totalLines=0;
-  const TARGET_LINES=3400; // roughly 60 pages at 56 lines/page
+  const TARGET_LINES=4600; // 60 pages at ~76 lines/page (8pt Consolas A4, verified)
 
   for(const fp of CORE_FILES){
     if(totalLines>=TARGET_LINES)break;
