@@ -17,7 +17,7 @@ npm run dev
 src/
   app/          — 页面路由 (Server Components)
   components/   — UI组件 (Client Components)
-  lib/          — 工具函数 (validators, prisma, timeline, settings, file-utils)
+  lib/          — 工具函数 (validators, prisma, timeline, settings, file-utils, paper-status)
 prisma/
   schema.prisma — 数据模型 (9表)
   seed.ts       — 种子数据
@@ -63,10 +63,15 @@ Student → Thesis → ThesisReview
 - 上传分两步：`/api/files/upload` 存文件 → `/api/attachments` 创建记录
 - 允许空 MIME 类型通过（浏览器不识别 .7z/.rar 等格式）
 - 附件类型区分：`submission_paper`, `submission_supplement`, `revision_review`, `revision_manuscript`, `revision_supplement`, `thesis`, `thesis_expert`, `thesis_review`
+- 附件有独立的 `AttachmentUpload` 组件，支持上传/下载/删除，placeholder 自动按类型匹配
 
 ### 时间线
 - 从论文/投稿/返修**实际数据**派生，不依赖 `timeline_events` 表
 - `eventDate` 使用实际业务日期（`submittedAt`, `receivedAt` 等），不用 `new Date()`
+
+### 主题
+- 三档切换：浅色模式 / 专业蓝调(pro-theme) / 深色模式
+- 主题相关 CSS 集中在 `globals.css`，通过 `light`/`dark`/`pro-theme` class 控制
 
 ### 环境
 - npm (不是 pnpm)
