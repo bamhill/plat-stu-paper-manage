@@ -128,17 +128,6 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
                 </FormItem>
               )} />
             </div>
-            <FormField control={form.control} name="showOnDashboard" render={({ field }) => (
-              <FormItem className="flex items-center gap-2">
-                <FormControl>
-                  <input type="checkbox" checked={field.value ?? true} onChange={e => field.onChange(e.target.checked)} className="rounded" />
-                </FormControl>
-                <FormLabel className="!mt-0 cursor-pointer">首页看板可见</FormLabel>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <div>
-            </div>
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="enrollmentYear" render={({ field }) => (
                 <FormItem><FormLabel>入学年份</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
@@ -158,6 +147,15 @@ export function StudentForm({ open, onOpenChange, student }: Props) {
                 <FormItem><FormLabel>副导师</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
               )} />
             </div>
+            <FormField control={form.control} name="showOnDashboard" render={({ field }) => (
+              <FormItem className="flex items-center gap-2">
+                <FormControl>
+                  <input type="checkbox" checked={field.value !== false} onChange={e => field.onChange(e.target.checked)} className="rounded" />
+                </FormControl>
+                <FormLabel className="!mt-0 cursor-pointer">首页看板可见</FormLabel>
+                <FormMessage />
+              </FormItem>
+            )} />
             <FormField control={form.control} name="notes" render={({ field }) => (
               <FormItem><FormLabel>备注</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
             )} />

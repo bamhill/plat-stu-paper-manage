@@ -9,7 +9,7 @@ export default async function DashboardPage() {
   const statusFilter = settings.dashboardStatusFilter?.length ? settings.dashboardStatusFilter : undefined;
 
   const students = await prisma.student.findMany({
-    where: { status: "active", showOnDashboard: true },
+    where: { status: "active", showOnDashboard: { not: false } },
     include: {
       papers: {
         where: statusFilter ? { status: { in: statusFilter } } : undefined,
