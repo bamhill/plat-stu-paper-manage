@@ -103,6 +103,7 @@ export function SubmissionTimeline({ submissions, subAttachments }: { submission
 
             {/* Submission attachments */}
             <div className="mt-2 pt-2 border-t">
+              <p className="text-[11px] text-gray-400 mb-2">投稿相关附件（投稿文章、审稿意见书、补充材料等）</p>
               <AttachmentUpload
                 relatedType="submission"
                 relatedId={sub.id}
