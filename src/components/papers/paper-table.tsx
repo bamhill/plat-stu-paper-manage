@@ -55,7 +55,7 @@ export function PaperTable({ papers }: { papers: any[] }) {
           ) : (
             filtered.map((p: any) => (
               <TableRow key={p.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/papers/${p.id}`)}>
-                <TableCell className="font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                <TableCell className="font-medium truncate max-w-[300px]" title={p.title}>{p.title}</TableCell>
                 <TableCell>{p.student.name}</TableCell>
                 <TableCell>{p.paperType === "journal" ? "期刊" : "会议"}</TableCell>
                 <TableCell><StatusBadge value={p.status} /></TableCell>
