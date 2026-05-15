@@ -17,7 +17,7 @@ interface Student {
   id: number; name: string; studentNo: string; degreeType: string;
   enrollmentYear: number; graduationYear: number | null;
   direction: string; supervisor: string; coSupervisor: string | null;
-  status: string; notes: string | null;
+  status: string; showOnDashboard: boolean | null; notes: string | null;
 }
 
 interface Props {
