@@ -15,7 +15,7 @@ const DEGREE_LABELS: Record<string, string> = {
   master: "硕士", phd: "博士", joint: "联培", exchange: "交换",
 };
 
-type Student = {
+type StudentRow = {
   id: number; name: string; studentNo: string; degreeType: string;
   enrollmentYear: number; graduationYear: number | null;
   direction: string; supervisor: string; coSupervisor: string | null;
@@ -23,7 +23,7 @@ type Student = {
   _count?: { papers: number };
 };
 
-export function StudentTable({ students }: { students: Student[] }) {
+export function StudentTable({ students }: { students: StudentRow[] }) {
   const router = useRouter();
   const [editStudent, setEditStudent] = useState<Student | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Student | null>(null);

@@ -13,17 +13,15 @@ import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
-interface Student {
-  id: number; name: string; studentNo: string; degreeType: string;
-  enrollmentYear: number; graduationYear: number | null;
-  direction: string; supervisor: string; coSupervisor: string | null;
-  status: string; showOnDashboard: boolean | null; notes: string | null;
-}
-
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  student: Student | null;
+  student: {
+    id: number; name: string; studentNo: string; degreeType: string;
+    enrollmentYear: number; graduationYear: number | null;
+    direction: string; supervisor: string; coSupervisor: string | null;
+    status: string; showOnDashboard?: boolean | null; notes: string | null;
+  } | null;
 }
 
 export function StudentForm({ open, onOpenChange, student }: Props) {
