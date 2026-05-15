@@ -127,7 +127,7 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
               <FormItem><FormLabel>审稿意见摘要</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} rows={2} /></FormControl><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="responseSummary" render={({ field }) => (
-              <FormItem><FormLabel>回复摘要</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} rows={2} /></FormControl><FormMessage /></FormItem>
+              <FormItem><FormLabel>返修结果 / 回复摘要</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} rows={3} placeholder="记录返修后的审稿结果、修改说明等" /></FormControl><FormMessage /></FormItem>
             )} />
               </>
             )}

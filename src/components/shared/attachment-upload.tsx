@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Download, FileText } from "lucide-react";
+import { Upload, Download, FileText, Trash2 } from "lucide-react";
 
 interface Attachment {
   id: number;
@@ -124,9 +124,26 @@ export function AttachmentUpload({ relatedType, relatedId, existingAttachments }
                 {att.description && <span className="text-gray-400 text-xs">— {att.description}</span>}
                 <span className="text-gray-300 text-xs">{new Date(att.uploadedAt).toLocaleDateString("zh-CN")}</span>
               </div>
-              <a href={`/api/files/${att.filePath}`} download className="text-blue-600 hover:text-blue-800">
-                <Download className="h-4 w-4" />
-              </a>
+              <div className="flex items-center gap-1">
+                <a href={`/api/files/${att.filePath}`} download className="text-blue-600 hover:text-blue-800">
+                  <Download className="h-4 w-4" />
+                </a>
+                <button
+                  onClick={async () => {
+                    if (!confirm("确定删除此附件？")) return;
+                    try {
+                      const res = await fetch(`/api/attachments?id=${att.id}`, { method: "DELETE" });
+                      if (res.ok) {
+                        setAttachments(prev => prev.filter(a => a.id !== att.id));
+                        toast.success("附件已删除");
+                      } else toast.error("删除失败");
+                    } catch { toast.error("删除失败"); }
+                  }}
+                  className="text-red-400 hover:text-red-600"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           ))}
         </div>

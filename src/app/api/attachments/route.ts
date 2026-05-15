@@ -37,3 +37,20 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json(attachment);
 }
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "缺少id" }, { status: 400 });
+
+  const attachment = await prisma.attachment.findUnique({ where: { id: Number(id) } });
+  if (!attachment) return NextResponse.json({ error: "附件不存在" }, { status: 404 });
+
+  // Delete file from disk
+  const { getFilePath } = await import("@/lib/file-utils");
+  const fs = await import("fs/promises");
+  try { await fs.unlink(getFilePath(attachment.filePath)); } catch {}
+
+  await prisma.attachment.delete({ where: { id: Number(id) } });
+  return NextResponse.json({ ok: true });
+}
