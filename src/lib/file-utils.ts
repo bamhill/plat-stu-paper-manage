@@ -49,13 +49,21 @@ export async function saveFile(
   try {
     await mkdir(dir, { recursive: true });
   } catch {
-    // Fallback: try creating parent dirs one by one
-    const parts = dir.split(path.sep);
-    let current = "";
-    for (const part of parts) {
-      current = current ? path.join(current, part) : part;
-      if (!existsSync(current)) {
-        await mkdir(current);
+    // Fallback: ensure root exists first, then create subdirs
+    if (!existsSync(root)) {
+      await mkdir(root, { recursive: true });
+    }
+    // Now create relative sub-path from root
+    const rel = path.relative(root, dir);
+    if (rel && !existsSync(dir)) {
+      const parts = rel.split(path.sep);
+      let current = root;
+      for (const part of parts) {
+        if (!part) continue;
+        current = path.join(current, part);
+        if (!existsSync(current)) {
+          await mkdir(current);
+        }
       }
     }
   }
