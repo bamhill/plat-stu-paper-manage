@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 研究生论文过程管理系统
 
-## Getting Started
+管理研究生小论文投稿、返修、大论文全过程。
 
-First, run the development server:
+## 快速开始
 
 ```bash
+npm install
+npx prisma db push
+npx prisma db seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 功能模块
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **首页看板** — 按年级分组，论文进度卡片（可配置状态筛选和看板可见性）
+- **学生管理** — 在读/已毕业筛选，自定义学位类型，首页可见开关
+- **小论文** — 版本标签、投稿/返修追踪、附件上传
+- **大论文** — 开题/答辩阶段，3位外审专家评分，答辩成绩，附件上传
+- **投稿记录** — 稿件编号、审稿意见、返修轮次展开，附件上传
+- **返修记录** — 返修类型/状态/日期，附件上传
+- **综合查询** — 按论文/按学生两种视图，层次展开
+- **返修分析** — 关键词规则引擎 + 统计分析
+- **批量导入** — Excel模板下载/上传
+- **系统设置** — 文件目录、学位类型、AI分析、首页卡片状态
 
-## Learn More
+## 技术栈
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js 14 · TypeScript · Prisma 5 · SQLite · Tailwind CSS · shadcn/ui 4.x
