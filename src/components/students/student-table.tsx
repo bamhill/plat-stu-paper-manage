@@ -25,8 +25,8 @@ type StudentRow = {
 
 export function StudentTable({ students }: { students: StudentRow[] }) {
   const router = useRouter();
-  const [editStudent, setEditStudent] = useState<Student | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Student | null>(null);
+  const [editStudent, setEditStudent] = useState<StudentRow | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<StudentRow | null>(null);
 
   return (
     <>
