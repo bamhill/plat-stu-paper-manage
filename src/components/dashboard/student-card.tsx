@@ -19,31 +19,31 @@ export function StudentCard({ student }: { student: any }) {
 
   return (
     <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push(`/students/${student.id}`)}>
-      <CardContent className="p-3">
-        <div className="flex items-center justify-between mb-2">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-medium text-xs">
+            <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-medium text-sm">
               {student.name.charAt(0)}
             </div>
             <div>
-              <div className="font-medium text-xs">{student.name}</div>
-              <div className="text-[10px] text-gray-400">{student.direction}</div>
+              <div className="font-medium text-sm">{student.name}</div>
+              <div className="text-xs text-gray-400">{student.direction}</div>
             </div>
           </div>
-          <ChevronRight className="h-3 w-3 text-gray-300" />
+          <ChevronRight className="h-4 w-4 text-gray-300" />
         </div>
         {papers.length === 0 ? (
-          <p className="text-[10px] text-gray-400">暂无论文</p>
+          <p className="text-xs text-gray-400">暂无论文</p>
         ) : (
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             {displayPapers.map((paper: any) => (
-              <div key={paper.id} className="rounded border p-1.5 text-[10px] flex items-center justify-between gap-2">
+              <div key={paper.id} className="rounded border p-2 text-xs flex items-center justify-between gap-2">
                 <span className="font-medium truncate flex-1">{paper.targetVenue && <span className="text-gray-400">({paper.targetVenue}) </span>}{paper.title}</span>
                 <StatusBadge value={paper.status} />
               </div>
             ))}
             {moreCount > 0 && (
-              <p className="text-[10px] text-blue-600">+{moreCount} 篇</p>
+              <p className="text-xs text-blue-600">+{moreCount} 篇</p>
             )}
           </div>
         )}
