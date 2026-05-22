@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatDate } from "@/lib/utils";
 import { Search, ChevronDown, ChevronRight, BarChart3 } from "lucide-react";
 
 const CATEGORIES = [
@@ -361,7 +362,7 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
                         </Badge>
                       </td>
                       <td className="px-3 py-2">
-                        {rev.receivedAt ? new Date(rev.receivedAt).toLocaleDateString("zh-CN") : "-"}
+                        {formatDate(rev.receivedAt)}
                       </td>
                       <td className="px-3 py-2">
                         <Badge className={getStatusBadge(rev.status)}>
@@ -518,7 +519,7 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
               <CardTitle className="text-sm">日期范围</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              {new Date(statsDateEarliest).toLocaleDateString("zh-CN")} ~ {new Date(statsDateLatest).toLocaleDateString("zh-CN")}
+              {formatDate(statsDateEarliest)} ~ {formatDate(statsDateLatest)}
             </CardContent>
           </Card>
         )}

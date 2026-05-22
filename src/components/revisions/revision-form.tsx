@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AttachmentUpload } from "@/components/shared/attachment-upload";
+import { toDateInputValue } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
@@ -35,9 +36,9 @@ export function RevisionForm({ open, onOpenChange, revision }: { open: boolean; 
     if (revision) {
       form.reset({
         submissionId: revision.submissionId, revisionRound: revision.revisionRound,
-        receivedAt: revision.receivedAt?.split("T")[0] ?? null,
-        dueAt: revision.dueAt?.split("T")[0] ?? null,
-        submittedAt: revision.submittedAt?.split("T")[0] ?? null,
+        receivedAt: toDateInputValue(revision.receivedAt),
+        dueAt: toDateInputValue(revision.dueAt),
+        submittedAt: toDateInputValue(revision.submittedAt),
         revisionType: revision.revisionType,
         commentsSummary: revision.commentsSummary ?? null,
         responseSummary: revision.responseSummary ?? null,

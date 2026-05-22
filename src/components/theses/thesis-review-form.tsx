@@ -11,6 +11,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { toDateInputValue } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 interface Props {
@@ -39,7 +40,7 @@ export function ThesisReviewForm({ open, onOpenChange, thesisId, review }: Props
         thesisId, reviewerName: review.reviewerName,
         reviewerType: review.reviewerType, score: review.score ?? null,
         decision: review.decision, comments: review.comments ?? null,
-        reviewedAt: review.reviewedAt?.split("T")[0] ?? null,
+        reviewedAt: toDateInputValue(review.reviewedAt),
       } as ThesisReviewFormData);
     } else {
       form.reset({

@@ -1,6 +1,5 @@
 import { prisma } from "./prisma";
 
-// Derive paper status from its latest submission/revision
 export async function syncPaperStatus(paperId: number) {
   const paper = await prisma.paper.findUnique({
     where: { id: paperId },
@@ -17,7 +16,7 @@ export async function syncPaperStatus(paperId: number) {
   if (!paper) return;
 
   const latestSub = paper.submissions[0];
-  if (!latestSub) return; // No submissions, keep current status
+  if (!latestSub) return; // No submissions — keep current status
 
   let newStatus = paper.status;
 

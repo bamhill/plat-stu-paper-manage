@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { formatDate } from "@/lib/utils";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 export function StudentDetailTabs({ student }: { student: any }) {
@@ -71,8 +72,8 @@ export function StudentDetailTabs({ student }: { student: any }) {
                                       <span className="font-medium">第{rev.revisionRound}轮返修</span>
                                       <StatusBadge value={rev.revisionType} />
                                       <StatusBadge value={rev.status} />
-                                      <span className="text-gray-400">收到：{rev.receivedAt ? new Date(rev.receivedAt).toLocaleDateString("zh-CN") : "-"}</span>
-                                      <span className="text-gray-400">截止：{rev.dueAt ? new Date(rev.dueAt).toLocaleDateString("zh-CN") : "-"}</span>
+                                      <span className="text-gray-400">收到：{formatDate(rev.receivedAt)}</span>
+                                      <span className="text-gray-400">截止：{formatDate(rev.dueAt)}</span>
                                     </div>
                                     {rev.commentsSummary && (
                                       <p className="mt-0.5 text-gray-600 whitespace-pre-wrap">{rev.commentsSummary}</p>
@@ -164,7 +165,7 @@ export function StudentDetailTabs({ student }: { student: any }) {
                     {events.map((evt, i) => (
                       <div key={i} className="flex gap-2 text-xs">
                         <div className="text-gray-400 w-24 shrink-0 pt-0.5">
-                          {evt.date.toLocaleDateString("zh-CN")}
+                          {formatDate(evt.date)}
                         </div>
                         <div className={`w-1.5 h-1.5 rounded-full ${evt.color} shrink-0 mt-1`} />
                         <div className="pb-1.5">

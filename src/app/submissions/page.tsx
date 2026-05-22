@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { SubmissionListClient } from "./submission-list-client";
 
@@ -16,7 +17,7 @@ export default async function SubmissionsPage() {
     <div>
       <AppBreadcrumb />
       <h1 className="text-xl font-bold mb-4">投稿记录</h1>
-      <SubmissionListClient submissions={JSON.parse(JSON.stringify(submissions))} />
+      <SubmissionListClient submissions={serialize(submissions)} />
     </div>
   );
 }

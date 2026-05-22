@@ -79,7 +79,6 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Determine folder structure
     const folder = await getPaperFolder(category, entityId);
     const buffer = Buffer.from(await file.arrayBuffer());
     const result = await saveFile(

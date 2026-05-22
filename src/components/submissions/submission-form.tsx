@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AttachmentUpload } from "@/components/shared/attachment-upload";
+import { toDateInputValue } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
@@ -39,8 +40,8 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
         paperId: submission.paperId, venueName: submission.venueName,
         submissionRound: submission.submissionRound,
         manuscriptNo: submission.manuscriptNo ?? null,
-        submittedAt: submission.submittedAt?.split("T")[0] ?? null,
-        decisionAt: submission.decisionAt?.split("T")[0] ?? null,
+        submittedAt: toDateInputValue(submission.submittedAt),
+        decisionAt: toDateInputValue(submission.decisionAt),
         decision: submission.decision ?? null,
         editorComments: submission.editorComments ?? null,
         reviewerComments: submission.reviewerComments ?? null,

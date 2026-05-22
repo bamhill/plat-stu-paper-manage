@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { RevisionListClient } from "./revision-list-client";
 
@@ -15,7 +16,7 @@ export default async function RevisionsPage() {
     <div>
       <AppBreadcrumb />
       <h1 className="text-xl font-bold mb-4">返修记录</h1>
-      <RevisionListClient revisions={JSON.parse(JSON.stringify(revisions))} />
+      <RevisionListClient revisions={serialize(revisions)} />
     </div>
   );
 }

@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteThesis } from "@/app/theses/actions";
 import { ThesisForm } from "./thesis-form";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
+import { EmptyTableRow } from "@/components/shared/empty-table-row";
+import { TableActions } from "@/components/shared/table-actions";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -32,7 +33,7 @@ export function ThesisTable({ theses }: { theses: any[] }) {
         </TableHeader>
         <TableBody>
           {theses.length === 0 ? (
-            <TableRow><TableCell colSpan={9} className="text-center text-gray-400 py-8">暂无数据</TableCell></TableRow>
+            <EmptyTableRow colSpan={9} />
           ) : (
             theses.map((t: any) => (
               <TableRow key={t.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/theses/${t.id}`)}>
@@ -45,10 +46,7 @@ export function ThesisTable({ theses }: { theses: any[] }) {
                 <TableCell className="text-center font-medium text-sm">{t.expert3Score || "-"}</TableCell>
                 <TableCell className="text-center font-medium text-sm">{t.score || "-"}</TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => setEditTarget(t)}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(t)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
-                  </div>
+                  <TableActions onEdit={() => setEditTarget(t)} onDelete={() => setDeleteTarget(t)} />
                 </TableCell>
               </TableRow>
             ))

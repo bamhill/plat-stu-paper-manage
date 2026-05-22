@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { formatSize, formatDate } from "@/lib/utils";
 import { ChevronDown, ChevronRight, Download, FileText } from "lucide-react";
 
 const DECISION_BORDER: Record<string, string> = {
@@ -20,12 +21,6 @@ export function SubmissionTimeline({ submissions, subAttachments }: { submission
   function toggleRevisions(id: number) { const n = new Set(expandedRevisions); if (n.has(id)) n.delete(id); else n.add(id); setExpandedRevisions(n); }
 
   if (submissions.length === 0) return <p className="text-gray-400 text-sm">暂无投稿记录</p>;
-
-  function formatSize(bytes: number) {
-    if (bytes < 1024) return `${bytes}B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
-  }
 
   return (
     <div className="space-y-3">
@@ -63,8 +58,8 @@ export function SubmissionTimeline({ submissions, subAttachments }: { submission
             <div className="flex items-center gap-3 text-[11px] text-gray-400 mb-2">
               <span>编号：{sub.manuscriptNo || "-"}</span>
               <span>·</span>
-              <span>投稿：{sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString("zh-CN") : "-"}</span>
-              {sub.decisionAt && <><span>·</span><span>决定：{new Date(sub.decisionAt).toLocaleDateString("zh-CN")}</span></>}
+              <span>投稿：{formatDate(sub.submittedAt)}</span>
+              {sub.decisionAt && <><span>·</span><span>决定：{formatDate(sub.decisionAt)}</span></>}
             </div>
 
             {/* Comments — expandable */}
@@ -106,9 +101,9 @@ export function SubmissionTimeline({ submissions, subAttachments }: { submission
                           <StatusBadge value={rev.status} />
                         </div>
                         <div className="text-gray-400">
-                          收到：{rev.receivedAt ? new Date(rev.receivedAt).toLocaleDateString("zh-CN") : "-"}
-                          {" · "}截止：{rev.dueAt ? new Date(rev.dueAt).toLocaleDateString("zh-CN") : "-"}
-                          {" · "}提交：{rev.submittedAt ? new Date(rev.submittedAt).toLocaleDateString("zh-CN") : "-"}
+                          收到：{formatDate(rev.receivedAt)}
+                          {" · "}截止：{formatDate(rev.dueAt)}
+                          {" · "}提交：{formatDate(rev.submittedAt)}
                         </div>
                         {rev.commentsSummary && <p className="mt-1 text-gray-600">{rev.commentsSummary}</p>}
                         {rev.responseSummary && <p className="mt-0.5 text-blue-700 font-medium">结果：{rev.responseSummary}</p>}

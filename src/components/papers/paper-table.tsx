@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deletePaper } from "@/app/papers/actions";
 import { PaperForm } from "./paper-form";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
+import { EmptyTableRow } from "@/components/shared/empty-table-row";
+import { TableActions } from "@/components/shared/table-actions";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { NativeSelect } from "@/components/ui/select";
@@ -51,7 +52,7 @@ export function PaperTable({ papers }: { papers: any[] }) {
         </TableHeader>
         <TableBody>
           {filtered.length === 0 ? (
-            <TableRow><TableCell colSpan={7} className="text-center text-gray-400 py-8">暂无数据</TableCell></TableRow>
+            <EmptyTableRow colSpan={7} />
           ) : (
             filtered.map((p: any) => (
               <TableRow key={p.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/papers/${p.id}`)}>
@@ -62,10 +63,7 @@ export function PaperTable({ papers }: { papers: any[] }) {
                 <TableCell className="text-gray-500">{p.targetVenue ?? "-"}</TableCell>
                 <TableCell>{p.versionLabel || `v${p.currentVersion}`}</TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => setEditPaper(p)}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(p)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
-                  </div>
+                  <TableActions onEdit={() => setEditPaper(p)} onDelete={() => setDeleteTarget(p)} />
                 </TableCell>
               </TableRow>
             ))

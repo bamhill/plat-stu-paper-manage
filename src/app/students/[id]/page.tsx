@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { StudentDetailTabs } from "./student-detail-tabs";
@@ -32,7 +33,7 @@ export default async function StudentDetailPage({ params }: { params: { id: stri
           {student.studentNo} · {student.degreeType} · {student.enrollmentYear}级 · {student.direction} · 导师：{student.supervisor}
         </p>
       </div>
-      <StudentDetailTabs student={JSON.parse(JSON.stringify(student))} />
+      <StudentDetailTabs student={serialize(student)} />
     </div>
   );
 }

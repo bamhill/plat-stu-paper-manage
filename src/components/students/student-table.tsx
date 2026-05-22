@@ -8,12 +8,10 @@ import { deleteStudent } from "@/app/students/actions";
 import { StudentForm } from "./student-form";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
+import { EmptyTableRow } from "@/components/shared/empty-table-row";
+import { TableActions } from "@/components/shared/table-actions";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-const DEGREE_LABELS: Record<string, string> = {
-  master: "硕士", phd: "博士", joint: "联培", exchange: "交换",
-};
 
 type StudentRow = {
   id: number; name: string; studentNo: string; degreeType: string;
@@ -46,27 +44,20 @@ export function StudentTable({ students }: { students: StudentRow[] }) {
         </TableHeader>
         <TableBody>
           {students.length === 0 ? (
-            <TableRow><TableCell colSpan={8} className="text-center text-gray-400 py-8">暂无数据</TableCell></TableRow>
+            <EmptyTableRow colSpan={8} />
           ) : (
             students.map((s) => (
               <TableRow key={s.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/students/${s.id}`)}>
                 <TableCell className="font-medium">{s.name}</TableCell>
                 <TableCell className="text-gray-500">{s.studentNo}</TableCell>
-                <TableCell>{DEGREE_LABELS[s.degreeType] ?? s.degreeType}</TableCell>
+                <TableCell>{s.degreeType}</TableCell>
                 <TableCell>{s.enrollmentYear}级</TableCell>
                 <TableCell>{s.direction}</TableCell>
                 <TableCell>{s.supervisor}</TableCell>
                 <TableCell><StatusBadge value={s.status} /></TableCell>
                 <TableCell className="text-center">{s.showOnDashboard !== false ? "✓" : "-"}</TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => setEditStudent(s)}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(s)}>
-                      <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                    </Button>
-                  </div>
+                  <TableActions onEdit={() => setEditStudent(s)} onDelete={() => setDeleteTarget(s)} />
                 </TableCell>
               </TableRow>
             ))

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { ThesisListClient } from "./thesis-list-client";
 
@@ -13,7 +14,7 @@ export default async function ThesesPage() {
     <div>
       <AppBreadcrumb />
       <h1 className="text-xl font-bold mb-4">大论文管理</h1>
-      <ThesisListClient theses={JSON.parse(JSON.stringify(theses))} />
+      <ThesisListClient theses={serialize(theses)} />
     </div>
   );
 }

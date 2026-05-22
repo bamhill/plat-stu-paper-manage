@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { PaperListClient } from "./paper-list-client";
 
@@ -13,7 +14,7 @@ export default async function PapersPage() {
     <div>
       <AppBreadcrumb />
       <h1 className="text-xl font-bold mb-4">小论文管理</h1>
-      <PaperListClient papers={JSON.parse(JSON.stringify(papers))} />
+      <PaperListClient papers={serialize(papers)} />
     </div>
   );
 }

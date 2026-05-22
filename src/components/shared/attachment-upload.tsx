@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, Download, FileText, Trash2 } from "lucide-react";
+import { formatSize, formatDate } from "@/lib/utils";
 
 interface Attachment {
   id: number;
@@ -102,12 +103,6 @@ export function AttachmentUpload({ relatedType, relatedId, existingAttachments, 
     }
   }
 
-  function formatSize(bytes: number) {
-    if (bytes < 1024) return `${bytes}B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
-  }
-
   return (
     <div className="space-y-3">
       <div className="flex items-end gap-3">
@@ -136,7 +131,7 @@ export function AttachmentUpload({ relatedType, relatedId, existingAttachments, 
                 <span>{att.fileName}</span>
                 <span className="text-gray-400">{formatSize(att.fileSize)}</span>
                 {att.description && <span className="text-gray-400 text-xs">— {att.description}</span>}
-                <span className="text-gray-300 text-xs">{new Date(att.uploadedAt).toLocaleDateString("zh-CN")}</span>
+                <span className="text-gray-300 text-xs">{formatDate(att.uploadedAt)}</span>
               </div>
               <div className="flex items-center gap-1">
                 <a href={`/api/files/${att.filePath}`} download className="text-blue-600 hover:text-blue-800">

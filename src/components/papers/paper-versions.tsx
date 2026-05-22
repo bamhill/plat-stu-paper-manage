@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { addPaperVersion } from "@/app/papers/actions";
+import { formatSize } from "@/lib/utils";
 import { Upload, Download } from "lucide-react";
 
 type Version = {
   id: number; versionNumber: number; fileName: string;
-  filePath: string; fileSize: number; description: string | null; uploadedAt: string;
+  filePath: string; fileSize: number; description: string | null; uploadedAt: string | Date;
 };
 
 export function PaperVersions({ paperId, versions }: { paperId: number; versions: Version[] }) {
@@ -29,12 +30,6 @@ export function PaperVersions({ paperId, versions }: { paperId: number; versions
       toast.success("新版本上传成功");
     } catch (e: any) { toast.error(e.message || "上传失败"); }
     finally { setUploading(false); }
-  }
-
-  function formatSize(bytes: number) {
-    if (bytes < 1024) return `${bytes}B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
   }
 
   return (

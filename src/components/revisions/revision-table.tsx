@@ -1,13 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Pencil, Trash2, Paperclip } from "lucide-react";
+import { Paperclip } from "lucide-react";
 import { toast } from "sonner";
 import { deleteRevision } from "@/app/revisions/actions";
 import { RevisionForm } from "./revision-form";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
+import { EmptyTableRow } from "@/components/shared/empty-table-row";
+import { TableActions } from "@/components/shared/table-actions";
+import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -35,7 +38,7 @@ export function RevisionTable({ revisions }: { revisions: any[] }) {
         </TableHeader>
         <TableBody>
           {revisions.length === 0 ? (
-            <TableRow><TableCell colSpan={8} className="text-center text-gray-400 py-8">暂无数据</TableCell></TableRow>
+            <EmptyTableRow colSpan={8} />
           ) : (
             revisions.map((r: any) => (
               <React.Fragment key={r.id}>
@@ -45,12 +48,11 @@ export function RevisionTable({ revisions }: { revisions: any[] }) {
                   <TableCell className="max-w-[160px] truncate" title={r.submission.venueName}>{r.submission.venueName}</TableCell>
                   <TableCell>第{r.revisionRound}轮</TableCell>
                   <TableCell><StatusBadge value={r.revisionType} /></TableCell>
-                  <TableCell className="text-gray-500">{r.dueAt ? new Date(r.dueAt).toLocaleDateString("zh-CN") : "-"}</TableCell>
+                  <TableCell className="text-gray-500">{formatDate(r.dueAt)}</TableCell>
                   <TableCell><StatusBadge value={r.status} /></TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => setEditTarget(r)}><Pencil className="h-3.5 w-3.5" /></Button>
-                      <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(r)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
+                      <TableActions onEdit={() => setEditTarget(r)} onDelete={() => setDeleteTarget(r)} />
                       <Button variant="ghost" size="icon" onClick={() => toggleAtt(r.id)}><Paperclip className="h-3.5 w-3.5" /></Button>
                     </div>
                   </TableCell>

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { AnalysisClient } from "./analysis-client";
 
@@ -38,8 +39,8 @@ export default async function AnalysisPage() {
       <AppBreadcrumb />
       <h1 className="text-xl font-bold mb-4">返修分析</h1>
       <AnalysisClient
-        revisions={JSON.parse(JSON.stringify(revisions))}
-        students={JSON.parse(JSON.stringify(students))}
+        revisions={serialize(revisions) as any}
+        students={serialize(students)}
         venues={venues}
       />
     </div>

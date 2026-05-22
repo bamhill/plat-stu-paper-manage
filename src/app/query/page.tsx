@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { QueryClient } from "./query-client";
 
@@ -33,8 +34,8 @@ export default async function QueryPage() {
       <AppBreadcrumb />
       <h1 className="text-xl font-bold mb-4">综合查询</h1>
       <QueryClient
-        papers={JSON.parse(JSON.stringify(papers))}
-        students={JSON.parse(JSON.stringify(students))}
+        papers={serialize(papers)}
+        students={serialize(students)}
       />
     </div>
   );

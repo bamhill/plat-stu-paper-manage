@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { getSettings } from "@/lib/settings";
 import { GradeGroup } from "@/components/dashboard/grade-group";
 
@@ -33,7 +34,7 @@ export default async function DashboardPage() {
     .sort(([a], [b]) => a - b)
     .map(([year, students]) => {
       const grade = `${year}级`;
-      return { year, grade, students: JSON.parse(JSON.stringify(students)) };
+      return { year, grade, students: serialize(students) };
     });
 
   return (

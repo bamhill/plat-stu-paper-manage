@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -48,7 +49,7 @@ export default async function ThesisDetailPage({ params }: { params: { id: strin
           学生：<Link href={`/students/${thesis.student.id}`} className="text-blue-600 hover:underline">{thesis.student.name}</Link>
         </p>
       </div>
-      <ThesisDetailClient thesis={JSON.parse(JSON.stringify({ ...thesis, reviews: reviewsWithAttachments, attachments: thesisAttachments }))} />
+      <ThesisDetailClient thesis={serialize({ ...thesis, reviews: reviewsWithAttachments, attachments: thesisAttachments })} />
     </div>
   );
 }

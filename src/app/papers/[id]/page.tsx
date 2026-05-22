@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -64,7 +65,7 @@ export default async function PaperDetailPage({ params }: { params: { id: string
           <div className="rounded-lg border bg-white p-3">
             <h2 className="font-medium text-sm mb-1">论文稿件版本</h2>
             <p className="text-[11px] text-gray-400 mb-3">记录论文稿件Word/PDF的迭代历史，每版直接在此上传文件</p>
-            <PaperVersions paperId={paper.id} versions={JSON.parse(JSON.stringify(paper.versions))} />
+            <PaperVersions paperId={paper.id} versions={serialize(paper.versions)} />
           </div>
         </div>
 
@@ -73,8 +74,8 @@ export default async function PaperDetailPage({ params }: { params: { id: string
           <h2 className="font-medium">投稿历程</h2>
           <p className="text-xs text-gray-400 -mt-3 mb-2">投稿记录、审稿意见和返修附件均在下方管理</p>
           <SubmissionTimeline
-            submissions={JSON.parse(JSON.stringify(paper.submissions))}
-            subAttachments={JSON.parse(JSON.stringify(allSubAttachments))}
+            submissions={serialize(paper.submissions)}
+            subAttachments={serialize(allSubAttachments)}
           />
         </div>
       </div>

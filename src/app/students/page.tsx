@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
 import { StudentListTabs } from "./student-list-tabs";
 
@@ -29,8 +30,8 @@ export default async function StudentsPage() {
         <h1 className="text-xl font-bold">学生管理</h1>
       </div>
       <StudentListTabs
-        activeStudents={JSON.parse(JSON.stringify(activeStudents))}
-        graduatedStudents={JSON.parse(JSON.stringify(graduatedStudents))}
+        activeStudents={serialize(activeStudents)}
+        graduatedStudents={serialize(graduatedStudents)}
         degreeTypes={allDegreeTypes.map(d => d.degreeType)}
       />
     </div>

@@ -10,6 +10,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
 import { AttachmentUpload } from "@/components/shared/attachment-upload";
+import { toDateInputValue } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
@@ -41,8 +42,8 @@ export function ThesisForm({ open, onOpenChange, thesis }: { open: boolean; onOp
       form.reset({
         studentId: thesis.studentId, title: thesis.title,
         degreeType: thesis.degreeType, stage: thesis.stage,
-        proposalDate: thesis.proposalDate?.split("T")[0] ?? null,
-        defenseDate: thesis.defenseDate?.split("T")[0] ?? null,
+        proposalDate: toDateInputValue(thesis.proposalDate),
+        defenseDate: toDateInputValue(thesis.defenseDate),
         score: thesis.score ?? null,
         expert1Score: thesis.expert1Score ?? null,
         expert2Score: thesis.expert2Score ?? null,

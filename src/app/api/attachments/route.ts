@@ -46,7 +46,6 @@ export async function DELETE(req: NextRequest) {
   const attachment = await prisma.attachment.findUnique({ where: { id: Number(id) } });
   if (!attachment) return NextResponse.json({ error: "附件不存在" }, { status: 404 });
 
-  // Delete file from disk
   const { getFilePath } = await import("@/lib/file-utils");
   const fs = await import("fs/promises");
   try { await fs.unlink(getFilePath(attachment.filePath)); } catch {}

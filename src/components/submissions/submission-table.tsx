@@ -10,6 +10,9 @@ import { ConfirmDelete } from "@/components/shared/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { RevisionForm } from "@/components/revisions/revision-form";
 import { AttachmentUpload } from "@/components/shared/attachment-upload";
+import { EmptyTableRow } from "@/components/shared/empty-table-row";
+import { TableActions } from "@/components/shared/table-actions";
+import { formatDate } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export function SubmissionTable({ submissions }: { submissions: any[] }) {
@@ -43,7 +46,7 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
         </TableHeader>
         <TableBody>
           {submissions.length === 0 ? (
-            <TableRow><TableCell colSpan={11} className="text-center text-gray-400 py-8">暂无数据</TableCell></TableRow>
+            <EmptyTableRow colSpan={11} />
           ) : (
             submissions.map((s: any) => {
               const isExpanded = expanded.has(s.id);
@@ -65,15 +68,12 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                     <TableCell className="max-w-[160px] truncate" title={s.venueName}>{s.venueName}</TableCell>
                     <TableCell className="whitespace-nowrap">第{s.submissionRound}次</TableCell>
                     <TableCell className="max-w-[120px] truncate" title={s.manuscriptNo}>{s.manuscriptNo ?? "-"}</TableCell>
-                    <TableCell className="text-gray-500">{s.submittedAt ? new Date(s.submittedAt).toLocaleDateString("zh-CN") : "-"}</TableCell>
+                    <TableCell className="text-gray-500">{formatDate(s.submittedAt)}</TableCell>
                     <TableCell>{s.decision ? <StatusBadge value={s.decision} /> : "-"}</TableCell>
                     <TableCell><StatusBadge value={s.status} /></TableCell>
                     <TableCell>{s.revisions?.length ?? 0}轮</TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => setEditTarget(s)}><Pencil className="h-3.5 w-3.5" /></Button>
-                        <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(s)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
-                      </div>
+                      <TableActions onEdit={() => setEditTarget(s)} onDelete={() => setDeleteTarget(s)} />
                     </TableCell>
                   </TableRow>
                   {/* Submission-level comments */}
@@ -106,13 +106,13 @@ export function SubmissionTable({ submissions }: { submissions: any[] }) {
                           <StatusBadge value={r.revisionType} />
                           <StatusBadge value={r.status} />
                           <span className="text-gray-400">
-                            收到：{r.receivedAt ? new Date(r.receivedAt).toLocaleDateString("zh-CN") : "-"}
+                            收到：{formatDate(r.receivedAt)}
                           </span>
                           <span className="text-gray-400">
-                            截止：{r.dueAt ? new Date(r.dueAt).toLocaleDateString("zh-CN") : "-"}
+                            截止：{formatDate(r.dueAt)}
                           </span>
                           <span className="text-gray-400">
-                            提交：{r.submittedAt ? new Date(r.submittedAt).toLocaleDateString("zh-CN") : "-"}
+                            提交：{formatDate(r.submittedAt)}
                           </span>
                           <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); setEditRevision(r); }}>
                             <Pencil className="h-3 w-3" />

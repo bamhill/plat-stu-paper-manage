@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { RevisionForm } from "@/components/revisions/revision-form";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/select";
+import { formatDate } from "@/lib/utils";
 import { ChevronDown, ChevronRight, Plus, Search } from "lucide-react";
 
 export function QueryClient({ papers, students }: { papers: any[]; students: any[] }) {
@@ -101,7 +102,7 @@ export function QueryClient({ papers, students }: { papers: any[]; students: any
                               <span className="text-gray-500">— {sub.venueName}</span>
                               <StatusBadge value={sub.status} />
                               {sub.decision && <StatusBadge value={sub.decision} />}
-                              <span className="text-xs text-gray-400">{sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString("zh-CN") : ""}</span>
+                              <span className="text-xs text-gray-400">{formatDate(sub.submittedAt)}</span>
                               <span className="text-xs text-gray-400">· {sub.revisions?.length || 0}轮返修</span>
                             </div>
                             {subExpanded && sub.revisions?.map((rev: any) => (
@@ -109,8 +110,8 @@ export function QueryClient({ papers, students }: { papers: any[]; students: any
                                 <span>第{rev.revisionRound}轮</span>
                                 <StatusBadge value={rev.revisionType} />
                                 <StatusBadge value={rev.status} />
-                                <span>收到：{rev.receivedAt ? new Date(rev.receivedAt).toLocaleDateString("zh-CN") : "-"}</span>
-                                <span>截止：{rev.dueAt ? new Date(rev.dueAt).toLocaleDateString("zh-CN") : "-"}</span>
+                                <span>收到：{formatDate(rev.receivedAt)}</span>
+                                <span>截止：{formatDate(rev.dueAt)}</span>
                                 {rev.commentsSummary && <span className="text-gray-400 truncate max-w-xs">{rev.commentsSummary}</span>}
                               </div>
                             ))}
@@ -188,7 +189,7 @@ export function QueryClient({ papers, students }: { papers: any[]; students: any
                                       <span>第{rev.revisionRound}轮</span>
                                       <StatusBadge value={rev.revisionType} />
                                       <StatusBadge value={rev.status} />
-                                      <span>收到：{rev.receivedAt ? new Date(rev.receivedAt).toLocaleDateString("zh-CN") : "-"}</span>
+                                      <span>收到：{formatDate(rev.receivedAt)}</span>
                                       {rev.commentsSummary && <span className="text-gray-400 truncate max-w-xs">{rev.commentsSummary}</span>}
                                     </div>
                                   ))}
