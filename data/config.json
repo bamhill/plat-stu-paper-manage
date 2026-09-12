@@ -1,5 +1,5 @@
 {
-  "fileRootDir": "d:\\研究生管理\\",
+  "fileRootDir": "data/files",
   "organizeByStudent": true,
   "degreeTypes": [
     "管工学硕",
@@ -9,8 +9,12 @@
     "MBA非全",
     "企管学硕"
   ],
-  "aiMode": "local",
-  "aiApiKey": "",
-  "aiApiUrl": "https://api.deepseek.com/v1",
-  "aiModel": "deepseek-chat"
+  "aiPackageDefaults": {
+    "includeEditorDecision": true,
+    "includeReviewerComments": true,
+    "includeRevisionHistory": true,
+    "includeSubmissionHistory": true,
+    "includeResponsibilityHistory": true,
+    "includeAttachments": true
+  }
 }
