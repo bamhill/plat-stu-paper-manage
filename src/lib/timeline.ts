@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { requireTeacher } from "./auth";
 
 interface CreateTimelineEventArgs {
   studentId: number;
@@ -11,6 +12,9 @@ interface CreateTimelineEventArgs {
 }
 
 export async function createTimelineEvent(args: CreateTimelineEventArgs) {
+  const teacher = await requireTeacher();
+  const student = await prisma.student.findFirst({ where: { id: args.studentId, teacherId: teacher.id }, select: { id: true } });
+  if (!student) throw new Error("Student not found");
   await prisma.timelineEvent.create({
     data: {
       studentId: args.studentId,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { Fragment, useState, useMemo } from "react";
 import { NativeSelect } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
 import { Search, ChevronDown, ChevronRight, BarChart3 } from "lucide-react";
+import { paperDisplayTitle } from "@/lib/paper-display";
 
 const CATEGORIES = [
   { key: "实验不足", keywords: ["实验", "对比", "baseline", "数据", "消融", "ablation", "样本"], color: "bg-red-50 border-red-200" },
@@ -335,7 +336,7 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
                 </tr>
               ) : (
                 filteredRevisions.map((rev) => (
-                  <>
+                  <Fragment key={rev.id}>
                     <tr
                       key={rev.id}
                       className="border-b hover:bg-gray-50 cursor-pointer"
@@ -353,7 +354,7 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
                         {rev.submission?.paper?.student?.name || "-"}
                       </td>
                       <td className="px-3 py-2 max-w-[200px] truncate">
-                        {rev.submission?.paper?.title || "-"}
+                        {paperDisplayTitle(rev.submission?.paper?.title || "-")}
                       </td>
                       <td className="px-3 py-2">{rev.submission?.venueName || "-"}</td>
                       <td className="px-3 py-2">
@@ -411,7 +412,7 @@ export function AnalysisClient({ revisions, students, venues }: AnalysisClientPr
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 ))
               )}
             </tbody>

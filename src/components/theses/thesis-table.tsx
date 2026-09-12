@@ -9,7 +9,6 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
 import { EmptyTableRow } from "@/components/shared/empty-table-row";
 import { TableActions } from "@/components/shared/table-actions";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export function ThesisTable({ theses }: { theses: any[] }) {

@@ -7,8 +7,25 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { NativeSelect } from "@/components/ui/select";
 import { Plus, Trash2, Pencil } from "lucide-react";
+
+type AiDefaults = {
+  includeEditorDecision: boolean;
+  includeReviewerComments: boolean;
+  includeRevisionHistory: boolean;
+  includeSubmissionHistory: boolean;
+  includeResponsibilityHistory: boolean;
+  includeAttachments: boolean;
+};
+
+const DEFAULT_AI: AiDefaults = {
+  includeEditorDecision: true,
+  includeReviewerComments: true,
+  includeRevisionHistory: true,
+  includeSubmissionHistory: true,
+  includeResponsibilityHistory: true,
+  includeAttachments: true,
+};
 
 export function SettingsClient() {
   const [fileRootDir, setFileRootDir] = useState("data/files");
@@ -17,292 +34,130 @@ export function SettingsClient() {
   const [newDegreeType, setNewDegreeType] = useState("");
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
-  const [aiMode, setAiMode] = useState<"off" | "local" | "cloud">("local");
-  const [aiApiKey, setAiApiKey] = useState("");
-  const [aiApiUrl, setAiApiUrl] = useState("https://api.deepseek.com/v1");
-  const [aiModel, setAiModel] = useState("deepseek-chat");
-  const [dashboardFilter, setDashboardFilter] = useState<string[]>([]);
+  const [aiDefaults, setAiDefaults] = useState<AiDefaults>(DEFAULT_AI);
   const [loading, setLoading] = useState(true);
 
-  const STATUS_OPTIONS = [
-    { value: "writing", label: "撰写中" }, { value: "ready_to_submit", label: "待投稿" },
-    { value: "submitted", label: "已投稿" }, { value: "with_editor", label: "编辑处理中" },
-    { value: "under_review", label: "外审中" }, { value: "minor_revision", label: "小修" },
-    { value: "major_revision", label: "大修" }, { value: "accepted", label: "已接收" },
-    { value: "rejected", label: "已拒稿" }, { value: "published", label: "已发表" },
-  ];
 
   useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.fileRootDir) setFileRootDir(data.fileRootDir);
-        if (data.organizeByStudent !== undefined)
-          setOrganizeByStudent(data.organizeByStudent);
-        if (data.degreeTypes) setDegreeTypes(data.degreeTypes);
-        if (data.aiMode) setAiMode(data.aiMode);
-        if (data.aiApiKey !== undefined) setAiApiKey(data.aiApiKey);
-        if (data.aiApiUrl) setAiApiUrl(data.aiApiUrl);
-        if (data.aiModel) setAiModel(data.aiModel);
-        if (data.dashboardStatusFilter) setDashboardFilter(data.dashboardStatusFilter);
-        setLoading(false);
-      });
+    fetch("/api/settings").then((r) => r.json()).then((data) => {
+      if (data.fileRootDir) setFileRootDir(data.fileRootDir);
+      if (data.organizeByStudent !== undefined) setOrganizeByStudent(data.organizeByStudent);
+      if (data.degreeTypes) setDegreeTypes(data.degreeTypes);
+      if (data.aiPackageDefaults) setAiDefaults({ ...DEFAULT_AI, ...data.aiPackageDefaults });
+      setLoading(false);
+    });
   }, []);
 
-  async function saveFileSettings() {
+  async function savePatch(patch: Record<string, unknown>, success: string) {
     const res = await fetch("/api/settings", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fileRootDir, organizeByStudent }),
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch),
     });
-    if (res.ok) toast.success("文件设置已保存");
-    else toast.error("保存失败");
+    if (res.ok) toast.success(success); else toast.error("保存失败");
+    return res.ok;
+  }
+
+  async function saveFileSettings() {
+    await savePatch({ fileRootDir, organizeByStudent }, "文件设置已保存");
   }
 
   async function addDegreeType() {
     if (!newDegreeType.trim()) return;
     const updated = [...degreeTypes, newDegreeType.trim()];
-    const res = await fetch("/api/settings", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ degreeTypes: updated }),
-    });
-    if (res.ok) {
-      setDegreeTypes(updated);
-      setNewDegreeType("");
-      toast.success("学位类型已添加");
+    if (await savePatch({ degreeTypes: updated }, "学位类型已添加")) {
+      setDegreeTypes(updated); setNewDegreeType("");
     }
   }
 
   async function removeDegreeType(idx: number) {
     const updated = degreeTypes.filter((_, i) => i !== idx);
-    const res = await fetch("/api/settings", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ degreeTypes: updated }),
-    });
-    if (res.ok) {
-      setDegreeTypes(updated);
-      toast.success("学位类型已删除");
-    }
+    if (await savePatch({ degreeTypes: updated }, "学位类型已删除")) setDegreeTypes(updated);
   }
 
   async function saveDegreeTypeEdit(idx: number) {
     if (!editValue.trim()) return;
-    const updated = [...degreeTypes];
-    updated[idx] = editValue.trim();
-    const res = await fetch("/api/settings", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ degreeTypes: updated }),
-    });
-    if (res.ok) {
-      setDegreeTypes(updated);
-      setEditingIdx(null);
-      toast.success("学位类型已更新");
+    const updated = [...degreeTypes]; updated[idx] = editValue.trim();
+    if (await savePatch({ degreeTypes: updated }, "学位类型已更新")) {
+      setDegreeTypes(updated); setEditingIdx(null);
     }
   }
 
-  async function saveAiSettings() {
-    const res = await fetch("/api/settings", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ aiMode, aiApiKey, aiApiUrl, aiModel }),
-    });
-    if (res.ok) toast.success("AI 设置已保存");
-    else toast.error("保存失败");
+  async function saveAiDefaults() {
+    await savePatch({ aiPackageDefaults: aiDefaults }, "AI任务包偏好已保存");
   }
 
   if (loading) return <div className="text-gray-400">加载中...</div>;
 
+  const aiOptions: Array<[keyof AiDefaults, string]> = [
+    ["includeEditorDecision", "编辑决定"],
+    ["includeReviewerComments", "审稿意见"],
+    ["includeRevisionHistory", "返修记录"],
+    ["includeSubmissionHistory", "投稿历史"],
+    ["includeResponsibilityHistory", "责任交接"],
+    ["includeAttachments", "附件清单"],
+  ];
+
   return (
     <div className="space-y-6 max-w-2xl">
-      {/* File Settings */}
       <Card>
-        <CardHeader>
-          <CardTitle>文件存储设置</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle>文件存储</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div>
             <Label>附件存储目录</Label>
             <div className="flex gap-2 mt-1">
-              <Input
-                value={fileRootDir}
-                onChange={(e) => setFileRootDir(e.target.value)}
-                placeholder="data/files"
-              />
+              <Input value={fileRootDir} onChange={(e) => setFileRootDir(e.target.value)} placeholder="data/files" />
               <Button onClick={saveFileSettings}>保存</Button>
             </div>
-            <p className="text-xs text-gray-400 mt-1">
-              相对于项目根目录的路径，默认为 data/files
-            </p>
           </div>
           <div className="flex items-center justify-between">
-            <div>
-              <Label>按学生组织子目录</Label>
-              <p className="text-xs text-gray-400">
-                启用后，附件将按【学生姓名_学号/类型】创建子目录
-              </p>
-            </div>
-            <Switch
-              checked={organizeByStudent}
-              onCheckedChange={(v) => {
-                setOrganizeByStudent(v);
-              }}
-            />
+            <div><Label>按学生组织子目录</Label><p className="text-xs text-gray-400">附件按学生与投稿轮次归档</p></div>
+            <Switch checked={organizeByStudent} onCheckedChange={setOrganizeByStudent} />
           </div>
-          <Button onClick={saveFileSettings} variant="outline">
-            保存文件设置
-          </Button>
         </CardContent>
       </Card>
 
-      {/* Degree Types */}
       <Card>
-        <CardHeader>
-          <CardTitle>学位类型管理</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-gray-500">
-            管理学生可选的学位类型。修改后将影响学生表单中的学位类型下拉选项。
-          </p>
-          <div className="space-y-2">
-            {degreeTypes.map((dt, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between rounded-md border px-3 py-2"
-              >
-                {editingIdx === idx ? (
-                  <div className="flex gap-2 flex-1 mr-2">
-                    <Input value={editValue} onChange={e => setEditValue(e.target.value)} onKeyDown={e => e.key === "Enter" && saveDegreeTypeEdit(idx)} />
-                    <Button size="sm" onClick={() => saveDegreeTypeEdit(idx)}>保存</Button>
-                    <Button size="sm" variant="outline" onClick={() => setEditingIdx(null)}>取消</Button>
+        <CardHeader><CardTitle>学位类型</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          {degreeTypes.map((dt, idx) => (
+            <div key={`${dt}-${idx}`} className="flex items-center justify-between rounded-md border px-3 py-2">
+              {editingIdx === idx ? (
+                <div className="flex gap-2 flex-1 mr-2">
+                  <Input value={editValue} onChange={e => setEditValue(e.target.value)} />
+                  <Button size="sm" onClick={() => saveDegreeTypeEdit(idx)}>保存</Button>
+                  <Button size="sm" variant="outline" onClick={() => setEditingIdx(null)}>取消</Button>
+                </div>
+              ) : (
+                <>
+                  <span className="text-sm">{dt}</span>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" onClick={() => { setEditingIdx(idx); setEditValue(dt); }}><Pencil className="h-3.5 w-3.5" /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => removeDegreeType(idx)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
                   </div>
-                ) : (
-                  <>
-                    <span className="text-sm">{dt}</span>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => { setEditingIdx(idx); setEditValue(dt); }}
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeDegreeType(idx)}
-                      >
-                        <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
+                </>
+              )}
+            </div>
+          ))}
           <div className="flex gap-2">
-            <Input
-              value={newDegreeType}
-              onChange={(e) => setNewDegreeType(e.target.value)}
-              placeholder="输入新学位类型，如：工程博士"
-              onKeyDown={(e) => e.key === "Enter" && addDegreeType()}
-            />
-            <Button onClick={addDegreeType}>
-              <Plus className="h-4 w-4 mr-1" />
-              添加
-            </Button>
+            <Input value={newDegreeType} onChange={(e) => setNewDegreeType(e.target.value)} placeholder="输入新学位类型" onKeyDown={(e) => e.key === "Enter" && addDegreeType()} />
+            <Button onClick={addDegreeType}><Plus className="h-4 w-4 mr-1" />添加</Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* AI Settings */}
       <Card>
-        <CardHeader>
-          <CardTitle>AI 分析设置</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>AI 模式</Label>
-            <NativeSelect value={aiMode} onValueChange={(v) => setAiMode(v as "off" | "local" | "cloud")}>
-              <option value="local">本地关键词（无需 API）</option>
-              <option value="cloud">云端 API</option>
-              <option value="off">关闭</option>
-            </NativeSelect>
-            <p className="text-xs text-gray-400 mt-1">
-              本地模式使用内置关键词规则进行分析，无需 API Key。云端模式需配置 API 信息。
-            </p>
-          </div>
-          {aiMode === "cloud" && (
-            <>
-              <div>
-                <Label>API Key</Label>
-                <Input
-                  type="password"
-                  value={aiApiKey}
-                  onChange={(e) => setAiApiKey(e.target.value)}
-                  placeholder="sk-xxxxxxxxxxxxxxxx"
-                />
-              </div>
-              <div>
-                <Label>API URL</Label>
-                <Input
-                  value={aiApiUrl}
-                  onChange={(e) => setAiApiUrl(e.target.value)}
-                  placeholder="https://api.deepseek.com/v1"
-                />
-              </div>
-              <div>
-                <Label>模型</Label>
-                <Input
-                  value={aiModel}
-                  onChange={(e) => setAiModel(e.target.value)}
-                  placeholder="deepseek-chat"
-                />
-              </div>
-            </>
-          )}
-          <Button onClick={saveAiSettings}>保存 AI 设置</Button>
+        <CardHeader><CardTitle>AI任务包偏好</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-gray-500">生成给外部模型的任务包时默认带上这些材料；每次生成前仍可单独调整。</p>
+          {aiOptions.map(([key, label]) => (
+            <div key={key} className="flex items-center justify-between rounded-md border px-3 py-2">
+              <span className="text-sm">{label}</span>
+              <Switch checked={aiDefaults[key]} onCheckedChange={(v) => setAiDefaults((prev) => ({ ...prev, [key]: v }))} />
+            </div>
+          ))}
+          <Button onClick={saveAiDefaults}>保存任务包偏好</Button>
         </CardContent>
       </Card>
 
-      {/* Dashboard Card Filter */}
-      <Card>
-        <CardHeader><CardTitle>首页卡片显示</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-gray-500">选择在首页学生卡片中显示的小论文状态。未勾选的状态不会出现在卡片上。</p>
-          <div className="grid grid-cols-2 gap-2">
-            {STATUS_OPTIONS.map(opt => (
-              <label key={opt.value} className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={dashboardFilter.includes(opt.value)}
-                  onChange={e => {
-                    if (e.target.checked) setDashboardFilter([...dashboardFilter, opt.value]);
-                    else setDashboardFilter(dashboardFilter.filter(v => v !== opt.value));
-                  }}
-                  className="rounded"
-                />
-                {opt.label}
-              </label>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setDashboardFilter(STATUS_OPTIONS.map(o => o.value))}>全选</Button>
-            <Button variant="outline" size="sm" onClick={() => setDashboardFilter([])}>全不选</Button>
-          </div>
-          <Button onClick={async () => {
-            const res = await fetch("/api/settings", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ dashboardStatusFilter: dashboardFilter }),
-            });
-            if (res.ok) toast.success("首页显示设置已保存");
-            else toast.error("保存失败");
-          }}>保存显示设置</Button>
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -1,30 +1,26 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
-import { AppSidebar } from "@/components/layout/app-sidebar";
+import { AppShell } from "@/components/layout/app-shell";
+import { getCurrentTeacher } from "@/lib/auth";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "研究生论文过程管理系统",
-  description: "管理研究生小论文投稿、返修、大论文全过程",
+  title: "导师论文工作台",
+  description: "学生论文、投稿与返修过程管理",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const teacher = await getCurrentTeacher();
   return (
-    <html lang="zh-CN">
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light">
+    <html lang="zh-CN" suppressHydrationWarning>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <TooltipProvider>
-            <div className="flex min-h-screen">
-              <AppSidebar />
-              <main className="flex-1 ml-56 p-6 bg-gray-50 min-h-screen">
-                {children}
-              </main>
-            </div>
+            <AppShell teacher={teacher}>{children}</AppShell>
             <Toaster position="top-right" richColors />
           </TooltipProvider>
         </ThemeProvider>

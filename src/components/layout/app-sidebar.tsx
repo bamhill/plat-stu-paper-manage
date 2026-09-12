@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
-  GraduationCap,
+  Home,
+  Users,
   FileText,
   BookOpen,
   Send,
@@ -16,110 +17,120 @@ import {
   Settings,
   Sun,
   Moon,
-  Palette,
+  LogOut,
 } from "lucide-react";
 
-const navItems = [
-  { href: "/dashboard", label: "首页", icon: LayoutDashboard },
-  { href: "/students", label: "学生管理", icon: GraduationCap },
-  { href: "/papers", label: "小论文", icon: FileText },
-  { href: "/submissions", label: "　投稿记录", icon: Send, indent: true },
-  { href: "/revisions", label: "　返修记录", icon: RefreshCw, indent: true },
-  { href: "/theses", label: "大论文", icon: BookOpen },
-  { href: "/query", label: "综合查询", icon: Search },
-  { href: "/analysis", label: "返修分析", icon: BarChart3 },
-  { href: "/import", label: "批量导入", icon: Upload },
-  { href: "/settings", label: "系统设置", icon: Settings },
+type NavItem = {
+  href: string;
+  label: string;
+  icon: typeof Home;
+};
+
+type NavGroup = {
+  label: string;
+  items: NavItem[];
+};
+
+const navGroups: NavGroup[] = [
+  {
+    label: "日常工作",
+    items: [
+      { href: "/dashboard", label: "首页", icon: Home },
+      { href: "/students", label: "学生", icon: Users },
+      { href: "/papers", label: "小论文", icon: FileText },
+      { href: "/theses", label: "大论文", icon: BookOpen },
+    ],
+  },
+  {
+    label: "过程管理",
+    items: [
+      { href: "/submissions", label: "投稿记录", icon: Send },
+      { href: "/revisions", label: "返修记录", icon: RefreshCw },
+      { href: "/query", label: "综合查询", icon: Search },
+      { href: "/analysis", label: "返修统计", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "系统",
+    items: [
+      { href: "/import", label: "批量导入", icon: Upload },
+      { href: "/settings", label: "系统设置", icon: Settings },
+    ],
+  },
 ];
 
-const THEMES = ["light", "pro", "dark"] as const;
-const THEME_LABELS: Record<string, string> = { light: "浅色模式", pro: "专业蓝调", dark: "深色模式" };
-const THEME_ICONS: Record<string, typeof Sun> = { light: Sun, pro: Palette, dark: Moon };
-
-export function AppSidebar() {
+export function AppSidebar({ teacher }: { teacher: { name: string; email: string } }) {
   const pathname = usePathname();
+  const [dark, setDark] = useState(false);
 
-  function getTheme(): string {
-    if (typeof document === "undefined") return "light";
-    const cls = document.documentElement.className;
-    if (cls.includes("dark")) return "dark";
-    if (cls.includes("pro-theme")) return "pro";
-    return "light";
-  }
-
-  function cycleTheme() {
-    const current = getTheme();
-    const idx = THEMES.indexOf(current as typeof THEMES[number]);
-    const next = THEMES[(idx + 1) % THEMES.length];
-
-    const html = document.documentElement;
-    html.classList.remove("light", "dark", "pro-theme");
-
-    if (next === "dark") {
-      html.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else if (next === "pro") {
-      html.classList.add("light", "pro-theme");
-      localStorage.setItem("theme", "pro");
-    } else {
-      html.classList.add("light");
-      localStorage.setItem("theme", "light");
-    }
-  }
-
-  // On mount, restore saved theme
-  function initTheme() {
-    if (typeof window === "undefined") return;
+  useEffect(() => {
     const saved = localStorage.getItem("theme") || "light";
-    const html = document.documentElement;
-    html.classList.remove("light", "dark", "pro-theme");
-    if (saved === "dark") html.classList.add("dark");
-    else if (saved === "pro") { html.classList.add("light", "pro-theme"); }
-    else html.classList.add("light");
+    const nextDark = saved === "dark";
+    document.documentElement.classList.toggle("dark", nextDark);
+    setDark(nextDark);
+  }, []);
+
+  function toggleTheme() {
+    const nextDark = !dark;
+    document.documentElement.classList.toggle("dark", nextDark);
+    localStorage.setItem("theme", nextDark ? "dark" : "light");
+    setDark(nextDark);
   }
 
-  if (typeof window !== "undefined" && !(window as any).__themeInited) {
-    (window as any).__themeInited = true;
-    initTheme();
-  }
-
-  const currentTheme = typeof document !== "undefined" ? getTheme() : "light";
-  const ThemeIcon = THEME_ICONS[currentTheme] || Palette;
+  const ThemeIcon = dark ? Moon : Sun;
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-56 border-r bg-white">
-      <div className="flex h-14 items-center border-b px-4">
-        <GraduationCap className="h-6 w-6 text-blue-600 mr-2" />
-        <span className="font-semibold text-sm">论文过程管理</span>
+    <aside className="paper-sidebar fixed left-0 top-0 z-40 h-screen w-[196px]">
+      <div className="paper-brand">
+        <div className="paper-brand-mark">P</div>
+        <div className="min-w-0">
+          <div className="paper-brand-title">导师论文工作台</div>
+          <div className="paper-brand-subtitle">学生 · 投稿 · 返修</div>
+        </div>
       </div>
-      <nav className="space-y-1 p-3">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                (item as any).indent && "pl-9",
-                isActive
-                  ? "bg-blue-50 text-blue-700 font-medium"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-              )}
-            >
-              {(item as any).indent ? null : <item.icon className="h-4 w-4" />}
-              {item.label.trim()}
-            </Link>
-          );
-        })}
+
+      <nav className="paper-nav">
+        {navGroups.map((group) => (
+          <div className="paper-nav-group" key={group.label}>
+            <div className="paper-nav-label">{group.label}</div>
+            <div className="paper-nav-items">
+              {group.items.map((item) => {
+                const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn("paper-nav-link", isActive && "paper-nav-link-active")}
+                  >
+                    <item.icon className="h-[17px] w-[17px]" strokeWidth={1.9} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
-      <div className="absolute bottom-4 left-3 right-3">
-        <button
-          onClick={cycleTheme}
-          className="flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
-        >
+
+      <div className="paper-sidebar-footer">
+        <div className="paper-account">
+          <div className="paper-account-avatar">{teacher.name.slice(0, 1)}</div>
+          <div className="paper-account-text">
+            <strong>{teacher.name}</strong>
+            <span title={teacher.email}>{teacher.email}</span>
+          </div>
+          <form action="/api/auth/logout" method="post">
+            <button className="paper-logout" type="submit" title="退出登录" aria-label="退出登录">
+              <LogOut className="h-4 w-4" />
+            </button>
+          </form>
+        </div>
+        <button onClick={toggleTheme} className="paper-theme-button" type="button">
           <ThemeIcon className="h-4 w-4" />
-          {THEME_LABELS[currentTheme] || "浅色模式"}
+          <span>{dark ? "深色模式" : "浅色模式"}</span>
+          <span className={cn("paper-theme-switch", dark && "paper-theme-switch-on")}>
+            <i />
+          </span>
         </button>
       </div>
     </aside>

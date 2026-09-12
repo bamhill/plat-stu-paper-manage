@@ -14,8 +14,9 @@ import { AttachmentUpload } from "@/components/shared/attachment-upload";
 import { toDateInputValue } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { paperDisplayTitle } from "@/lib/paper-display";
 
-export function SubmissionForm({ open, onOpenChange, submission }: { open: boolean; onOpenChange: (o: boolean) => void; submission: any | null }) {
+export function SubmissionForm({ open, onOpenChange, submission, initialPaperId = null, initialVenue = "" }: { open: boolean; onOpenChange: (o: boolean) => void; submission: any | null; initialPaperId?: number | null; initialVenue?: string }) {
   const [papers, setPapers] = useState<any[]>([]);
   const [createdId, setCreatedId] = useState<number | null>(null);
   const activeId = submission?.id || createdId;
@@ -25,14 +26,23 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
   const form = useForm<SubmissionFormData>({
     resolver: zodResolver(submissionSchema),
     defaultValues: {
-      paperId: 0 as unknown as number,
-      venueName: "", submissionRound: 1,
+      paperId: (initialPaperId ?? 0) as unknown as number,
+      venueName: initialVenue, submissionRound: 1,
       manuscriptNo: null,
+      manuscriptTitle: null, firstAuthor: null, correspondingAuthor: null,
+      responsibleStudentName: null, responsibleStudentNo: null,
       submittedAt: null, decisionAt: null, decision: null,
       editorComments: null, reviewerComments: null,
-      status: "pending", notes: null,
+      status: "submitted", notes: null,
     } as SubmissionFormData,
   });
+
+  useEffect(() => {
+    if (!submission && open) {
+      if (initialPaperId) form.setValue("paperId", initialPaperId);
+      if (initialVenue) form.setValue("venueName", initialVenue);
+    }
+  }, [initialPaperId, initialVenue, submission, open, form]);
 
   useEffect(() => {
     if (submission) {
@@ -40,6 +50,11 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
         paperId: submission.paperId, venueName: submission.venueName,
         submissionRound: submission.submissionRound,
         manuscriptNo: submission.manuscriptNo ?? null,
+        manuscriptTitle: submission.manuscriptTitle ?? null,
+        firstAuthor: submission.firstAuthor ?? null,
+        correspondingAuthor: submission.correspondingAuthor ?? null,
+        responsibleStudentName: submission.responsibleStudentName ?? null,
+        responsibleStudentNo: submission.responsibleStudentNo ?? null,
         submittedAt: toDateInputValue(submission.submittedAt),
         decisionAt: toDateInputValue(submission.decisionAt),
         decision: submission.decision ?? null,
@@ -90,7 +105,7 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
                 <FormControl>
                   <NativeSelect value={String(field.value ?? "")} onValueChange={(v) => field.onChange(Number(v))}>
                     <option value="" disabled>选择论文</option>
-                    {papers.map((p: any) => <option key={p.id} value={String(p.id)}>{p.title} ({p.student?.name})</option>)}
+                    {papers.map((p: any) => <option key={p.id} value={String(p.id)}>{paperDisplayTitle(p.title)} ({p.student?.name})</option>)}
                   </NativeSelect>
                 </FormControl><FormMessage />
               </FormItem>
@@ -101,6 +116,25 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
               )} />
               <FormField control={form.control} name="manuscriptNo" render={({ field }) => (
                 <FormItem><FormLabel>稿件编号</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
+              )} />
+            </div>
+            <FormField control={form.control} name="manuscriptTitle" render={({ field }) => (
+              <FormItem><FormLabel>本轮英文题名</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} rows={2} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="firstAuthor" render={({ field }) => (
+                <FormItem><FormLabel>本轮第一作者</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="correspondingAuthor" render={({ field }) => (
+                <FormItem><FormLabel>本轮通讯作者</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
+              )} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="responsibleStudentName" render={({ field }) => (
+                <FormItem><FormLabel>本轮负责学生</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} placeholder="不填则新投稿默认当前负责学生" /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="responsibleStudentNo" render={({ field }) => (
+                <FormItem><FormLabel>本轮负责学生学号</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
               )} />
             </div>
             <FormField control={form.control} name="submissionRound" render={({ field }) => (
@@ -117,8 +151,11 @@ export function SubmissionForm({ open, onOpenChange, submission }: { open: boole
                 <FormItem><FormLabel>状态</FormLabel>
                   <FormControl>
                     <NativeSelect value={field.value || ""} onValueChange={field.onChange}>
-                      <option value="pending">待处理</option>
-                      <option value="under_review">审稿中</option>
+                      <option value="submitted">已投稿（Submitted）</option>
+                      <option value="with_editor">编辑处理中（With Editor）</option>
+                      <option value="pending">编辑处理中（旧数据兼容）</option>
+                      <option value="awaiting_reviewer_assignment">等待分配审稿人</option>
+                      <option value="under_review">外审中</option>
                       <option value="decisioned">已返回</option>
                     </NativeSelect>
                   </FormControl><FormMessage />

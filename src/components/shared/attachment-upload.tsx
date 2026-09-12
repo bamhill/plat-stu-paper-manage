@@ -14,6 +14,9 @@ interface Attachment {
   fileSize: number;
   fileType: string;
   description: string | null;
+  sourceStudentName?: string | null;
+  sourceStudentNo?: string | null;
+  fileExists?: boolean;
   uploadedAt: string;
 }
 
@@ -131,12 +134,16 @@ export function AttachmentUpload({ relatedType, relatedId, existingAttachments, 
                 <span>{att.fileName}</span>
                 <span className="text-gray-400">{formatSize(att.fileSize)}</span>
                 {att.description && <span className="text-gray-400 text-xs">— {att.description}</span>}
+                {att.sourceStudentName && <span className="text-slate-400 text-xs">来源：{att.sourceStudentName}</span>}
+                {att.fileExists === false && <span className="text-amber-600 text-xs">仅记录</span>}
                 <span className="text-gray-300 text-xs">{formatDate(att.uploadedAt)}</span>
               </div>
               <div className="flex items-center gap-1">
-                <a href={`/api/files/${att.filePath}`} download className="text-blue-600 hover:text-blue-800">
-                  <Download className="h-4 w-4" />
-                </a>
+                {att.fileExists !== false && (
+                  <a href={`/api/files/${att.filePath}`} download className="text-blue-600 hover:text-blue-800">
+                    <Download className="h-4 w-4" />
+                  </a>
+                )}
                 <button
                   onClick={async () => {
                     if (!confirm("确定删除此附件？")) return;

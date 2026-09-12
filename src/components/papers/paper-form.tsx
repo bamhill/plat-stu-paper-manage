@@ -26,8 +26,9 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
     resolver: zodResolver(paperSchema),
     defaultValues: {
       studentId: 0, title: "", paperType: "journal", direction: "",
-      firstAuthor: "", correspondingAuthor: "", status: "writing",
+      status: "writing",
       targetVenue: null, versionLabel: null, notes: null, myThoughts: null,
+      isPriority: false, priorityOrder: null,
     } as PaperFormData,
   });
 
@@ -36,11 +37,11 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
       form.reset({
         studentId: paper.studentId, title: paper.title,
         paperType: paper.paperType, direction: paper.direction,
-        firstAuthor: paper.firstAuthor, correspondingAuthor: paper.correspondingAuthor,
         status: paper.status, targetVenue: paper.targetVenue ?? null,
         currentVersion: paper.currentVersion ?? 1,
         versionLabel: paper.versionLabel ?? null,
         notes: paper.notes ?? null, myThoughts: paper.myThoughts ?? null,
+        isPriority: !!paper.isPriority, priorityOrder: paper.priorityOrder ?? null,
       } as PaperFormData);
     }
   }, [paper, form]);
@@ -121,17 +122,24 @@ export function PaperForm({ open, onOpenChange, paper }: { open: boolean; onOpen
             <FormField control={form.control} name="direction" render={({ field }) => (
               <FormItem><FormLabel>方向</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )} />
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="firstAuthor" render={({ field }) => (
-                <FormItem><FormLabel>第一作者</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="correspondingAuthor" render={({ field }) => (
-                <FormItem><FormLabel>通讯作者</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-            </div>
             <FormField control={form.control} name="targetVenue" render={({ field }) => (
               <FormItem><FormLabel>目标期刊/会议</FormLabel><FormControl><Input {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} /></FormControl><FormMessage /></FormItem>
             )} />
+            <div className="rounded-md border border-slate-200 px-3 py-2.5">
+              <FormField control={form.control} name="isPriority" render={({ field }) => (
+                <FormItem>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" checked={!!field.value} onChange={e => field.onChange(e.target.checked)} className="rounded" />
+                    <span className="font-medium text-slate-700">首页重点跟踪</span>
+                  </label>
+                </FormItem>
+              )} />
+              {form.watch("isPriority") && (
+                <FormField control={form.control} name="priorityOrder" render={({ field }) => (
+                  <FormItem className="mt-2"><FormLabel>显示顺序</FormLabel><FormControl><Input type="number" min={1} {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value ? Number(e.target.value) : null)} placeholder="留空则排在当前重点稿件之后" /></FormControl><FormMessage /></FormItem>
+                )} />
+              )}
+            </div>
             <FormField control={form.control} name="myThoughts" render={({ field }) => (
               <FormItem><FormLabel>我的思考</FormLabel><FormControl><Textarea {...field} value={field.value ?? ""} onChange={e => field.onChange(e.target.value || null)} placeholder="导师对这篇论文的判断..." /></FormControl><FormMessage /></FormItem>
             )} />

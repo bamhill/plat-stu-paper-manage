@@ -1,0 +1,18 @@
+services:
+  stumanage:
+    build: .
+    ports:
+      - "${STUMANAGE_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: "file:./data/dev.db"
+      AUTH_SECRET: "${AUTH_SECRET:-}"
+      LEGACY_CLAIM_CODE: "${LEGACY_CLAIM_CODE:-}"
+      TZ: "Asia/Shanghai"
+    volumes:
+      - stumanage_db:/app/prisma/data
+      - stumanage_files:/app/data
+    restart: unless-stopped
+
+volumes:
+  stumanage_db:
+  stumanage_files:

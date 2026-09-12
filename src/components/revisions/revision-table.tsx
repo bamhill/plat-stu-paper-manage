@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Paperclip } from "lucide-react";
+import { Paperclip, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { deleteRevision } from "@/app/revisions/actions";
 import { RevisionForm } from "./revision-form";
@@ -33,7 +34,7 @@ export function RevisionTable({ revisions }: { revisions: any[] }) {
             <TableHead>小论文</TableHead><TableHead>学生</TableHead>
             <TableHead>期刊</TableHead><TableHead>轮次</TableHead>
             <TableHead>类型</TableHead><TableHead>截止日期</TableHead>
-            <TableHead>状态</TableHead><TableHead className="w-24">操作</TableHead>
+            <TableHead>状态</TableHead><TableHead className="w-32">操作</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -52,6 +53,7 @@ export function RevisionTable({ revisions }: { revisions: any[] }) {
                   <TableCell><StatusBadge value={r.status} /></TableCell>
                   <TableCell>
                     <div className="flex gap-1">
+                      <Link href={`/revisions/${r.id}/ai`} className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-[11px] text-blue-700 hover:bg-blue-50" title="AI辅助"><Sparkles className="h-3.5 w-3.5" />AI</Link>
                       <TableActions onEdit={() => setEditTarget(r)} onDelete={() => setDeleteTarget(r)} />
                       <Button variant="ghost" size="icon" onClick={() => toggleAtt(r.id)}><Paperclip className="h-3.5 w-3.5" /></Button>
                     </div>

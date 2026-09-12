@@ -9,39 +9,18 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
 import { EmptyTableRow } from "@/components/shared/empty-table-row";
 import { TableActions } from "@/components/shared/table-actions";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { NativeSelect } from "@/components/ui/select";
+import { paperDisplayTitle } from "@/lib/paper-display";
 
-const STATUS_OPTIONS = [
-  { value: "全部", label: "全部状态" },
-  { value: "writing", label: "撰写中" },
-  { value: "ready_to_submit", label: "待投稿" },
-  { value: "submitted", label: "已投稿" },
-  { value: "with_editor", label: "编辑处理中" },
-  { value: "under_review", label: "外审中" },
-  { value: "minor_revision", label: "小修" },
-  { value: "major_revision", label: "大修" },
-  { value: "accepted", label: "已接收" },
-  { value: "rejected", label: "已拒稿" },
-  { value: "published", label: "已发表" },
-];
+
 
 export function PaperTable({ papers }: { papers: any[] }) {
   const router = useRouter();
   const [editPaper, setEditPaper] = useState<any | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
-  const [filter, setFilter] = useState("全部");
-
-  const filtered = filter === "全部" ? papers : papers.filter((p: any) => p.status === filter);
 
   return (
     <>
-      <div className="mb-4">
-        <NativeSelect value={filter} onValueChange={(v) => v && setFilter(v)} className="w-40">
-          {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </NativeSelect>
-      </div>
       <Table className="table-fixed">
         <TableHeader>
           <TableRow>
@@ -51,12 +30,12 @@ export function PaperTable({ papers }: { papers: any[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filtered.length === 0 ? (
+          {papers.length === 0 ? (
             <EmptyTableRow colSpan={7} />
           ) : (
-            filtered.map((p: any) => (
+            papers.map((p: any) => (
               <TableRow key={p.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/papers/${p.id}`)}>
-                <TableCell className="font-medium truncate max-w-[300px]" title={p.title}>{p.title}</TableCell>
+                <TableCell className="font-medium truncate max-w-[300px]" title={p.title}><span className="inline-flex items-center gap-1.5">{p.isPriority ? <span className="text-amber-500">★</span> : null}{paperDisplayTitle(p.title)}</span></TableCell>
                 <TableCell>{p.student.name}</TableCell>
                 <TableCell>{p.paperType === "journal" ? "期刊" : "会议"}</TableCell>
                 <TableCell><StatusBadge value={p.status} /></TableCell>

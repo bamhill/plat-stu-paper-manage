@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteStudent } from "@/app/students/actions";
 import { StudentForm } from "./student-form";
@@ -10,7 +9,6 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { ConfirmDelete } from "@/components/shared/confirm-delete";
 import { EmptyTableRow } from "@/components/shared/empty-table-row";
 import { TableActions } from "@/components/shared/table-actions";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type StudentRow = {
@@ -37,6 +35,7 @@ export function StudentTable({ students }: { students: StudentRow[] }) {
             <TableHead>年级</TableHead>
             <TableHead>方向</TableHead>
             <TableHead>导师</TableHead>
+            <TableHead className="text-center">小论文</TableHead>
             <TableHead>状态</TableHead>
             <TableHead className="w-12 text-center">看板</TableHead>
             <TableHead className="w-24">操作</TableHead>
@@ -44,7 +43,7 @@ export function StudentTable({ students }: { students: StudentRow[] }) {
         </TableHeader>
         <TableBody>
           {students.length === 0 ? (
-            <EmptyTableRow colSpan={8} />
+            <EmptyTableRow colSpan={10} />
           ) : (
             students.map((s) => (
               <TableRow key={s.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/students/${s.id}`)}>
@@ -54,6 +53,7 @@ export function StudentTable({ students }: { students: StudentRow[] }) {
                 <TableCell>{s.enrollmentYear}级</TableCell>
                 <TableCell>{s.direction}</TableCell>
                 <TableCell>{s.supervisor}</TableCell>
+                <TableCell className="text-center font-medium text-slate-600">{s._count?.papers ?? 0}</TableCell>
                 <TableCell><StatusBadge value={s.status} /></TableCell>
                 <TableCell className="text-center">{s.showOnDashboard !== false ? "✓" : "-"}</TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>

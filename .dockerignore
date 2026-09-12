@@ -1,0 +1,16 @@
+node_modules
+.next
+.next_base_backup
+.git
+*.zip
+screenshots
+screenshots_*
+.claude
+memory
+tasks
+logs
+docs
+#U8f6f#U8457
+software-copyright.skill
+data/auth-secret
+data/legacy-claim-code

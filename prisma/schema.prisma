@@ -7,10 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Teacher {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  status       String    @default("active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  students     Student[]
+  attachments  Attachment[]
+  settings     TeacherSetting?
+  promptTemplates PromptTemplate[]
+  aiTaskRuns      AiTaskRun[]
+
+  @@map("teachers")
+}
+
+model TeacherSetting {
+  id         Int      @id @default(autoincrement())
+  teacherId  Int      @unique @map("teacher_id")
+  configJson String   @map("config_json")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@map("teacher_settings")
+}
+
 model Student {
   id              Int       @id @default(autoincrement())
+  teacherId       Int       @map("teacher_id")
   name            String
-  studentNo       String    @unique @map("student_no")
+  studentNo       String    @map("student_no")
   degreeType      String    @map("degree_type")
   enrollmentYear  Int       @map("enrollment_year")
   graduationYear  Int?      @map("graduation_year")
@@ -23,10 +54,15 @@ model Student {
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
+  teacher         Teacher   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   papers          Paper[]
   theses          Thesis[]
   timelineEvents  TimelineEvent[]
+  transfersFrom   PaperResponsibilityTransfer[] @relation("TransferFrom")
+  transfersTo     PaperResponsibilityTransfer[] @relation("TransferTo")
 
+  @@unique([teacherId, studentNo])
+  @@index([teacherId, status])
   @@map("students")
 }
 
@@ -42,6 +78,8 @@ model Paper {
   targetVenue          String?   @map("target_venue")
   currentVersion       Int       @default(1) @map("current_version")
   versionLabel         String?   @map("version_label")
+  isPriority           Boolean   @default(false) @map("is_priority")
+  priorityOrder        Int?      @map("priority_order")
   notes                String?
   myThoughts           String?   @map("my_thoughts")
   createdAt            DateTime  @default(now()) @map("created_at")
@@ -50,7 +88,11 @@ model Paper {
   student        Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
   versions       PaperVersion[]
   submissions    Submission[]
+  responsibilityTransfers PaperResponsibilityTransfer[]
+  aiTaskRuns     AiTaskRun[]
 
+  @@index([studentId, status])
+  @@index([isPriority, priorityOrder])
   @@map("papers")
 }
 
@@ -70,24 +112,32 @@ model PaperVersion {
 }
 
 model Submission {
-  id                Int       @id @default(autoincrement())
-  paperId           Int       @map("paper_id")
-  venueName         String    @map("venue_name")
-  submissionRound   Int       @map("submission_round")
-  manuscriptNo      String?   @map("manuscript_no")
-  submittedAt       DateTime? @map("submitted_at")
-  decisionAt        DateTime? @map("decision_at")
-  decision          String?
-  editorComments    String?   @map("editor_comments")
-  reviewerComments  String?   @map("reviewer_comments")
-  status            String    @default("pending")
-  notes             String?
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  id                   Int       @id @default(autoincrement())
+  paperId              Int       @map("paper_id")
+  venueName            String    @map("venue_name")
+  submissionRound      Int       @map("submission_round")
+  manuscriptNo         String?   @map("manuscript_no")
+  manuscriptTitle      String?   @map("manuscript_title")
+  firstAuthor          String?   @map("first_author")
+  correspondingAuthor String?   @map("corresponding_author")
+  responsibleStudentName String? @map("responsible_student_name")
+  responsibleStudentNo   String? @map("responsible_student_no")
+  submittedAt          DateTime? @map("submitted_at")
+  underReviewAt        DateTime? @map("under_review_at")
+  decisionAt           DateTime? @map("decision_at")
+  decision             String?
+  editorComments       String?   @map("editor_comments")
+  reviewerComments     String?   @map("reviewer_comments")
+  status               String    @default("pending")
+  notes                String?
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
 
   paper      Paper       @relation(fields: [paperId], references: [id], onDelete: Cascade)
   revisions  Revision[]
+  aiTaskRuns AiTaskRun[]
 
+  @@index([paperId, submissionRound])
   @@map("submissions")
 }
 
@@ -102,11 +152,12 @@ model Revision {
   commentsSummary  String?   @map("comments_summary")
   responseSummary  String?   @map("response_summary")
   status           String    @default("pending")
-  notes            String?
+  notes             String?
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime  @updatedAt @map("updated_at")
 
   submission  Submission   @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  aiTaskRuns  AiTaskRun[]
 
   @@map("revisions")
 }
@@ -122,7 +173,7 @@ model Thesis {
   submittedAt    DateTime? @map("submitted_at")
   reviewedAt     DateTime? @map("reviewed_at")
   defenseDate    DateTime? @map("defense_date")
-  score          String?   // defense score (答辩成绩)
+  score          String?
   expert1Score   String?   @map("expert1_score")
   expert2Score   String?   @map("expert2_score")
   expert3Score   String?   @map("expert3_score")
@@ -156,6 +207,7 @@ model ThesisReview {
 
 model Attachment {
   id          Int      @id @default(autoincrement())
+  teacherId   Int      @map("teacher_id")
   relatedType String   @map("related_type")
   relatedId   Int      @map("related_id")
   fileName    String   @map("file_name")
@@ -163,8 +215,13 @@ model Attachment {
   fileType    String   @map("file_type")
   fileSize    Int      @map("file_size")
   description String?
+  sourceStudentName String? @map("source_student_name")
+  sourceStudentNo   String? @map("source_student_no")
   uploadedAt  DateTime @default(now()) @map("uploaded_at")
 
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([teacherId, relatedType, relatedId])
   @@map("attachments")
 }
 
@@ -182,4 +239,72 @@ model TimelineEvent {
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("timeline_events")
+}
+
+model PaperResponsibilityTransfer {
+  id            Int       @id @default(autoincrement())
+  paperId       Int       @map("paper_id")
+  fromStudentId Int       @map("from_student_id")
+  toStudentId   Int       @map("to_student_id")
+  transferredAt DateTime? @map("transferred_at")
+  notes         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  paper       Paper   @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  fromStudent Student @relation("TransferFrom", fields: [fromStudentId], references: [id], onDelete: Restrict)
+  toStudent   Student @relation("TransferTo", fields: [toStudentId], references: [id], onDelete: Restrict)
+
+  @@unique([paperId, fromStudentId, toStudentId])
+  @@index([fromStudentId])
+  @@index([toStudentId])
+  @@map("paper_responsibility_transfers")
+}
+
+model PromptTemplate {
+  id        Int      @id @default(autoincrement())
+  teacherId Int      @map("teacher_id")
+  name      String
+  taskType  String   @map("task_type")
+  body      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([teacherId, taskType])
+  @@map("prompt_templates")
+}
+
+model AiTaskRun {
+  id               Int      @id @default(autoincrement())
+  teacherId        Int      @map("teacher_id")
+  paperId          Int?     @map("paper_id")
+  submissionId     Int?     @map("submission_id")
+  revisionId       Int?     @map("revision_id")
+  taskType         String   @map("task_type")
+  templateKey      String?  @map("template_key")
+  templateName     String?  @map("template_name")
+  promptText       String   @map("prompt_text")
+  packageText      String   @map("package_text")
+  supplementalText String?  @map("supplemental_text")
+  resultText       String?  @map("result_text")
+  resultStatus     String   @default("draft") @map("result_status")
+  rawResult        String?  @map("raw_result")
+  parsedJson       String?  @map("parsed_json")
+  acceptedJson     String?  @map("accepted_json")
+  materialJson     String?  @map("material_json")
+  parseWarningsJson String? @map("parse_warnings_json")
+  parsedAt         DateTime? @map("parsed_at")
+  acceptedAt       DateTime? @map("accepted_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  teacher    Teacher     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  paper      Paper?      @relation(fields: [paperId], references: [id], onDelete: SetNull)
+  submission Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  revision   Revision?   @relation(fields: [revisionId], references: [id], onDelete: SetNull)
+
+  @@index([teacherId, taskType])
+  @@index([revisionId, createdAt])
+  @@map("ai_task_runs")
 }

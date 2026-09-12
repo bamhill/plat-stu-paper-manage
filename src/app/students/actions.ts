@@ -5,11 +5,17 @@ import { prisma } from "@/lib/prisma";
 import { createTimelineEvent } from "@/lib/timeline";
 import { studentSchema } from "@/lib/validators";
 import type { StudentFormData } from "@/lib/validators";
+import { assertStudentAllowed } from "@/lib/student-policy";
+import { requireTeacher } from "@/lib/auth";
+import { requireOwnedStudent } from "@/lib/tenant";
 
 export async function createStudent(data: StudentFormData) {
+  const teacher = await requireTeacher();
   const parsed = studentSchema.parse(data);
+  assertStudentAllowed(parsed.name);
   const student = await prisma.student.create({
     data: {
+      teacherId: teacher.id,
       name: parsed.name, studentNo: parsed.studentNo,
       degreeType: parsed.degreeType, enrollmentYear: parsed.enrollmentYear,
       graduationYear: parsed.graduationYear ?? null,
@@ -27,10 +33,13 @@ export async function createStudent(data: StudentFormData) {
 }
 
 export async function updateStudent(id: number, data: StudentFormData) {
+  const { teacher } = await requireOwnedStudent(id);
   const parsed = studentSchema.parse(data);
+  assertStudentAllowed(parsed.name);
   const student = await prisma.student.update({
     where: { id },
     data: {
+      teacherId: teacher.id,
       name: parsed.name, studentNo: parsed.studentNo,
       degreeType: parsed.degreeType, enrollmentYear: parsed.enrollmentYear,
       graduationYear: parsed.graduationYear ?? null,
@@ -45,6 +54,7 @@ export async function updateStudent(id: number, data: StudentFormData) {
 }
 
 export async function deleteStudent(id: number) {
+  await requireOwnedStudent(id);
   await prisma.student.delete({ where: { id } });
   revalidatePath("/students");
 }

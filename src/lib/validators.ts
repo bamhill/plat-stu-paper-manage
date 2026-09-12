@@ -19,10 +19,10 @@ export const paperSchema = z.object({
   title: z.string().min(1, "标题不能为空"),
   paperType: z.enum(["journal", "conference"]),
   direction: z.string().min(1, "方向不能为空"),
-  firstAuthor: z.string().min(1, "第一作者不能为空"),
-  correspondingAuthor: z.string().min(1, "通讯作者不能为空"),
+  firstAuthor: z.string().nullable().optional(),
+  correspondingAuthor: z.string().nullable().optional(),
   status: z.enum([
-    "writing", "ready_to_submit", "submitted", "with_editor", "under_review",
+    "writing", "ready_to_submit", "submitted", "with_editor", "awaiting_reviewer_assignment", "under_review",
     "minor_revision", "major_revision", "accepted", "rejected", "published",
   ]),
   targetVenue: z.string().nullable().optional(),
@@ -30,6 +30,8 @@ export const paperSchema = z.object({
   versionLabel: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
   myThoughts: z.string().nullable().optional(),
+  isPriority: z.boolean().optional(),
+  priorityOrder: z.coerce.number().int().min(1).nullable().optional(),
 });
 
 export const submissionSchema = z.object({
@@ -37,12 +39,17 @@ export const submissionSchema = z.object({
   venueName: z.string().min(1, "期刊/会议名不能为空"),
   submissionRound: z.coerce.number().int().min(1),
   manuscriptNo: z.string().nullable().optional(),
+  manuscriptTitle: z.string().nullable().optional(),
+  firstAuthor: z.string().nullable().optional(),
+  correspondingAuthor: z.string().nullable().optional(),
+  responsibleStudentName: z.string().nullable().optional(),
+  responsibleStudentNo: z.string().nullable().optional(),
   submittedAt: z.string().nullable().optional(),
   decisionAt: z.string().nullable().optional(),
   decision: z.enum(["under_review", "minor_revision", "major_revision", "reject", "accept"]).nullable().optional(),
   editorComments: z.string().nullable().optional(),
   reviewerComments: z.string().nullable().optional(),
-  status: z.enum(["pending", "under_review", "decisioned"]),
+  status: z.enum(["submitted", "with_editor", "pending", "awaiting_reviewer_assignment", "under_review", "decisioned"]),
   notes: z.string().nullable().optional(),
 });
 

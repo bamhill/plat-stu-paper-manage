@@ -1,11 +1,12 @@
-import { AppBreadcrumb } from "@/components/layout/app-breadcrumb";
+import { PageHeader } from "@/components/layout/page-header";
 import { SettingsClient } from "./settings-client";
+import { requireTeacher } from "@/lib/auth";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  await requireTeacher();
   return (
     <div>
-      <AppBreadcrumb />
-      <h1 className="text-xl font-bold mb-6">系统设置</h1>
+      <PageHeader title="系统设置" description="文件、学位类型、AI任务包与首页显示。" />
       <SettingsClient />
     </div>
   );

@@ -13,7 +13,7 @@ const DECISION_BORDER: Record<string, string> = {
   under_review: "border-l-blue-300",
 };
 
-export function SubmissionTimeline({ submissions, subAttachments }: { submissions: any[]; subAttachments: any[] }) {
+export function SubmissionTimeline({ submissions, subAttachments, currentSubmissionId }: { submissions: any[]; subAttachments: any[]; currentSubmissionId?: number | null }) {
   const [expandedComments, setExpandedComments] = useState<Set<number>>(new Set());
   const [expandedRevisions, setExpandedRevisions] = useState<Set<number>>(new Set());
 
@@ -40,19 +40,26 @@ export function SubmissionTimeline({ submissions, subAttachments }: { submission
                 <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-xs font-bold text-gray-500">
                   {sub.submissionRound}
                 </span>
-                <span className="font-medium">{sub.venueName}</span>
+                <span className="font-medium">{sub.venueName}</span>{sub.id === currentSubmissionId ? <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100">当前投稿</span> : <span className="text-[9px] text-slate-400">历史</span>}
               </div>
               <div className="flex items-center gap-1.5">
-                <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
-                  sub.status === "under_review" ? "bg-blue-100 text-blue-700" :
-                  sub.status === "decisioned" ? "bg-purple-100 text-purple-700" :
-                  "bg-gray-100 text-gray-600"
-                }`}>
-                  {sub.status === "pending" ? "待处理" : sub.status === "under_review" ? "审稿中" : sub.status === "decisioned" ? "已决定" : sub.status}
-                </span>
+                <StatusBadge value={sub.id !== currentSubmissionId && sub.status === "pending" ? "closed_history" : sub.status} />
                 {sub.decision && <StatusBadge value={sub.decision} />}
               </div>
             </div>
+
+            {(sub.manuscriptTitle || sub.firstAuthor || sub.correspondingAuthor || sub.responsibleStudentName) && (
+              <div className="mb-2 rounded-md border border-slate-100 bg-slate-50/70 px-2.5 py-2 text-[11px]">
+                {sub.manuscriptTitle && <div className="font-medium leading-5 text-slate-700">{sub.manuscriptTitle}</div>}
+                {(sub.firstAuthor || sub.correspondingAuthor) && (
+                  <div className={`${sub.manuscriptTitle ? "mt-1" : ""} flex flex-wrap gap-x-4 gap-y-1 text-slate-500`}>
+                    {sub.firstAuthor && <span>第一作者：<b className="font-medium text-slate-700">{sub.firstAuthor}</b></span>}
+                    {sub.correspondingAuthor && <span>通讯作者：<b className="font-medium text-slate-700">{sub.correspondingAuthor}</b></span>}
+                    {sub.responsibleStudentName && <span>本轮负责：<b className="font-medium text-slate-700">{sub.responsibleStudentName}</b></span>}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Meta line */}
             <div className="flex items-center gap-3 text-[11px] text-gray-400 mb-2">
@@ -126,10 +133,14 @@ export function SubmissionTimeline({ submissions, subAttachments }: { submission
                         <span className="truncate">{a.fileName}</span>
                         <span className="text-gray-400 shrink-0">{formatSize(a.fileSize)}</span>
                         {a.description && <span className="text-gray-400 truncate">— {a.description}</span>}
+                        {a.sourceStudentName && <span className="text-slate-400 truncate">来源：{a.sourceStudentName}</span>}
+                        {a.fileExists === false && <span className="text-amber-600 shrink-0">仅记录</span>}
                       </div>
-                      <a href={`/api/files/${a.filePath}`} download className="text-blue-500 hover:text-blue-700 shrink-0 ml-2">
-                        <Download className="h-3.5 w-3.5" />
-                      </a>
+                      {a.fileExists !== false && (
+                        <a href={`/api/files/${a.filePath}`} download className="text-blue-500 hover:text-blue-700 shrink-0 ml-2">
+                          <Download className="h-3.5 w-3.5" />
+                        </a>
+                      )}
                     </div>
                   ))}
                 </div>

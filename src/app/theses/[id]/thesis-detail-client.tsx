@@ -36,10 +36,11 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 items-start">
       {/* Left: Progress */}
-      <div className="space-y-4">
-        <h2 className="font-medium">进度</h2>
+      <section className="paper-detail-card">
+        <div className="paper-detail-card-head"><span>培养进度</span></div>
+        <div className="paper-detail-card-body space-y-4">
         <div className="space-y-1">
           {STAGES.map((stage, i) => {
             const dateVal = stage.dateField ? thesis[stage.dateField] : null;
@@ -71,17 +72,20 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
             <div className="text-xl font-bold text-blue-600">{thesis.score || "未录入"}{thesis.score ? "分" : ""}</div>
           )}
         </div>
-      </div>
+        </div>
+      </section>
 
       {/* Right: 3 Expert Reviews + Attachments */}
-      <div className="lg:col-span-2 space-y-6">
-        <h2 className="font-medium">外审专家评审</h2>
+      <div className="xl:col-span-2 space-y-3">
+        <div className="paper-detail-card">
+          <div className="paper-detail-card-head"><span>外审专家评审</span><span className="paper-muted-note">3 位专家槽位</span></div>
+          <div className="paper-detail-card-body space-y-3">
 
         {EXPERT_SLOTS.map((label, idx) => {
           const review = reviews[idx];
           const expertScore = [thesis.expert1Score, thesis.expert2Score, thesis.expert3Score][idx];
           return (
-            <div key={idx} className="rounded-lg border bg-white p-4 space-y-3">
+            <div key={idx} className="rounded-md border border-slate-200 bg-white p-3 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="font-medium text-sm">{label}</h3>
                 <div className="flex items-center gap-2">
@@ -133,9 +137,13 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
           );
         })}
 
+          </div>
+        </div>
+
         {/* Thesis-level attachments */}
-        <div className="pt-4 border-t">
-          <h2 className="font-medium mb-3">大论文附件</h2>
+        <div className="paper-detail-card">
+          <div className="paper-detail-card-head"><span>大论文附件</span></div>
+          <div className="paper-detail-card-body">
           <AttachmentUpload
             relatedType="thesis"
             relatedId={thesis.id}
@@ -145,6 +153,7 @@ export function ThesisDetailClient({ thesis }: { thesis: any }) {
               description: a.description, uploadedAt: a.uploadedAt,
             }))}
           />
+          </div>
         </div>
 
         <ThesisReviewForm open={showReviewForm} onOpenChange={setShowReviewForm} thesisId={thesis.id} review={editReview} />
